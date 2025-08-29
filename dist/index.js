@@ -432,7 +432,7 @@ var jsxRuntimeExports = requireJsxRuntime();
 /**
  * Main axis alignment controls how children are positioned along the main axis
  */
-var MainAxisAlignment$1;
+exports.MainAxisAlignment = void 0;
 (function (MainAxisAlignment) {
     MainAxisAlignment["START"] = "flex-start";
     MainAxisAlignment["CENTER"] = "center";
@@ -440,50 +440,50 @@ var MainAxisAlignment$1;
     MainAxisAlignment["SPACE_BETWEEN"] = "space-between";
     MainAxisAlignment["SPACE_AROUND"] = "space-around";
     MainAxisAlignment["SPACE_EVENLY"] = "space-evenly";
-})(MainAxisAlignment$1 || (MainAxisAlignment$1 = {}));
+})(exports.MainAxisAlignment || (exports.MainAxisAlignment = {}));
 /**
  * Cross axis alignment controls how children are positioned perpendicular to the main axis
  */
-var CrossAxisAlignment$1;
+exports.CrossAxisAlignment = void 0;
 (function (CrossAxisAlignment) {
     CrossAxisAlignment["START"] = "flex-start";
     CrossAxisAlignment["CENTER"] = "center";
     CrossAxisAlignment["END"] = "flex-end";
     CrossAxisAlignment["STRETCH"] = "stretch";
     CrossAxisAlignment["BASELINE"] = "baseline";
-})(CrossAxisAlignment$1 || (CrossAxisAlignment$1 = {}));
+})(exports.CrossAxisAlignment || (exports.CrossAxisAlignment = {}));
 /**
  * Main axis size controls how much space the flex container should occupy
  */
-var MainAxisSize;
+exports.MainAxisSize = void 0;
 (function (MainAxisSize) {
     MainAxisSize["MIN"] = "min-content";
     MainAxisSize["MAX"] = "max-content";
-})(MainAxisSize || (MainAxisSize = {}));
+})(exports.MainAxisSize || (exports.MainAxisSize = {}));
 /**
  * Text direction for layout purposes
  */
-var TextDirection;
+exports.TextDirection = void 0;
 (function (TextDirection) {
     TextDirection["LTR"] = "ltr";
     TextDirection["RTL"] = "rtl";
-})(TextDirection || (TextDirection = {}));
+})(exports.TextDirection || (exports.TextDirection = {}));
 /**
  * Vertical direction for column layout
  */
-var VerticalDirection;
+exports.VerticalDirection = void 0;
 (function (VerticalDirection) {
     VerticalDirection["UP"] = "column-reverse";
     VerticalDirection["DOWN"] = "column";
-})(VerticalDirection || (VerticalDirection = {}));
+})(exports.VerticalDirection || (exports.VerticalDirection = {}));
 /**
  * Text baseline for alignment
  */
-var TextBaseline;
+exports.TextBaseline = void 0;
 (function (TextBaseline) {
     TextBaseline["ALPHABETIC"] = "alphabetic";
     TextBaseline["IDEOGRAPHIC"] = "ideographic";
-})(TextBaseline || (TextBaseline = {}));
+})(exports.TextBaseline || (exports.TextBaseline = {}));
 /**
  * EdgeInsets provides methods for creating padding values in different configurations
  */
@@ -618,17 +618,17 @@ var Flex$1;
      */
     function getMainAxisAlignmentClass(alignment) {
         switch (alignment) {
-            case MainAxisAlignment$1.START:
+            case exports.MainAxisAlignment.START:
                 return 'justify-start';
-            case MainAxisAlignment$1.CENTER:
+            case exports.MainAxisAlignment.CENTER:
                 return 'justify-center';
-            case MainAxisAlignment$1.END:
+            case exports.MainAxisAlignment.END:
                 return 'justify-end';
-            case MainAxisAlignment$1.SPACE_BETWEEN:
+            case exports.MainAxisAlignment.SPACE_BETWEEN:
                 return 'justify-between';
-            case MainAxisAlignment$1.SPACE_AROUND:
+            case exports.MainAxisAlignment.SPACE_AROUND:
                 return 'justify-around';
-            case MainAxisAlignment$1.SPACE_EVENLY:
+            case exports.MainAxisAlignment.SPACE_EVENLY:
                 return 'justify-evenly';
             default:
                 return 'justify-start';
@@ -642,15 +642,15 @@ var Flex$1;
      */
     function getCrossAxisAlignmentClass(alignment) {
         switch (alignment) {
-            case CrossAxisAlignment$1.START:
+            case exports.CrossAxisAlignment.START:
                 return 'items-start';
-            case CrossAxisAlignment$1.CENTER:
+            case exports.CrossAxisAlignment.CENTER:
                 return 'items-center';
-            case CrossAxisAlignment$1.END:
+            case exports.CrossAxisAlignment.END:
                 return 'items-end';
-            case CrossAxisAlignment$1.STRETCH:
+            case exports.CrossAxisAlignment.STRETCH:
                 return 'items-stretch';
-            case CrossAxisAlignment$1.BASELINE:
+            case exports.CrossAxisAlignment.BASELINE:
                 return 'items-baseline';
             default:
                 return 'items-start';
@@ -664,9 +664,9 @@ var Flex$1;
      */
     function getMainAxisSizeClass(size) {
         switch (size) {
-            case MainAxisSize.MIN:
+            case exports.MainAxisSize.MIN:
                 return 'w-min h-min';
-            case MainAxisSize.MAX:
+            case exports.MainAxisSize.MAX:
                 return 'w-max h-max';
             default:
                 return '';
@@ -731,7 +731,7 @@ function Container(props) {
  * ```
  */
 function Row(props) {
-    const { children, mainAxisAlignment = MainAxisAlignment$1.START, crossAxisAlignment = CrossAxisAlignment$1.CENTER, mainAxisSize, textDirection = TextDirection.LTR, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
+    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection = exports.TextDirection.LTR, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
     const effectivePadding = Flex$1.calculatePadding({
         paddingAll,
         paddingHorizontal,
@@ -757,7 +757,7 @@ function Row(props) {
         padding: effectivePadding,
         margin: effectiveMargin,
         direction: textDirection,
-        flexDirection: textDirection === TextDirection.RTL ? 'row-reverse' : 'row',
+        flexDirection: textDirection === exports.TextDirection.RTL ? 'row-reverse' : 'row',
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
     return (jsxRuntimeExports.jsx("div", { className: containerClasses, style: containerStyle, children: children }));
@@ -780,7 +780,7 @@ function Row(props) {
  * ```
  */
 function Column(props) {
-    const { children, mainAxisAlignment = MainAxisAlignment$1.START, crossAxisAlignment = CrossAxisAlignment$1.CENTER, mainAxisSize, verticalDirection = VerticalDirection.DOWN, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
+    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, verticalDirection = exports.VerticalDirection.DOWN, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
     const effectivePadding = Flex$1.calculatePadding({
         paddingAll,
         paddingHorizontal,
@@ -812,7 +812,7 @@ function Column(props) {
 }
 
 function Flex(props) {
-    const { children, direction, mainAxisAlignment = MainAxisAlignment$1.START, crossAxisAlignment = CrossAxisAlignment$1.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
+    const { children, direction, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
     const effectivePadding = Flex$1.calculatePadding({
         paddingAll,
         paddingHorizontal,
@@ -862,21 +862,21 @@ function Spacer({ flex = 1 }) {
 /**
  * Scroll direction for ListView
  */
-var ScrollDirection;
+exports.ScrollDirection = void 0;
 (function (ScrollDirection) {
     ScrollDirection["VERTICAL"] = "vertical";
     ScrollDirection["HORIZONTAL"] = "horizontal";
-})(ScrollDirection || (ScrollDirection = {}));
+})(exports.ScrollDirection || (exports.ScrollDirection = {}));
 /**
  * Scroll physics behavior controls how the list responds to user scroll gestures
  */
-var ScrollPhysics;
+exports.ScrollPhysics = void 0;
 (function (ScrollPhysics) {
     ScrollPhysics["BOUNCING"] = "bouncing";
     ScrollPhysics["CLAMPING"] = "clamping";
     ScrollPhysics["NEVER_SCROLLABLE"] = "never_scrollable";
     ScrollPhysics["ALWAYS_SCROLLABLE"] = "always_scrollable";
-})(ScrollPhysics || (ScrollPhysics = {}));
+})(exports.ScrollPhysics || (exports.ScrollPhysics = {}));
 /**
  * Cross axis alignment controls how children are positioned perpendicular to the main axis
  */
@@ -902,24 +902,24 @@ var MainAxisAlignment;
 /**
  * Padding direction options for convenience methods
  */
-var PaddingDirection;
+exports.PaddingDirection = void 0;
 (function (PaddingDirection) {
     PaddingDirection["ALL"] = "all";
     PaddingDirection["HORIZONTAL"] = "horizontal";
     PaddingDirection["VERTICAL"] = "vertical";
     PaddingDirection["NONE"] = "none";
-})(PaddingDirection || (PaddingDirection = {}));
+})(exports.PaddingDirection || (exports.PaddingDirection = {}));
 var ListView$1;
 (function (ListView) {
     function getPhysicsClassName(physics) {
         switch (physics) {
-            case ScrollPhysics.BOUNCING:
+            case exports.ScrollPhysics.BOUNCING:
                 return 'scroll-smooth';
-            case ScrollPhysics.CLAMPING:
+            case exports.ScrollPhysics.CLAMPING:
                 return 'scroll-auto';
-            case ScrollPhysics.NEVER_SCROLLABLE:
+            case exports.ScrollPhysics.NEVER_SCROLLABLE:
                 return 'overflow-hidden';
-            case ScrollPhysics.ALWAYS_SCROLLABLE:
+            case exports.ScrollPhysics.ALWAYS_SCROLLABLE:
                 return 'overflow-scroll';
             default:
                 return 'scroll-auto';
@@ -927,13 +927,13 @@ var ListView$1;
     }
     ListView.getPhysicsClassName = getPhysicsClassName;
     function getScrollDirectionClasses(direction) {
-        return direction === ScrollDirection.VERTICAL
+        return direction === exports.ScrollDirection.VERTICAL
             ? 'flex-col overflow-y-auto overflow-x-hidden'
             : 'flex-row overflow-x-auto overflow-y-hidden';
     }
     ListView.getScrollDirectionClasses = getScrollDirectionClasses;
     function getCrossAxisAlignmentClass(alignment, direction) {
-        const isVertical = direction === ScrollDirection.VERTICAL;
+        const isVertical = direction === exports.ScrollDirection.VERTICAL;
         switch (alignment) {
             case CrossAxisAlignment.START:
                 return isVertical ? 'items-start' : 'justify-start';
@@ -949,7 +949,7 @@ var ListView$1;
     }
     ListView.getCrossAxisAlignmentClass = getCrossAxisAlignmentClass;
     function getMainAxisAlignmentClass(alignment, direction) {
-        const isVertical = direction === ScrollDirection.VERTICAL;
+        const isVertical = direction === exports.ScrollDirection.VERTICAL;
         switch (alignment) {
             case MainAxisAlignment.START:
                 return isVertical ? 'justify-start' : 'items-start';
@@ -1012,7 +1012,7 @@ function useListViewHook({ items = [], itemCount, itemBuilder, separatorBuilder,
     };
 }
 function ListView(props) {
-    const { items, itemCount, itemBuilder, separatorBuilder, keyExtractor, scrollDirection = ScrollDirection.VERTICAL, reverse = false, shrinkWrap = false, physics = ScrollPhysics.BOUNCING, crossAxisAlignment = CrossAxisAlignment.STRETCH, mainAxisAlignment = MainAxisAlignment.START, padding, paddingAll, paddingHorizontal, paddingVertical, flexible, expanded, flex, clipBehavior = 'visible', } = props;
+    const { items, itemCount, itemBuilder, separatorBuilder, keyExtractor, scrollDirection = exports.ScrollDirection.VERTICAL, reverse = false, shrinkWrap = false, physics = exports.ScrollPhysics.BOUNCING, crossAxisAlignment = CrossAxisAlignment.STRETCH, mainAxisAlignment = MainAxisAlignment.START, padding, paddingAll, paddingHorizontal, paddingVertical, flexible, expanded, flex, clipBehavior = 'visible', } = props;
     const { rendered } = useListViewHook({
         items,
         itemCount,
@@ -1050,7 +1050,7 @@ function ListView(props) {
         ...flexStyles,
         padding: effectivePadding,
         ...(reverse && {
-            flexDirection: (scrollDirection === ScrollDirection.VERTICAL
+            flexDirection: (scrollDirection === exports.ScrollDirection.VERTICAL
                 ? 'column-reverse'
                 : 'row-reverse'),
         }),

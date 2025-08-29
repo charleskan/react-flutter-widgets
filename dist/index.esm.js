@@ -1058,5 +1058,5 @@ function ListView(props) {
 ListView.builder = (props) => ListView(props);
 ListView.separated = (props) => ListView(props);
 
-export { Column, Container, EdgeInsets, Flex, ListView, Row, SizedBox, Spacer };
+export { Column, Container, CrossAxisAlignment$1 as CrossAxisAlignment, EdgeInsets, Flex, ListView, MainAxisAlignment$1 as MainAxisAlignment, MainAxisSize, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, VerticalDirection };
 //# sourceMappingURL=index.esm.js.map
