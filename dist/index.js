@@ -877,28 +877,7 @@ exports.ScrollPhysics = void 0;
     ScrollPhysics["NEVER_SCROLLABLE"] = "never_scrollable";
     ScrollPhysics["ALWAYS_SCROLLABLE"] = "always_scrollable";
 })(exports.ScrollPhysics || (exports.ScrollPhysics = {}));
-/**
- * Cross axis alignment controls how children are positioned perpendicular to the main axis
- */
-var CrossAxisAlignment;
-(function (CrossAxisAlignment) {
-    CrossAxisAlignment["START"] = "flex-start";
-    CrossAxisAlignment["CENTER"] = "center";
-    CrossAxisAlignment["END"] = "flex-end";
-    CrossAxisAlignment["STRETCH"] = "stretch";
-})(CrossAxisAlignment || (CrossAxisAlignment = {}));
-/**
- * Main axis alignment controls how children are positioned along the main axis
- */
-var MainAxisAlignment;
-(function (MainAxisAlignment) {
-    MainAxisAlignment["START"] = "flex-start";
-    MainAxisAlignment["CENTER"] = "center";
-    MainAxisAlignment["END"] = "flex-end";
-    MainAxisAlignment["SPACE_BETWEEN"] = "space-between";
-    MainAxisAlignment["SPACE_AROUND"] = "space-around";
-    MainAxisAlignment["SPACE_EVENLY"] = "space-evenly";
-})(MainAxisAlignment || (MainAxisAlignment = {}));
+// MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 /**
  * Padding direction options for convenience methods
  */
@@ -935,13 +914,13 @@ var ListView$1;
     function getCrossAxisAlignmentClass(alignment, direction) {
         const isVertical = direction === exports.ScrollDirection.VERTICAL;
         switch (alignment) {
-            case CrossAxisAlignment.START:
+            case exports.CrossAxisAlignment.START:
                 return isVertical ? 'items-start' : 'justify-start';
-            case CrossAxisAlignment.CENTER:
+            case exports.CrossAxisAlignment.CENTER:
                 return isVertical ? 'items-center' : 'justify-center';
-            case CrossAxisAlignment.END:
+            case exports.CrossAxisAlignment.END:
                 return isVertical ? 'items-end' : 'justify-end';
-            case CrossAxisAlignment.STRETCH:
+            case exports.CrossAxisAlignment.STRETCH:
                 return isVertical ? 'items-stretch' : 'justify-stretch';
             default:
                 return isVertical ? 'items-stretch' : 'justify-start';
@@ -951,17 +930,17 @@ var ListView$1;
     function getMainAxisAlignmentClass(alignment, direction) {
         const isVertical = direction === exports.ScrollDirection.VERTICAL;
         switch (alignment) {
-            case MainAxisAlignment.START:
+            case exports.MainAxisAlignment.START:
                 return isVertical ? 'justify-start' : 'items-start';
-            case MainAxisAlignment.CENTER:
+            case exports.MainAxisAlignment.CENTER:
                 return isVertical ? 'justify-center' : 'items-center';
-            case MainAxisAlignment.END:
+            case exports.MainAxisAlignment.END:
                 return isVertical ? 'justify-end' : 'items-end';
-            case MainAxisAlignment.SPACE_BETWEEN:
+            case exports.MainAxisAlignment.SPACE_BETWEEN:
                 return isVertical ? 'justify-between' : 'items-between';
-            case MainAxisAlignment.SPACE_AROUND:
+            case exports.MainAxisAlignment.SPACE_AROUND:
                 return isVertical ? 'justify-around' : 'items-around';
-            case MainAxisAlignment.SPACE_EVENLY:
+            case exports.MainAxisAlignment.SPACE_EVENLY:
                 return isVertical ? 'justify-evenly' : 'items-evenly';
             default:
                 return isVertical ? 'justify-start' : 'items-start';
@@ -1012,7 +991,7 @@ function useListViewHook({ items = [], itemCount, itemBuilder, separatorBuilder,
     };
 }
 function ListView(props) {
-    const { items, itemCount, itemBuilder, separatorBuilder, keyExtractor, scrollDirection = exports.ScrollDirection.VERTICAL, reverse = false, shrinkWrap = false, physics = exports.ScrollPhysics.BOUNCING, crossAxisAlignment = CrossAxisAlignment.STRETCH, mainAxisAlignment = MainAxisAlignment.START, padding, paddingAll, paddingHorizontal, paddingVertical, flexible, expanded, flex, clipBehavior = 'visible', } = props;
+    const { items, itemCount, itemBuilder, separatorBuilder, keyExtractor, scrollDirection = exports.ScrollDirection.VERTICAL, reverse = false, shrinkWrap = false, physics = exports.ScrollPhysics.BOUNCING, crossAxisAlignment = exports.CrossAxisAlignment.STRETCH, mainAxisAlignment = exports.MainAxisAlignment.START, padding, paddingAll, paddingHorizontal, paddingVertical, flexible, expanded, flex, clipBehavior = 'visible', } = props;
     const { rendered } = useListViewHook({
         items,
         itemCount,

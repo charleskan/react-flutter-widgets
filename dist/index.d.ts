@@ -65,7 +65,7 @@ declare function Container(props: ContainerProps): react_jsx_runtime.JSX.Element
 /**
  * Main axis alignment controls how children are positioned along the main axis
  */
-declare enum MainAxisAlignment$1 {
+declare enum MainAxisAlignment {
     START = "flex-start",
     CENTER = "center",
     END = "flex-end",
@@ -76,7 +76,7 @@ declare enum MainAxisAlignment$1 {
 /**
  * Cross axis alignment controls how children are positioned perpendicular to the main axis
  */
-declare enum CrossAxisAlignment$1 {
+declare enum CrossAxisAlignment {
     START = "flex-start",
     CENTER = "center",
     END = "flex-end",
@@ -150,9 +150,9 @@ interface FlexProps {
     /** Child elements to render inside the flex container */
     children: ReactNode;
     /** Main axis alignment of children */
-    mainAxisAlignment?: MainAxisAlignment$1;
+    mainAxisAlignment?: MainAxisAlignment;
     /** Cross axis alignment of children */
-    crossAxisAlignment?: CrossAxisAlignment$1;
+    crossAxisAlignment?: CrossAxisAlignment;
     /** How much space the flex container should occupy along the main axis */
     mainAxisSize?: MainAxisSize;
     /** Text direction for layout */
@@ -285,26 +285,6 @@ declare enum ScrollPhysics {
     ALWAYS_SCROLLABLE = "always_scrollable"
 }
 /**
- * Cross axis alignment controls how children are positioned perpendicular to the main axis
- */
-declare enum CrossAxisAlignment {
-    START = "flex-start",
-    CENTER = "center",
-    END = "flex-end",
-    STRETCH = "stretch"
-}
-/**
- * Main axis alignment controls how children are positioned along the main axis
- */
-declare enum MainAxisAlignment {
-    START = "flex-start",
-    CENTER = "center",
-    END = "flex-end",
-    SPACE_BETWEEN = "space-between",
-    SPACE_AROUND = "space-around",
-    SPACE_EVENLY = "space-evenly"
-}
-/**
  * Padding direction options for convenience methods
  */
 declare enum PaddingDirection {
@@ -382,5 +362,5 @@ declare namespace ListView {
 }
 //# sourceMappingURL=ListView.d.ts.map
 
-export { Column, Container, CrossAxisAlignment$1 as CrossAxisAlignment, EdgeInsets, Flex, ListView, MainAxisAlignment$1 as MainAxisAlignment, MainAxisSize, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, VerticalDirection };
+export { Column, Container, CrossAxisAlignment, EdgeInsets, Flex, ListView, MainAxisAlignment, MainAxisSize, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, VerticalDirection };
 export type { ColumnProps, ContainerProps, FlexProps, ListViewProps, RowProps, SizedBoxProps, SpacerProps };

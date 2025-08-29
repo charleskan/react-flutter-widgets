@@ -430,7 +430,7 @@ var jsxRuntimeExports = requireJsxRuntime();
 /**
  * Main axis alignment controls how children are positioned along the main axis
  */
-var MainAxisAlignment$1;
+var MainAxisAlignment;
 (function (MainAxisAlignment) {
     MainAxisAlignment["START"] = "flex-start";
     MainAxisAlignment["CENTER"] = "center";
@@ -438,18 +438,18 @@ var MainAxisAlignment$1;
     MainAxisAlignment["SPACE_BETWEEN"] = "space-between";
     MainAxisAlignment["SPACE_AROUND"] = "space-around";
     MainAxisAlignment["SPACE_EVENLY"] = "space-evenly";
-})(MainAxisAlignment$1 || (MainAxisAlignment$1 = {}));
+})(MainAxisAlignment || (MainAxisAlignment = {}));
 /**
  * Cross axis alignment controls how children are positioned perpendicular to the main axis
  */
-var CrossAxisAlignment$1;
+var CrossAxisAlignment;
 (function (CrossAxisAlignment) {
     CrossAxisAlignment["START"] = "flex-start";
     CrossAxisAlignment["CENTER"] = "center";
     CrossAxisAlignment["END"] = "flex-end";
     CrossAxisAlignment["STRETCH"] = "stretch";
     CrossAxisAlignment["BASELINE"] = "baseline";
-})(CrossAxisAlignment$1 || (CrossAxisAlignment$1 = {}));
+})(CrossAxisAlignment || (CrossAxisAlignment = {}));
 /**
  * Main axis size controls how much space the flex container should occupy
  */
@@ -616,17 +616,17 @@ var Flex$1;
      */
     function getMainAxisAlignmentClass(alignment) {
         switch (alignment) {
-            case MainAxisAlignment$1.START:
+            case MainAxisAlignment.START:
                 return 'justify-start';
-            case MainAxisAlignment$1.CENTER:
+            case MainAxisAlignment.CENTER:
                 return 'justify-center';
-            case MainAxisAlignment$1.END:
+            case MainAxisAlignment.END:
                 return 'justify-end';
-            case MainAxisAlignment$1.SPACE_BETWEEN:
+            case MainAxisAlignment.SPACE_BETWEEN:
                 return 'justify-between';
-            case MainAxisAlignment$1.SPACE_AROUND:
+            case MainAxisAlignment.SPACE_AROUND:
                 return 'justify-around';
-            case MainAxisAlignment$1.SPACE_EVENLY:
+            case MainAxisAlignment.SPACE_EVENLY:
                 return 'justify-evenly';
             default:
                 return 'justify-start';
@@ -640,15 +640,15 @@ var Flex$1;
      */
     function getCrossAxisAlignmentClass(alignment) {
         switch (alignment) {
-            case CrossAxisAlignment$1.START:
+            case CrossAxisAlignment.START:
                 return 'items-start';
-            case CrossAxisAlignment$1.CENTER:
+            case CrossAxisAlignment.CENTER:
                 return 'items-center';
-            case CrossAxisAlignment$1.END:
+            case CrossAxisAlignment.END:
                 return 'items-end';
-            case CrossAxisAlignment$1.STRETCH:
+            case CrossAxisAlignment.STRETCH:
                 return 'items-stretch';
-            case CrossAxisAlignment$1.BASELINE:
+            case CrossAxisAlignment.BASELINE:
                 return 'items-baseline';
             default:
                 return 'items-start';
@@ -729,7 +729,7 @@ function Container(props) {
  * ```
  */
 function Row(props) {
-    const { children, mainAxisAlignment = MainAxisAlignment$1.START, crossAxisAlignment = CrossAxisAlignment$1.CENTER, mainAxisSize, textDirection = TextDirection.LTR, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
+    const { children, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize, textDirection = TextDirection.LTR, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
     const effectivePadding = Flex$1.calculatePadding({
         paddingAll,
         paddingHorizontal,
@@ -778,7 +778,7 @@ function Row(props) {
  * ```
  */
 function Column(props) {
-    const { children, mainAxisAlignment = MainAxisAlignment$1.START, crossAxisAlignment = CrossAxisAlignment$1.CENTER, mainAxisSize, verticalDirection = VerticalDirection.DOWN, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
+    const { children, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize, verticalDirection = VerticalDirection.DOWN, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
     const effectivePadding = Flex$1.calculatePadding({
         paddingAll,
         paddingHorizontal,
@@ -810,7 +810,7 @@ function Column(props) {
 }
 
 function Flex(props) {
-    const { children, direction, mainAxisAlignment = MainAxisAlignment$1.START, crossAxisAlignment = CrossAxisAlignment$1.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
+    const { children, direction, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
     const effectivePadding = Flex$1.calculatePadding({
         paddingAll,
         paddingHorizontal,
@@ -875,28 +875,7 @@ var ScrollPhysics;
     ScrollPhysics["NEVER_SCROLLABLE"] = "never_scrollable";
     ScrollPhysics["ALWAYS_SCROLLABLE"] = "always_scrollable";
 })(ScrollPhysics || (ScrollPhysics = {}));
-/**
- * Cross axis alignment controls how children are positioned perpendicular to the main axis
- */
-var CrossAxisAlignment;
-(function (CrossAxisAlignment) {
-    CrossAxisAlignment["START"] = "flex-start";
-    CrossAxisAlignment["CENTER"] = "center";
-    CrossAxisAlignment["END"] = "flex-end";
-    CrossAxisAlignment["STRETCH"] = "stretch";
-})(CrossAxisAlignment || (CrossAxisAlignment = {}));
-/**
- * Main axis alignment controls how children are positioned along the main axis
- */
-var MainAxisAlignment;
-(function (MainAxisAlignment) {
-    MainAxisAlignment["START"] = "flex-start";
-    MainAxisAlignment["CENTER"] = "center";
-    MainAxisAlignment["END"] = "flex-end";
-    MainAxisAlignment["SPACE_BETWEEN"] = "space-between";
-    MainAxisAlignment["SPACE_AROUND"] = "space-around";
-    MainAxisAlignment["SPACE_EVENLY"] = "space-evenly";
-})(MainAxisAlignment || (MainAxisAlignment = {}));
+// MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 /**
  * Padding direction options for convenience methods
  */
@@ -1058,5 +1037,5 @@ function ListView(props) {
 ListView.builder = (props) => ListView(props);
 ListView.separated = (props) => ListView(props);
 
-export { Column, Container, CrossAxisAlignment$1 as CrossAxisAlignment, EdgeInsets, Flex, ListView, MainAxisAlignment$1 as MainAxisAlignment, MainAxisSize, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, VerticalDirection };
+export { Column, Container, CrossAxisAlignment, EdgeInsets, Flex, ListView, MainAxisAlignment, MainAxisSize, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, VerticalDirection };
 //# sourceMappingURL=index.esm.js.map

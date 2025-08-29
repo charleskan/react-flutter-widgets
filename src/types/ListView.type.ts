@@ -1,6 +1,9 @@
 import type { CSSProperties, Key, ReactNode } from 'react'
 import { MainAxisAlignment, CrossAxisAlignment } from './Flex.type'
 
+// Re-export enums from Flex.type.ts for ListView usage
+export { MainAxisAlignment, CrossAxisAlignment }
+
 /**
  * Scroll direction for ListView
  */
