@@ -1,4 +1,5 @@
 import type { CSSProperties, Key, ReactNode } from 'react'
+import { MainAxisAlignment, CrossAxisAlignment } from './Flex.type'
 
 /**
  * Scroll direction for ListView
@@ -18,27 +19,7 @@ export enum ScrollPhysics {
   ALWAYS_SCROLLABLE = 'always_scrollable',
 }
 
-/**
- * Cross axis alignment controls how children are positioned perpendicular to the main axis
- */
-export enum CrossAxisAlignment {
-  START = 'flex-start',
-  CENTER = 'center',
-  END = 'flex-end',
-  STRETCH = 'stretch',
-}
-
-/**
- * Main axis alignment controls how children are positioned along the main axis
- */
-export enum MainAxisAlignment {
-  START = 'flex-start',
-  CENTER = 'center',
-  END = 'flex-end',
-  SPACE_BETWEEN = 'space-between',
-  SPACE_AROUND = 'space-around',
-  SPACE_EVENLY = 'space-evenly',
-}
+// MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 
 /**
  * Padding direction options for convenience methods
