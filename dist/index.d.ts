@@ -1,29 +1,6 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import React$1, { ReactNode, Key, CSSProperties } from 'react';
 
-/**
- * Container component equivalent to Flutter's Container widget.
- * Provides a convenient way to create a widget with common painting, positioning, and sizing properties.
- *
- * @example
- * ```tsx
- * <Container
- *   padding={EdgeInsets.all(16)}
- *   margin={EdgeInsets.symmetric({ horizontal: 8 })}
- *   width="100%"
- *   backgroundColor="#f5f5f5"
- *   borderRadius={8}
- * >
- *   <div>Content goes here</div>
- * </Container>
- * ```
- *
- * EdgeInsets methods:
- * - EdgeInsets.all(16) - uniform spacing on all sides
- * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
- * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
- * - EdgeInsets.zero() - no spacing
- */
 interface ContainerProps {
     /** Child content to render inside the container */
     children?: ReactNode;
@@ -60,6 +37,29 @@ interface ContainerProps {
     /** Custom inline styles (use sparingly) */
     style?: React.CSSProperties;
 }
+/**
+ * Container component equivalent to Flutter's Container widget.
+ * Provides a convenient way to create a widget with common painting, positioning, and sizing properties.
+ *
+ * @example
+ * ```tsx
+ * <Container
+ *   padding={EdgeInsets.all(16)}
+ *   margin={EdgeInsets.symmetric({ horizontal: 8 })}
+ *   width="100%"
+ *   backgroundColor="#f5f5f5"
+ *   borderRadius={8}
+ * >
+ *   <div>Content goes here</div>
+ * </Container>
+ * ```
+ *
+ * EdgeInsets methods:
+ * - EdgeInsets.all(16) - uniform spacing on all sides
+ * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
+ * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
+ * - EdgeInsets.zero() - no spacing
+ */
 declare function Container(props: ContainerProps): react_jsx_runtime.JSX.Element;
 
 /**
@@ -227,6 +227,10 @@ declare function Row(props: RowProps): react_jsx_runtime.JSX.Element;
 declare function Column(props: ColumnProps): react_jsx_runtime.JSX.Element;
 //# sourceMappingURL=Column.d.ts.map
 
+interface FlexComponentProps extends FlexProps {
+    /** Direction of the flex layout */
+    direction: 'row' | 'column';
+}
 /**
  * Flex component that provides flexible layout container, equivalent to Flutter's Flex widget.
  * This is the base component that both Column and Row extend from.
@@ -244,20 +248,58 @@ declare function Column(props: ColumnProps): react_jsx_runtime.JSX.Element;
  * </Flex>
  * ```
  */
-interface FlexComponentProps extends FlexProps {
-    /** Direction of the flex layout */
-    direction: 'row' | 'column';
-}
 declare function Flex(props: FlexComponentProps): react_jsx_runtime.JSX.Element;
 //# sourceMappingURL=Flex.d.ts.map
 
+/**
+ * SizedBox component equivalent to Flutter's SizedBox widget.
+ * Creates a box with specific width and/or height dimensions.
+ *
+ * @example
+ * ```tsx
+ * // Fixed size box
+ * <SizedBox width={100} height={50} />
+ *
+ * // Width only
+ * <SizedBox width="100%" />
+ *
+ * // Height only
+ * <SizedBox height={20} />
+ *
+ * // Using string values
+ * <SizedBox width="200px" height="10rem" />
+ * ```
+ */
 interface SizedBoxProps {
+    /** Width of the box - number is treated as pixels, string passed directly to CSS */
     width?: number | string;
+    /** Height of the box - number is treated as pixels, string passed directly to CSS */
     height?: number | string;
 }
 declare function SizedBox({ width, height }: SizedBoxProps): react_jsx_runtime.JSX.Element;
 
+/**
+ * Spacer component equivalent to Flutter's Spacer widget.
+ * Creates flexible space that expands to fill available space in a flex container.
+ *
+ * @example
+ * ```tsx
+ * <Row>
+ *   <div>Left content</div>
+ *   <Spacer />
+ *   <div>Right content</div>
+ * </Row>
+ *
+ * // With custom flex value
+ * <Column>
+ *   <div>Top content</div>
+ *   <Spacer flex={2} />
+ *   <div>Bottom content</div>
+ * </Column>
+ * ```
+ */
 interface SpacerProps {
+    /** Flex factor controlling how much space this widget takes relative to other flex children */
     flex?: number;
 }
 declare function Spacer({ flex }: SpacerProps): react_jsx_runtime.JSX.Element;
@@ -347,6 +389,35 @@ interface ListViewProps<T> extends ListViewBuilder<T> {
     semanticChildCount?: number;
 }
 
+/**
+ * ListView component equivalent to Flutter's ListView widget.
+ * Efficiently renders a scrollable list of items with customizable layout and behavior.
+ *
+ * @example
+ * ```tsx
+ * // Basic list with items array
+ * <ListView
+ *   items={['Item 1', 'Item 2', 'Item 3']}
+ *   itemBuilder={(item, index) => <div key={index}>{item}</div>}
+ *   scrollDirection={ScrollDirection.VERTICAL}
+ * />
+ *
+ * // Builder pattern with itemCount
+ * <ListView
+ *   itemCount={100}
+ *   itemBuilder={(_, index) => <div key={index}>Item {index}</div>}
+ *   separatorBuilder={(index) => <div key={`sep-${index}`} style={{height: 1, background: '#ccc'}} />}
+ * />
+ *
+ * // Horizontal scrolling list
+ * <ListView
+ *   items={data}
+ *   itemBuilder={(item, index) => <Card key={index} data={item} />}
+ *   scrollDirection={ScrollDirection.HORIZONTAL}
+ *   padding={EdgeInsets.all(16)}
+ * />
+ * ```
+ */
 declare function ListView<T>(props: ListViewProps<T>): react_jsx_runtime.JSX.Element;
 declare namespace ListView {
     var builder: <T>(props: ListViewProps<T>) => react_jsx_runtime.JSX.Element;
@@ -510,24 +581,6 @@ interface DragEndDetails {
 }
 declare function GestureDetector(props: GestureDetectorProps): react_jsx_runtime.JSX.Element;
 
-/**
- * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
- * Automatically animates changes to its properties over a specified duration.
- *
- * @example
- * ```tsx
- * <AnimatedContainer
- *   width={isExpanded ? 200 : 100}
- *   height={isExpanded ? 200 : 100}
- *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
- *   duration={300}
- *   curve="ease-in-out"
- *   onEnd={() => console.log('Animation completed')}
- * >
- *   <span>Animated content</span>
- * </AnimatedContainer>
- * ```
- */
 interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {
     /** Duration of the animation in milliseconds */
     duration: number;
@@ -562,24 +615,26 @@ declare enum AnimationCurve {
     /** Decelerate (Material Design) */
     decelerate = "cubic-bezier(0, 0, 0.2, 1)"
 }
-declare function AnimatedContainer(props: AnimatedContainerProps): react_jsx_runtime.JSX.Element;
-
 /**
- * AnimatedOpacity component equivalent to Flutter's AnimatedOpacity widget.
- * Animates the opacity of its child over a specified duration.
+ * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
+ * Automatically animates changes to its properties over a specified duration.
  *
  * @example
  * ```tsx
- * <AnimatedOpacity
- *   opacity={isVisible ? 1.0 : 0.0}
+ * <AnimatedContainer
+ *   width={isExpanded ? 200 : 100}
+ *   height={isExpanded ? 200 : 100}
+ *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
  *   duration={300}
  *   curve="ease-in-out"
- *   onEnd={() => console.log('Fade completed')}
+ *   onEnd={() => console.log('Animation completed')}
  * >
- *   <div>Content to fade</div>
- * </AnimatedOpacity>
+ *   <span>Animated content</span>
+ * </AnimatedContainer>
  * ```
  */
+declare function AnimatedContainer(props: AnimatedContainerProps): react_jsx_runtime.JSX.Element;
+
 interface AnimatedOpacityProps {
     /** Child content to render */
     children?: ReactNode;
@@ -602,6 +657,22 @@ interface AnimatedOpacityProps {
     /** Custom inline styles */
     style?: React.CSSProperties;
 }
+/**
+ * AnimatedOpacity component equivalent to Flutter's AnimatedOpacity widget.
+ * Animates the opacity of its child over a specified duration.
+ *
+ * @example
+ * ```tsx
+ * <AnimatedOpacity
+ *   opacity={isVisible ? 1.0 : 0.0}
+ *   duration={300}
+ *   curve="ease-in-out"
+ *   onEnd={() => console.log('Fade completed')}
+ * >
+ *   <div>Content to fade</div>
+ * </AnimatedOpacity>
+ * ```
+ */
 declare function AnimatedOpacity(props: AnimatedOpacityProps): react_jsx_runtime.JSX.Element;
 
 interface Size {

@@ -1,27 +1,4 @@
 import type { ReactNode } from 'react';
-/**
- * Container component equivalent to Flutter's Container widget.
- * Provides a convenient way to create a widget with common painting, positioning, and sizing properties.
- *
- * @example
- * ```tsx
- * <Container
- *   padding={EdgeInsets.all(16)}
- *   margin={EdgeInsets.symmetric({ horizontal: 8 })}
- *   width="100%"
- *   backgroundColor="#f5f5f5"
- *   borderRadius={8}
- * >
- *   <div>Content goes here</div>
- * </Container>
- * ```
- *
- * EdgeInsets methods:
- * - EdgeInsets.all(16) - uniform spacing on all sides
- * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
- * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
- * - EdgeInsets.zero() - no spacing
- */
 export interface ContainerProps {
     /** Child content to render inside the container */
     children?: ReactNode;
@@ -58,6 +35,29 @@ export interface ContainerProps {
     /** Custom inline styles (use sparingly) */
     style?: React.CSSProperties;
 }
+/**
+ * Container component equivalent to Flutter's Container widget.
+ * Provides a convenient way to create a widget with common painting, positioning, and sizing properties.
+ *
+ * @example
+ * ```tsx
+ * <Container
+ *   padding={EdgeInsets.all(16)}
+ *   margin={EdgeInsets.symmetric({ horizontal: 8 })}
+ *   width="100%"
+ *   backgroundColor="#f5f5f5"
+ *   borderRadius={8}
+ * >
+ *   <div>Content goes here</div>
+ * </Container>
+ * ```
+ *
+ * EdgeInsets methods:
+ * - EdgeInsets.all(16) - uniform spacing on all sides
+ * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
+ * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
+ * - EdgeInsets.zero() - no spacing
+ */
 declare function Container(props: ContainerProps): import("react/jsx-runtime").JSX.Element;
 export default Container;
 //# sourceMappingURL=Container.d.ts.map

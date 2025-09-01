@@ -1,22 +1,4 @@
 import type { ContainerProps } from '../layout/Container';
-/**
- * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
- * Automatically animates changes to its properties over a specified duration.
- *
- * @example
- * ```tsx
- * <AnimatedContainer
- *   width={isExpanded ? 200 : 100}
- *   height={isExpanded ? 200 : 100}
- *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
- *   duration={300}
- *   curve="ease-in-out"
- *   onEnd={() => console.log('Animation completed')}
- * >
- *   <span>Animated content</span>
- * </AnimatedContainer>
- * ```
- */
 export interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {
     /** Duration of the animation in milliseconds */
     duration: number;
@@ -51,6 +33,24 @@ export declare enum AnimationCurve {
     /** Decelerate (Material Design) */
     decelerate = "cubic-bezier(0, 0, 0.2, 1)"
 }
+/**
+ * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
+ * Automatically animates changes to its properties over a specified duration.
+ *
+ * @example
+ * ```tsx
+ * <AnimatedContainer
+ *   width={isExpanded ? 200 : 100}
+ *   height={isExpanded ? 200 : 100}
+ *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
+ *   duration={300}
+ *   curve="ease-in-out"
+ *   onEnd={() => console.log('Animation completed')}
+ * >
+ *   <span>Animated content</span>
+ * </AnimatedContainer>
+ * ```
+ */
 declare function AnimatedContainer(props: AnimatedContainerProps): import("react/jsx-runtime").JSX.Element;
 export default AnimatedContainer;
 //# sourceMappingURL=AnimatedContainer.d.ts.map

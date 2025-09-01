@@ -646,6 +646,29 @@ var Flex$1;
     Flex.getMainAxisSizeClass = getMainAxisSizeClass;
 })(Flex$1 || (Flex$1 = {}));
 
+/**
+ * Container component equivalent to Flutter's Container widget.
+ * Provides a convenient way to create a widget with common painting, positioning, and sizing properties.
+ *
+ * @example
+ * ```tsx
+ * <Container
+ *   padding={EdgeInsets.all(16)}
+ *   margin={EdgeInsets.symmetric({ horizontal: 8 })}
+ *   width="100%"
+ *   backgroundColor="#f5f5f5"
+ *   borderRadius={8}
+ * >
+ *   <div>Content goes here</div>
+ * </Container>
+ * ```
+ *
+ * EdgeInsets methods:
+ * - EdgeInsets.all(16) - uniform spacing on all sides
+ * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
+ * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
+ * - EdgeInsets.zero() - no spacing
+ */
 function Container(props) {
     const { children, width, height, padding, margin, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', style = {}, } = props;
     // Build flex styles
@@ -759,6 +782,23 @@ function Column(props) {
     return (jsxRuntimeExports.jsx("div", { className: containerClasses, style: containerStyle, children: children }));
 }
 
+/**
+ * Flex component that provides flexible layout container, equivalent to Flutter's Flex widget.
+ * This is the base component that both Column and Row extend from.
+ *
+ * @example
+ * ```tsx
+ * <Flex
+ *   direction="row"
+ *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
+ *   crossAxisAlignment={CrossAxisAlignment.CENTER}
+ *   padding={EdgeInsets.all(16)}
+ * >
+ *   <div>Item 1</div>
+ *   <div>Item 2</div>
+ * </Flex>
+ * ```
+ */
 function Flex(props) {
     const { children, direction, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
@@ -931,6 +971,35 @@ function useListViewHook({ items = [], itemCount, itemBuilder, separatorBuilder,
         itemCount: effectiveItemCount,
     };
 }
+/**
+ * ListView component equivalent to Flutter's ListView widget.
+ * Efficiently renders a scrollable list of items with customizable layout and behavior.
+ *
+ * @example
+ * ```tsx
+ * // Basic list with items array
+ * <ListView
+ *   items={['Item 1', 'Item 2', 'Item 3']}
+ *   itemBuilder={(item, index) => <div key={index}>{item}</div>}
+ *   scrollDirection={ScrollDirection.VERTICAL}
+ * />
+ *
+ * // Builder pattern with itemCount
+ * <ListView
+ *   itemCount={100}
+ *   itemBuilder={(_, index) => <div key={index}>Item {index}</div>}
+ *   separatorBuilder={(index) => <div key={`sep-${index}`} style={{height: 1, background: '#ccc'}} />}
+ * />
+ *
+ * // Horizontal scrolling list
+ * <ListView
+ *   items={data}
+ *   itemBuilder={(item, index) => <Card key={index} data={item} />}
+ *   scrollDirection={ScrollDirection.HORIZONTAL}
+ *   padding={EdgeInsets.all(16)}
+ * />
+ * ```
+ */
 function ListView(props) {
     const { items, itemCount, itemBuilder, separatorBuilder, keyExtractor, scrollDirection = exports.ScrollDirection.VERTICAL, reverse = false, shrinkWrap = false, physics = exports.ScrollPhysics.BOUNCING, crossAxisAlignment = exports.CrossAxisAlignment.STRETCH, mainAxisAlignment = exports.MainAxisAlignment.START, padding, paddingAll, paddingHorizontal, paddingVertical, flexible, expanded, flex, clipBehavior = 'visible', } = props;
     const { rendered } = useListViewHook({
@@ -1472,6 +1541,24 @@ exports.AnimationCurve = void 0;
     /** Decelerate (Material Design) */
     AnimationCurve["decelerate"] = "cubic-bezier(0, 0, 0.2, 1)";
 })(exports.AnimationCurve || (exports.AnimationCurve = {}));
+/**
+ * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
+ * Automatically animates changes to its properties over a specified duration.
+ *
+ * @example
+ * ```tsx
+ * <AnimatedContainer
+ *   width={isExpanded ? 200 : 100}
+ *   height={isExpanded ? 200 : 100}
+ *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
+ *   duration={300}
+ *   curve="ease-in-out"
+ *   onEnd={() => console.log('Animation completed')}
+ * >
+ *   <span>Animated content</span>
+ * </AnimatedContainer>
+ * ```
+ */
 function AnimatedContainer(props) {
     const { children, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, style = {}, 
     // Container props
@@ -1619,6 +1706,22 @@ function AnimatedContainer(props) {
     return (jsxRuntimeExports.jsx("div", { ref: containerRef, className: className, style: containerStyle, children: children }));
 }
 
+/**
+ * AnimatedOpacity component equivalent to Flutter's AnimatedOpacity widget.
+ * Animates the opacity of its child over a specified duration.
+ *
+ * @example
+ * ```tsx
+ * <AnimatedOpacity
+ *   opacity={isVisible ? 1.0 : 0.0}
+ *   duration={300}
+ *   curve="ease-in-out"
+ *   onEnd={() => console.log('Fade completed')}
+ * >
+ *   <div>Content to fade</div>
+ * </AnimatedOpacity>
+ * ```
+ */
 function AnimatedOpacity(props) {
     const { children, opacity, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, alwaysIncludeSemantics = false, className = '', style = {}, } = props;
     const [currentOpacity, setCurrentOpacity] = require$$0.useState(opacity);
