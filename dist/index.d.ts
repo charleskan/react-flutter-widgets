@@ -331,7 +331,19 @@ declare enum ScrollPhysics$1 {
 }
 /**
  * Defines padding values that can be applied to ListView components.
- * Can be a single number for uniform padding or an object specifying individual sides.
+ * Equivalent to Flutter's EdgeInsets class - supports uniform padding or individual sides.
+ *
+ * @example
+ * ```tsx
+ * // Uniform padding (equivalent to EdgeInsets.all(16))
+ * padding={16}
+ *
+ * // Individual sides (equivalent to EdgeInsets.only())
+ * padding={{ top: 8, bottom: 16, left: 12, right: 12 }}
+ *
+ * // Symmetric padding can be achieved with:
+ * padding={{ top: 8, bottom: 8, left: 16, right: 16 }}
+ * ```
  */
 type EdgeInsets$1 = number | {
     top?: number;
@@ -410,8 +422,29 @@ interface ListViewHandle {
     getScrollElement: () => HTMLUListElement | null;
 }
 /**
- * Flutter-inspired ListView component with multiple variants.
- * Supports basic children, builder pattern, and separated items.
+ * Flutter-inspired ListView component with multiple variants. Supports basic children, builder pattern, and separated items.
+ *
+ * @example
+ * ```tsx
+ * // Basic ListView with children
+ * <ListView>
+ *   <div>Item 1</div>
+ *   <div>Item 2</div>
+ * </ListView>
+ *
+ * // Builder pattern
+ * <ListView.builder
+ *   itemCount={100}
+ *   itemBuilder={(index) => <div key={index}>Item {index}</div>}
+ * />
+ *
+ * // With separators
+ * <ListView.separated
+ *   itemCount={10}
+ *   itemBuilder={(index) => <div key={index}>Item {index}</div>}
+ *   separatorBuilder={(index) => <hr key={`sep-${index}`} />}
+ * />
+ * ```
  */
 declare const ListView: React$1.ForwardRefExoticComponent<ListViewProps$1 & React$1.RefAttributes<ListViewHandle>> & {
     builder: React$1.ForwardRefExoticComponent<BuilderProps<unknown> & React$1.RefAttributes<ListViewHandle>>;

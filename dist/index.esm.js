@@ -982,8 +982,29 @@ function Builder({ itemCount, itemBuilder, separatorBuilder, ...rest }, ref) {
     return (jsxRuntimeExports.jsx(ListViewBase, { ref: ref, ...rest, children: items }));
 }
 /**
- * Flutter-inspired ListView component with multiple variants.
- * Supports basic children, builder pattern, and separated items.
+ * Flutter-inspired ListView component with multiple variants. Supports basic children, builder pattern, and separated items.
+ *
+ * @example
+ * ```tsx
+ * // Basic ListView with children
+ * <ListView>
+ *   <div>Item 1</div>
+ *   <div>Item 2</div>
+ * </ListView>
+ *
+ * // Builder pattern
+ * <ListView.builder
+ *   itemCount={100}
+ *   itemBuilder={(index) => <div key={index}>Item {index}</div>}
+ * />
+ *
+ * // With separators
+ * <ListView.separated
+ *   itemCount={10}
+ *   itemBuilder={(index) => <div key={index}>Item {index}</div>}
+ *   separatorBuilder={(index) => <hr key={`sep-${index}`} />}
+ * />
+ * ```
  */
 const ListView$1 = Object.assign(ListViewBase, {
     builder: forwardRef((p, ref) => Builder(p, ref)),
