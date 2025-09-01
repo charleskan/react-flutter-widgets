@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import { ReactNode, Key, CSSProperties } from 'react';
+import React$1, { ReactNode, Key, CSSProperties } from 'react';
 
 /**
  * Container component equivalent to Flutter's Container widget.
@@ -1024,5 +1024,78 @@ interface OpacityProps {
 }
 declare function Opacity({ children, opacity, alwaysIncludeSemantics, className, style, }: OpacityProps): react_jsx_runtime.JSX.Element;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BoxConstraints, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TransformProps };
+/**
+ * A Flutter TextField–inspired React component.
+ *
+ * NOTE: This mirrors common TextField props & behaviors from Flutter's material.TextField
+ * (controller, decoration, obscureText, maxLength, minLines, maxLines, expands, enabled, readOnly,
+ * autofocus, textInputAction-like submit on Enter, onEditingComplete, onSubmitted, etc.).
+ * Some Flutter features don't map 1:1 to the web; where not possible, we emulate sensible equivalents.
+ */
+interface InputDecoration {
+    labelText?: string;
+    hintText?: string;
+    helperText?: string;
+    errorText?: string;
+    prefixIcon?: React$1.ReactNode;
+    suffixIcon?: React$1.ReactNode;
+    counterText?: string;
+    filled?: boolean;
+    fillColor?: string;
+    border?: "none" | "outline" | "underline";
+}
+type TextInputType = "text" | "emailAddress" | "number" | "phone" | "url" | "password";
+type TextInputAction = "done" | "search" | "next" | "send" | "go" | "none";
+type TextAlign = "start" | "end" | "left" | "right" | "center";
+type TextCapitalization = "none" | "characters" | "words" | "sentences";
+interface TextFieldProps {
+    /** Controls the text being edited (controlled mode). If provided, component is controlled. */
+    value?: string;
+    /** Default text (uncontrolled mode). */
+    defaultValue?: string;
+    /** Equivalent of Flutter's controller.text setter semantics */
+    onChangeText?: (text: string) => void;
+    onChanged?: (text: string) => void;
+    onEditingComplete?: () => void;
+    onSubmitted?: (text: string) => void;
+    onFocus?: () => void;
+    onBlur?: () => void;
+    onTap?: () => void;
+    style?: React$1.CSSProperties;
+    textAlign?: TextAlign;
+    textDirection?: "ltr" | "rtl";
+    textCapitalization?: TextCapitalization;
+    maxLength?: number;
+    maxLines?: number | null;
+    minLines?: number;
+    expands?: boolean;
+    obscureText?: boolean;
+    obscuringCharacter?: string;
+    enabled?: boolean;
+    readOnly?: boolean;
+    autoFocus?: boolean;
+    canRequestFocus?: boolean;
+    keyboardType?: TextInputType;
+    textInputAction?: TextInputAction;
+    inputMode?: React$1.HTMLAttributes<HTMLInputElement>["inputMode"];
+    decoration?: InputDecoration;
+    id?: string;
+    name?: string;
+    placeholder?: string;
+    /** Forward a ref to access imperative methods like focus/select/clear. */
+    forwardedRef?: React$1.Ref<TextFieldHandle>;
+    className?: string;
+    containerStyle?: React$1.CSSProperties;
+}
+interface TextFieldHandle {
+    focus: () => void;
+    blur: () => void;
+    select: () => void;
+    clear: () => void;
+    getValue: () => string;
+    setValue: (v: string) => void;
+}
+declare const TextField: React$1.ForwardRefExoticComponent<TextFieldProps & React$1.RefAttributes<TextFieldHandle>>;
+
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BoxConstraints, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TransformProps };

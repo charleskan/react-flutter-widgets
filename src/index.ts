@@ -107,6 +107,18 @@ export {
   type OpacityProps,
 } from './components/interactive'
 
+// Form Components
+export {
+  TextField,
+  type TextFieldProps,
+  type TextFieldHandle,
+  type InputDecoration,
+  type TextInputType,
+  type TextInputAction,
+  type TextAlign,
+  type TextCapitalization,
+} from './components/form'
+
 // Core Utilities and Types
 export { EdgeInsets } from './types/Flex.type'
 

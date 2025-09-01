@@ -1,4 +1,4 @@
-import require$$0, { useMemo, useState, useRef, useEffect, useCallback, createContext, useContext } from 'react';
+import require$$0, { useMemo, useState, useRef, useEffect, useCallback, createContext, useContext, forwardRef, useImperativeHandle } from 'react';
 
 var jsxRuntime = {exports: {}};
 
@@ -2482,5 +2482,146 @@ function Opacity({ children, opacity, alwaysIncludeSemantics = false, className 
     return (jsxRuntimeExports.jsx("div", { className: className, style: containerStyle, "aria-hidden": !shouldIncludeSemantics, children: children }));
 }
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+function mapKeyboard(type) {
+    switch (type) {
+        case "emailAddress":
+            return { htmlType: "email", inputMode: "email" };
+        case "number":
+            return { htmlType: "text", inputMode: "numeric" }; // keep text to allow custom validation
+        case "phone":
+            return { htmlType: "tel", inputMode: "tel" };
+        case "url":
+            return { htmlType: "url", inputMode: "url" };
+        case "password":
+            return { htmlType: "password" };
+        case "text":
+        default:
+            return { htmlType: "text" };
+    }
+}
+function applyCapitalization(text, mode) {
+    if (!mode || mode === "none")
+        return text;
+    switch (mode) {
+        case "characters":
+            return text.toUpperCase();
+        case "words":
+            return text.replace(/(^|\s)([a-z])/g, (_, p1, p2) => p1 + p2.toUpperCase());
+        case "sentences":
+            return text.replace(/(^|[.!?]\s+)([a-z])/g, (_, p1, p2) => p1 + p2.toUpperCase());
+        default:
+            return text;
+    }
+}
+const TextField = forwardRef(function TextField(props, ref) {
+    const { value, defaultValue, onChangeText, onChanged, onEditingComplete, onSubmitted, onFocus, onBlur, onTap, style, textAlign = "start", textDirection, textCapitalization = "none", maxLength, maxLines = 1, minLines, expands = false, obscureText = false, obscuringCharacter: _, // not used directly; browser uses own mask
+    enabled = true, readOnly = false, autoFocus = false, canRequestFocus: __ = true, keyboardType = "text", textInputAction = "none", inputMode, decoration = {}, id, name, placeholder, forwardedRef, className, containerStyle, } = props;
+    const [inner, setInner] = useState(defaultValue ?? "");
+    const controlled = value !== undefined;
+    const currentValue = controlled ? value : inner;
+    const inputRef = useRef(null);
+    // expose imperative API
+    useImperativeHandle(ref ?? forwardedRef, () => ({
+        focus: () => inputRef.current?.focus(),
+        blur: () => inputRef.current?.blur(),
+        select: () => inputRef.current?.select?.(),
+        clear: () => {
+            if (controlled) {
+                (onChangeText ?? onChanged)?.("");
+            }
+            else {
+                setInner("");
+            }
+        },
+        getValue: () => currentValue,
+        setValue: (v) => {
+            if (!controlled)
+                setInner(v);
+        },
+    }), [controlled, currentValue, onChangeText, onChanged]);
+    // map Flutter keyboard type -> HTML
+    const { htmlType, inputMode: autoInputMode } = useMemo(() => mapKeyboard(obscureText ? "password" : keyboardType), [keyboardType, obscureText]);
+    // compute props
+    const dir = textDirection;
+    const ta = textAlign === "start" ? undefined : textAlign === "end" ? undefined : textAlign;
+    // enterKeyHint mapping removed as it's not used in the implementation
+    const handleChange = useCallback((e) => {
+        let text = e.target.value;
+        if (textCapitalization && textCapitalization !== "none") {
+            const cursor = e.target.selectionStart;
+            text = applyCapitalization(text, textCapitalization);
+            // try to restore caret if capitalization changed length (best-effort)
+            if (cursor != null) {
+                requestAnimationFrame(() => {
+                    try {
+                        e.target.setSelectionRange(cursor, cursor);
+                    }
+                    catch { }
+                });
+            }
+        }
+        if (controlled) {
+            (onChangeText ?? onChanged)?.(text);
+        }
+        else {
+            setInner(text);
+            (onChangeText ?? onChanged)?.(text);
+        }
+    }, [controlled, onChangeText, onChanged, textCapitalization]);
+    const handleKeyDown = useCallback((e) => {
+        if (e.key === "Enter") {
+            onEditingComplete?.();
+            onSubmitted?.(currentValue);
+            if (textInputAction === "next") {
+                // try to focus next focusable element
+                const form = e.currentTarget.form;
+                if (form) {
+                    const elements = Array.from(form.querySelectorAll("input, textarea, [tabindex]"));
+                    const idx = elements.indexOf(e.currentTarget);
+                    if (idx >= 0 && idx + 1 < elements.length)
+                        elements[idx + 1]?.focus();
+                }
+            }
+        }
+    }, [currentValue, onEditingComplete, onSubmitted, textInputAction]);
+    const handleBlur = useCallback(() => {
+        onEditingComplete?.();
+        onBlur?.();
+    }, [onEditingComplete, onBlur]);
+    const disabled = !enabled;
+    const showTextarea = expands || (maxLines == null || maxLines > 1 || (minLines != null && minLines > 1));
+    const { labelText, hintText, helperText, errorText, prefixIcon, suffixIcon, counterText, filled, fillColor, border } = decoration;
+    const baseField = showTextarea ? (jsxRuntimeExports.jsx("textarea", { ref: inputRef, id: id, name: name, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, rows: minLines ?? 1, style: {
+            width: "100%",
+            resize: expands ? "none" : "vertical",
+            flex: expands ? 1 : undefined,
+            minHeight: expands ? 0 : undefined,
+            textAlign: ta,
+            ...style,
+        }, className: "rtf-input" })) : (jsxRuntimeExports.jsx("input", { ref: inputRef, id: id, name: name, type: obscureText ? "password" : htmlType, inputMode: inputMode ?? autoInputMode, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, style: {
+            width: "100%",
+            textAlign: ta,
+            ...style,
+        }, className: "rtf-input" }));
+    const showCounter = maxLength != null || counterText;
+    const computedCounterText = counterText ?? (maxLength != null ? `${currentValue.length} / ${maxLength}` : undefined);
+    return (jsxRuntimeExports.jsxs("label", { className: "rtf-container " + (className ?? ""), style: { display: "block", ...containerStyle }, children: [labelText && (jsxRuntimeExports.jsx("span", { className: "rtf-label", children: labelText })), jsxRuntimeExports.jsxs("div", { className: "rtf-wrapper " + (errorText ? "rtf-error " : "") + (filled ? "rtf-filled " : "") + (border ? `rtf-border-${border} ` : "rtf-border-outline "), style: { background: filled ? (fillColor ?? "#f6f6f6") : undefined }, children: [prefixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-prefix", children: prefixIcon }), baseField, suffixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-suffix", children: suffixIcon })] }), helperText && !errorText && jsxRuntimeExports.jsx("div", { className: "rtf-helper", children: helperText }), errorText && jsxRuntimeExports.jsx("div", { className: "rtf-error-text", children: errorText }), showCounter && jsxRuntimeExports.jsx("div", { className: "rtf-counter", children: computedCounterText }), jsxRuntimeExports.jsx("style", { children: `
+        .rtf-container { font: inherit; color: inherit; }
+        .rtf-label { display:block; margin-bottom: 4px; font-size: 0.875rem; color: #555; }
+        .rtf-wrapper { display:flex; align-items:center; gap:8px; padding: 10px 12px; border-radius: 8px; }
+        .rtf-border-outline { border:1px solid #d0d7de; }
+        .rtf-border-underline { border-bottom:1px solid #d0d7de; border-radius:0; padding-left:0; padding-right:0; }
+        .rtf-border-none { border:none; }
+        .rtf-input { background:transparent; border:none; outline:none; font: inherit; color: inherit; }
+        .rtf-input:disabled { color:#9aa0a6; }
+        .rtf-filled { background: var(--rtf-fill, #f6f6f6); }
+        .rtf-helper { margin-top: 4px; font-size: 0.75rem; color: #6b7280; }
+        .rtf-error-text { margin-top: 4px; font-size: 0.75rem; color: #b00020; }
+        .rtf-error .rtf-border-outline, .rtf-error .rtf-border-underline { border-color:#b00020; }
+        .rtf-counter { margin-top: 4px; font-size: 0.75rem; color:#6b7280; text-align:right; }
+        .rtf-prefix, .rtf-suffix { display:flex; align-items:center; }
+      ` })] }));
+});
+
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map
