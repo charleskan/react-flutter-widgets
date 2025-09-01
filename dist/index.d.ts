@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import { ReactNode, CSSProperties, Key } from 'react';
+import { ReactNode, Key, CSSProperties } from 'react';
 
 /**
  * Container component equivalent to Flutter's Container widget.
@@ -17,6 +17,12 @@ import { ReactNode, CSSProperties, Key } from 'react';
  *   <div>Content goes here</div>
  * </Container>
  * ```
+ *
+ * EdgeInsets methods:
+ * - EdgeInsets.all(16) - uniform spacing on all sides
+ * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
+ * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
+ * - EdgeInsets.zero() - no spacing
  */
 interface ContainerProps {
     /** Child content to render inside the container */
@@ -25,16 +31,10 @@ interface ContainerProps {
     width?: number | string;
     /** Fixed height of the container */
     height?: number | string;
-    /** Padding inside the container */
+    /** Padding inside the container - must use EdgeInsets methods */
     padding?: string;
-    /** Margin outside the container */
+    /** Margin outside the container - must use EdgeInsets methods */
     margin?: string;
-    /** Convenience prop for uniform padding on all sides */
-    paddingAll?: number | string;
-    /** Convenience prop for horizontal padding */
-    paddingHorizontal?: number | string;
-    /** Convenience prop for vertical padding */
-    paddingVertical?: number | string;
     /** Background color of the container */
     backgroundColor?: string;
     /** Border radius for rounded corners */
@@ -112,36 +112,36 @@ declare enum TextBaseline {
     IDEOGRAPHIC = "ideographic"
 }
 /**
- * EdgeInsets provides methods for creating padding values in different configurations
+ * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
  */
 declare const EdgeInsets$1: {
     /**
-     * Creates uniform padding for all sides
-     * @param value - The padding value (number will be converted to px)
+     * Creates uniform spacing for all sides
+     * @param value - The spacing value (number will be converted to px)
      */
-    readonly all: (value: number | string) => CSSProperties["padding"];
+    readonly all: (value: number | string) => string;
     /**
-     * Creates symmetric padding for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical padding values
+     * Creates symmetric spacing for horizontal and/or vertical sides
+     * @param options - Object containing horizontal and/or vertical spacing values
      */
     readonly symmetric: (options: {
         horizontal?: number | string;
         vertical?: number | string;
-    }) => CSSProperties["padding"];
+    }) => string;
     /**
-     * Creates padding with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom padding values
+     * Creates spacing with individual control for each side
+     * @param options - Object containing left, top, right, and/or bottom spacing values
      */
     readonly only: (options: {
         left?: number | string;
         top?: number | string;
         right?: number | string;
         bottom?: number | string;
-    }) => CSSProperties["padding"];
+    }) => string;
     /**
-     * Creates zero padding for all sides
+     * Creates zero spacing for all sides
      */
-    readonly zero: () => CSSProperties["padding"];
+    readonly zero: () => string;
 };
 /**
  * Common flex container props interface following Flutter's layout model
@@ -169,16 +169,10 @@ interface FlexProps {
     width?: number | string;
     /** Fixed height of the container */
     height?: number | string;
-    /** Padding inside the container */
-    padding?: CSSProperties['padding'];
-    /** Margin outside the container */
-    margin?: CSSProperties['margin'];
-    /** Convenience prop for uniform padding on all sides */
-    paddingAll?: number | string;
-    /** Convenience prop for horizontal padding */
-    paddingHorizontal?: number | string;
-    /** Convenience prop for vertical padding */
-    paddingVertical?: number | string;
+    /** Padding inside the container - must use EdgeInsets methods */
+    padding?: string;
+    /** Margin outside the container - must use EdgeInsets methods */
+    margin?: string;
 }
 /**
  * Column component props extending FlexProps with column-specific options
@@ -203,7 +197,7 @@ interface RowProps extends FlexProps {
  * <Row
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingHorizontal={16}
+ *   padding={EdgeInsets.symmetric({ horizontal: 16 })}
  * >
  *   <div>Left Item</div>
  *   <div>Center Item</div>
@@ -222,7 +216,7 @@ declare function Row(props: RowProps): react_jsx_runtime.JSX.Element;
  * <Column
  *   mainAxisAlignment={MainAxisAlignment.CENTER}
  *   crossAxisAlignment={CrossAxisAlignment.START}
- *   paddingAll={16}
+ *   padding={EdgeInsets.all(16)}
  * >
  *   <div>Item 1</div>
  *   <div>Item 2</div>
@@ -243,7 +237,7 @@ declare function Column(props: ColumnProps): react_jsx_runtime.JSX.Element;
  *   direction="row"
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingAll={16}
+ *   padding={EdgeInsets.all(16)}
  * >
  *   <div>Item 1</div>
  *   <div>Item 2</div>
@@ -656,7 +650,7 @@ interface MediaQueryProps {
     breakpoints?: MediaQueryBreakpoints;
     data?: MediaQueryData;
 }
-declare function MediaQuery({ children, breakpoints, data }: MediaQueryProps): react_jsx_runtime.JSX.Element;
+declare function MediaQuery({ children, breakpoints, data, }: MediaQueryProps): react_jsx_runtime.JSX.Element;
 declare function useMediaQuery(): MediaQueryContextValue;
 declare function useBreakpoint(breakpoints?: MediaQueryBreakpoints): "xl" | "lg" | "md" | "sm" | "xs";
 declare function useBreakpointMatch(condition: string, breakpoints?: MediaQueryBreakpoints): boolean;

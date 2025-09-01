@@ -9,7 +9,7 @@ import { CrossAxisAlignment, Flex, MainAxisAlignment, TextDirection } from '../.
  * <Row
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingHorizontal={16}
+ *   padding={EdgeInsets.symmetric({ horizontal: 16 })}
  * >
  *   <div>Left Item</div>
  *   <div>Center Item</div>
@@ -27,24 +27,12 @@ function Row(props: RowProps) {
     textBaseline,
     padding,
     margin,
-    paddingAll,
-    paddingHorizontal,
-    paddingVertical,
     flex,
     expanded,
     flexible,
     width,
     height,
   } = props
-
-  const effectivePadding = Flex.calculatePadding({
-    paddingAll,
-    paddingHorizontal,
-    paddingVertical,
-    padding,
-  })
-
-  const effectiveMargin = Flex.calculateMargin(margin)
 
   const flexStyles = Flex.buildFlexStyles({
     flex,
@@ -64,8 +52,8 @@ function Row(props: RowProps) {
 
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
-    padding: effectivePadding,
-    margin: effectiveMargin,
+    padding,
+    margin,
     direction: textDirection,
     flexDirection: textDirection === TextDirection.RTL ? 'row-reverse' : 'row',
     alignItems:

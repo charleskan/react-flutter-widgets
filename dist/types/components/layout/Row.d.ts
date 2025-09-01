@@ -7,7 +7,7 @@ import type { RowProps } from '../../types/Flex.type';
  * <Row
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingHorizontal={16}
+ *   padding={EdgeInsets.symmetric({ horizontal: 16 })}
  * >
  *   <div>Left Item</div>
  *   <div>Center Item</div>

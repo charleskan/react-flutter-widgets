@@ -9,7 +9,7 @@ import type { FlexProps } from '../../types/Flex.type';
  *   direction="row"
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingAll={16}
+ *   padding={EdgeInsets.all(16)}
  * >
  *   <div>Item 1</div>
  *   <div>Item 2</div>

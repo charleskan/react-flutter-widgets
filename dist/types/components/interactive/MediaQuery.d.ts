@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 export interface Size {
     width: number;
     height: number;
@@ -45,7 +45,7 @@ export interface MediaQueryProps {
     breakpoints?: MediaQueryBreakpoints;
     data?: MediaQueryData;
 }
-export default function MediaQuery({ children, breakpoints, data }: MediaQueryProps): import("react/jsx-runtime").JSX.Element;
+export default function MediaQuery({ children, breakpoints, data, }: MediaQueryProps): import("react/jsx-runtime").JSX.Element;
 export declare function useMediaQuery(): MediaQueryContextValue;
 export declare function useBreakpoint(breakpoints?: MediaQueryBreakpoints): "xl" | "lg" | "md" | "sm" | "xs";
 export declare function useBreakpointMatch(condition: string, breakpoints?: MediaQueryBreakpoints): boolean;

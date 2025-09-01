@@ -56,26 +56,26 @@ export enum TextBaseline {
 }
 
 /**
- * EdgeInsets provides methods for creating padding values in different configurations
+ * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
  */
 export const EdgeInsets = {
   /**
-   * Creates uniform padding for all sides
-   * @param value - The padding value (number will be converted to px)
+   * Creates uniform spacing for all sides
+   * @param value - The spacing value (number will be converted to px)
    */
-  all(value: number | string): CSSProperties['padding'] {
-    const paddingValue = typeof value === 'number' ? `${value}px` : value
-    return paddingValue
+  all(value: number | string): string {
+    const spacingValue = typeof value === 'number' ? `${value}px` : value
+    return spacingValue
   },
 
   /**
-   * Creates symmetric padding for horizontal and/or vertical sides
-   * @param options - Object containing horizontal and/or vertical padding values
+   * Creates symmetric spacing for horizontal and/or vertical sides
+   * @param options - Object containing horizontal and/or vertical spacing values
    */
   symmetric(options: {
     horizontal?: number | string
     vertical?: number | string
-  }): CSSProperties['padding'] {
+  }): string {
     const horizontal = options.horizontal
       ? typeof options.horizontal === 'number'
         ? `${options.horizontal}px`
@@ -91,15 +91,15 @@ export const EdgeInsets = {
   },
 
   /**
-   * Creates padding with individual control for each side
-   * @param options - Object containing left, top, right, and/or bottom padding values
+   * Creates spacing with individual control for each side
+   * @param options - Object containing left, top, right, and/or bottom spacing values
    */
   only(options: {
     left?: number | string
     top?: number | string
     right?: number | string
     bottom?: number | string
-  }): CSSProperties['padding'] {
+  }): string {
     const top = options.top
       ? typeof options.top === 'number'
         ? `${options.top}px`
@@ -125,9 +125,9 @@ export const EdgeInsets = {
   },
 
   /**
-   * Creates zero padding for all sides
+   * Creates zero spacing for all sides
    */
-  zero(): CSSProperties['padding'] {
+  zero(): string {
     return '0'
   },
 } as const
@@ -166,16 +166,10 @@ export interface FlexProps {
   height?: number | string
 
   // Flutter spacing (using EdgeInsets)
-  /** Padding inside the container */
-  padding?: CSSProperties['padding']
-  /** Margin outside the container */
-  margin?: CSSProperties['margin']
-  /** Convenience prop for uniform padding on all sides */
-  paddingAll?: number | string
-  /** Convenience prop for horizontal padding */
-  paddingHorizontal?: number | string
-  /** Convenience prop for vertical padding */
-  paddingVertical?: number | string
+  /** Padding inside the container - must use EdgeInsets methods */
+  padding?: string
+  /** Margin outside the container - must use EdgeInsets methods */
+  margin?: string
 }
 
 /**
@@ -195,43 +189,6 @@ export interface RowProps extends FlexProps {
 }
 
 export namespace Flex {
-  /**
-   * Calculates the effective padding from various padding options
-   * @param options - Padding configuration options
-   * @returns Computed CSS padding value
-   */
-  export function calculatePadding(options: {
-    paddingAll?: number | string
-    paddingHorizontal?: number | string
-    paddingVertical?: number | string
-    padding?: CSSProperties['padding']
-  }): CSSProperties['padding'] {
-    const { paddingAll, paddingHorizontal, paddingVertical, padding } = options
-
-    // Priority: convenience props > padding
-    if (paddingAll !== undefined) {
-      return EdgeInsets.all(paddingAll)
-    }
-
-    if (paddingHorizontal !== undefined || paddingVertical !== undefined) {
-      return EdgeInsets.symmetric({
-        horizontal: paddingHorizontal,
-        vertical: paddingVertical,
-      })
-    }
-
-    return padding
-  }
-
-  /**
-   * Calculates the effective margin from margin prop
-   * @param margin - Margin value
-   * @returns Computed CSS margin value
-   */
-  export function calculateMargin(margin?: CSSProperties['margin']): CSSProperties['margin'] {
-    return margin
-  }
-
   /**
    * Builds flex-related CSS styles based on Flutter flex properties
    * @param options - Flutter flex configuration

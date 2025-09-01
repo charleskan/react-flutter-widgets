@@ -7,7 +7,7 @@ import type { ColumnProps } from '../../types/Flex.type';
  * <Column
  *   mainAxisAlignment={MainAxisAlignment.CENTER}
  *   crossAxisAlignment={CrossAxisAlignment.START}
- *   paddingAll={16}
+ *   padding={EdgeInsets.all(16)}
  * >
  *   <div>Item 1</div>
  *   <div>Item 2</div>

@@ -485,20 +485,20 @@ exports.TextBaseline = void 0;
     TextBaseline["IDEOGRAPHIC"] = "ideographic";
 })(exports.TextBaseline || (exports.TextBaseline = {}));
 /**
- * EdgeInsets provides methods for creating padding values in different configurations
+ * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
  */
 const EdgeInsets = {
     /**
-     * Creates uniform padding for all sides
-     * @param value - The padding value (number will be converted to px)
+     * Creates uniform spacing for all sides
+     * @param value - The spacing value (number will be converted to px)
      */
     all(value) {
-        const paddingValue = typeof value === 'number' ? `${value}px` : value;
-        return paddingValue;
+        const spacingValue = typeof value === 'number' ? `${value}px` : value;
+        return spacingValue;
     },
     /**
-     * Creates symmetric padding for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical padding values
+     * Creates symmetric spacing for horizontal and/or vertical sides
+     * @param options - Object containing horizontal and/or vertical spacing values
      */
     symmetric(options) {
         const horizontal = options.horizontal
@@ -514,8 +514,8 @@ const EdgeInsets = {
         return `${vertical} ${horizontal}`;
     },
     /**
-     * Creates padding with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom padding values
+     * Creates spacing with individual control for each side
+     * @param options - Object containing left, top, right, and/or bottom spacing values
      */
     only(options) {
         const top = options.top
@@ -541,7 +541,7 @@ const EdgeInsets = {
         return `${top} ${right} ${bottom} ${left}`;
     },
     /**
-     * Creates zero padding for all sides
+     * Creates zero spacing for all sides
      */
     zero() {
         return '0';
@@ -549,35 +549,6 @@ const EdgeInsets = {
 };
 var Flex$1;
 (function (Flex) {
-    /**
-     * Calculates the effective padding from various padding options
-     * @param options - Padding configuration options
-     * @returns Computed CSS padding value
-     */
-    function calculatePadding(options) {
-        const { paddingAll, paddingHorizontal, paddingVertical, padding } = options;
-        // Priority: convenience props > padding
-        if (paddingAll !== undefined) {
-            return EdgeInsets.all(paddingAll);
-        }
-        if (paddingHorizontal !== undefined || paddingVertical !== undefined) {
-            return EdgeInsets.symmetric({
-                horizontal: paddingHorizontal,
-                vertical: paddingVertical,
-            });
-        }
-        return padding;
-    }
-    Flex.calculatePadding = calculatePadding;
-    /**
-     * Calculates the effective margin from margin prop
-     * @param margin - Margin value
-     * @returns Computed CSS margin value
-     */
-    function calculateMargin(margin) {
-        return margin;
-    }
-    Flex.calculateMargin = calculateMargin;
     /**
      * Builds flex-related CSS styles based on Flutter flex properties
      * @param options - Flutter flex configuration
@@ -676,16 +647,7 @@ var Flex$1;
 })(Flex$1 || (Flex$1 = {}));
 
 function Container(props) {
-    const { children, width, height, padding, margin, paddingAll, paddingHorizontal, paddingVertical, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', style = {}, } = props;
-    // Calculate effective padding using EdgeInsets
-    const effectivePadding = Flex$1.calculatePadding({
-        paddingAll,
-        paddingHorizontal,
-        paddingVertical,
-        padding,
-    });
-    // Calculate effective margin
-    const effectiveMargin = Flex$1.calculateMargin(margin);
+    const { children, width, height, padding, margin, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', style = {}, } = props;
     // Build flex styles
     const flexStyles = Flex$1.buildFlexStyles({
         flex,
@@ -701,8 +663,8 @@ function Container(props) {
     // Container styles combining all properties
     const containerStyle = {
         ...flexStyles,
-        padding: effectivePadding,
-        margin: effectiveMargin,
+        padding,
+        margin,
         backgroundColor,
         borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
         borderWidth: borderWidth > 0 ? `${borderWidth}px` : undefined,
@@ -722,7 +684,7 @@ function Container(props) {
  * <Row
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingHorizontal={16}
+ *   padding={EdgeInsets.symmetric({ horizontal: 16 })}
  * >
  *   <div>Left Item</div>
  *   <div>Center Item</div>
@@ -731,14 +693,7 @@ function Container(props) {
  * ```
  */
 function Row(props) {
-    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection = exports.TextDirection.LTR, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
-    const effectivePadding = Flex$1.calculatePadding({
-        paddingAll,
-        paddingHorizontal,
-        paddingVertical,
-        padding,
-    });
-    const effectiveMargin = Flex$1.calculateMargin(margin);
+    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection = exports.TextDirection.LTR, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
         flex,
         expanded,
@@ -754,8 +709,8 @@ function Row(props) {
         .join(' ');
     const containerStyle = {
         ...flexStyles,
-        padding: effectivePadding,
-        margin: effectiveMargin,
+        padding,
+        margin,
         direction: textDirection,
         flexDirection: textDirection === exports.TextDirection.RTL ? 'row-reverse' : 'row',
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
@@ -771,7 +726,7 @@ function Row(props) {
  * <Column
  *   mainAxisAlignment={MainAxisAlignment.CENTER}
  *   crossAxisAlignment={CrossAxisAlignment.START}
- *   paddingAll={16}
+ *   padding={EdgeInsets.all(16)}
  * >
  *   <div>Item 1</div>
  *   <div>Item 2</div>
@@ -780,14 +735,7 @@ function Row(props) {
  * ```
  */
 function Column(props) {
-    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, verticalDirection = exports.VerticalDirection.DOWN, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
-    const effectivePadding = Flex$1.calculatePadding({
-        paddingAll,
-        paddingHorizontal,
-        paddingVertical,
-        padding,
-    });
-    const effectiveMargin = Flex$1.calculateMargin(margin);
+    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, verticalDirection = exports.VerticalDirection.DOWN, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
         flex,
         expanded,
@@ -803,8 +751,8 @@ function Column(props) {
         .join(' ');
     const containerStyle = {
         ...flexStyles,
-        padding: effectivePadding,
-        margin: effectiveMargin,
+        padding,
+        margin,
         flexDirection: verticalDirection,
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
@@ -812,14 +760,7 @@ function Column(props) {
 }
 
 function Flex(props) {
-    const { children, direction, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, paddingAll, paddingHorizontal, paddingVertical, flex, expanded, flexible, width, height, } = props;
-    const effectivePadding = Flex$1.calculatePadding({
-        paddingAll,
-        paddingHorizontal,
-        paddingVertical,
-        padding,
-    });
-    const effectiveMargin = Flex$1.calculateMargin(margin);
+    const { children, direction, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
         flex,
         expanded,
@@ -836,8 +777,8 @@ function Flex(props) {
         .join(' ');
     const containerStyle = {
         ...flexStyles,
-        padding: effectivePadding,
-        margin: effectiveMargin,
+        padding,
+        margin,
         direction: textDirection,
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
@@ -1534,7 +1475,7 @@ exports.AnimationCurve = void 0;
 function AnimatedContainer(props) {
     const { children, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, style = {}, 
     // Container props
-    width, height, padding, margin, paddingAll, paddingHorizontal, paddingVertical, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', } = props;
+    width, height, padding, margin, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', } = props;
     const [currentStyles, setCurrentStyles] = require$$0.useState({});
     const [isAnimating, setIsAnimating] = require$$0.useState(false);
     const previousPropsRef = require$$0.useRef(props);
@@ -1548,18 +1489,9 @@ function AnimatedContainer(props) {
             return `${value}px`;
         return value;
     };
-    // Calculate effective padding using same logic as Container
+    // Padding is now directly provided as EdgeInsets result
     const calculateEffectivePadding = () => {
-        if (padding)
-            return padding;
-        const top = paddingVertical ?? paddingAll ?? 0;
-        const right = paddingHorizontal ?? paddingAll ?? 0;
-        const bottom = paddingVertical ?? paddingAll ?? 0;
-        const left = paddingHorizontal ?? paddingAll ?? 0;
-        if (top === right && right === bottom && bottom === left) {
-            return typeof top === 'number' ? `${top}px` : top;
-        }
-        return `${normalizeValue(top)} ${normalizeValue(right)} ${normalizeValue(bottom)} ${normalizeValue(left)}`;
+        return padding || '0';
     };
     // Calculate animated styles based on current props
     const calculateTargetStyles = () => {
@@ -1583,9 +1515,6 @@ function AnimatedContainer(props) {
             height !== prev.height ||
             padding !== prev.padding ||
             margin !== prev.margin ||
-            paddingAll !== prev.paddingAll ||
-            paddingHorizontal !== prev.paddingHorizontal ||
-            paddingVertical !== prev.paddingVertical ||
             backgroundColor !== prev.backgroundColor ||
             borderRadius !== prev.borderRadius ||
             borderWidth !== prev.borderWidth ||
@@ -1630,9 +1559,6 @@ function AnimatedContainer(props) {
         height,
         padding,
         margin,
-        paddingAll,
-        paddingHorizontal,
-        paddingVertical,
         backgroundColor,
         borderRadius,
         borderWidth,
@@ -1773,9 +1699,15 @@ exports.Brightness = void 0;
     Brightness["light"] = "light";
     Brightness["dark"] = "dark";
 })(exports.Brightness || (exports.Brightness = {}));
-const defaultBreakpoints = { xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 };
+const defaultBreakpoints = {
+    xs: 0,
+    sm: 576,
+    md: 768,
+    lg: 992,
+    xl: 1200,
+};
 const MediaQueryContext = require$$0.createContext(undefined);
-const isBrowser = typeof window !== "undefined";
+const isBrowser = typeof window !== 'undefined';
 const DEFAULT_DATA = {
     size: { width: 0, height: 0 },
     devicePixelRatio: 1,
@@ -1788,7 +1720,7 @@ const DEFAULT_DATA = {
     highContrast: false,
     supportsTouch: false,
 };
-function MediaQuery({ children, breakpoints = defaultBreakpoints, data }) {
+function MediaQuery({ children, breakpoints = defaultBreakpoints, data, }) {
     const [mediaQueryData, setMediaQueryData] = require$$0.useState(() => data ?? DEFAULT_DATA);
     require$$0.useEffect(() => {
         if (data) {
@@ -1798,37 +1730,37 @@ function MediaQuery({ children, breakpoints = defaultBreakpoints, data }) {
         if (!isBrowser)
             return;
         const root = document.documentElement;
-        root.style.setProperty("--safe-area-inset-top", getComputedStyle(root).getPropertyValue("env(safe-area-inset-top)"));
-        root.style.setProperty("--safe-area-inset-right", getComputedStyle(root).getPropertyValue("env(safe-area-inset-right)"));
-        root.style.setProperty("--safe-area-inset-bottom", getComputedStyle(root).getPropertyValue("env(safe-area-inset-bottom)"));
-        root.style.setProperty("--safe-area-inset-left", getComputedStyle(root).getPropertyValue("env(safe-area-inset-left)"));
+        root.style.setProperty('--safe-area-inset-top', getComputedStyle(root).getPropertyValue('env(safe-area-inset-top)'));
+        root.style.setProperty('--safe-area-inset-right', getComputedStyle(root).getPropertyValue('env(safe-area-inset-right)'));
+        root.style.setProperty('--safe-area-inset-bottom', getComputedStyle(root).getPropertyValue('env(safe-area-inset-bottom)'));
+        root.style.setProperty('--safe-area-inset-left', getComputedStyle(root).getPropertyValue('env(safe-area-inset-left)'));
         const update = () => setMediaQueryData(readCurrent());
         update();
-        window.addEventListener("resize", update);
-        window.addEventListener("orientationchange", update);
-        const orientationMQ = window.matchMedia("(orientation: portrait)");
-        const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
-        const reduceMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const highContrastMQ = window.matchMedia("(prefers-contrast: more), (prefers-contrast: high)");
-        const forcedColorsMQ = window.matchMedia("(forced-colors: active)");
-        orientationMQ.addEventListener("change", update);
-        darkMQ.addEventListener("change", update);
-        reduceMotionMQ.addEventListener("change", update);
-        highContrastMQ.addEventListener("change", update);
-        forcedColorsMQ.addEventListener("change", update);
+        window.addEventListener('resize', update);
+        window.addEventListener('orientationchange', update);
+        const orientationMQ = window.matchMedia('(orientation: portrait)');
+        const darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+        const reduceMotionMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const highContrastMQ = window.matchMedia('(prefers-contrast: more), (prefers-contrast: high)');
+        const forcedColorsMQ = window.matchMedia('(forced-colors: active)');
+        orientationMQ.addEventListener('change', update);
+        darkMQ.addEventListener('change', update);
+        reduceMotionMQ.addEventListener('change', update);
+        highContrastMQ.addEventListener('change', update);
+        forcedColorsMQ.addEventListener('change', update);
         const vv = window.visualViewport;
-        vv?.addEventListener("resize", update);
-        vv?.addEventListener("scroll", update);
+        vv?.addEventListener('resize', update);
+        vv?.addEventListener('scroll', update);
         return () => {
-            window.removeEventListener("resize", update);
-            window.removeEventListener("orientationchange", update);
-            orientationMQ.removeEventListener("change", update);
-            darkMQ.removeEventListener("change", update);
-            reduceMotionMQ.removeEventListener("change", update);
-            highContrastMQ.removeEventListener("change", update);
-            forcedColorsMQ.removeEventListener("change", update);
-            vv?.removeEventListener("resize", update);
-            vv?.removeEventListener("scroll", update);
+            window.removeEventListener('resize', update);
+            window.removeEventListener('orientationchange', update);
+            orientationMQ.removeEventListener('change', update);
+            darkMQ.removeEventListener('change', update);
+            reduceMotionMQ.removeEventListener('change', update);
+            highContrastMQ.removeEventListener('change', update);
+            forcedColorsMQ.removeEventListener('change', update);
+            vv?.removeEventListener('resize', update);
+            vv?.removeEventListener('scroll', update);
         };
     }, [data]);
     const contextValue = require$$0.useMemo(() => ({ ...mediaQueryData, breakpoints }), [mediaQueryData, breakpoints]);
@@ -1837,7 +1769,7 @@ function MediaQuery({ children, breakpoints = defaultBreakpoints, data }) {
 function useMediaQuery() {
     const ctx = require$$0.useContext(MediaQueryContext);
     if (!ctx)
-        throw new Error("useMediaQuery must be used within a <MediaQuery> provider");
+        throw new Error('useMediaQuery must be used within a <MediaQuery> provider');
     return ctx;
 }
 function useBreakpoint(breakpoints) {
@@ -1846,14 +1778,14 @@ function useBreakpoint(breakpoints) {
     return require$$0.useMemo(() => {
         const w = size.width;
         if (w >= bp.xl)
-            return "xl";
+            return 'xl';
         if (w >= bp.lg)
-            return "lg";
+            return 'lg';
         if (w >= bp.md)
-            return "md";
+            return 'md';
         if (w >= bp.sm)
-            return "sm";
-        return "xs";
+            return 'sm';
+        return 'xs';
     }, [size.width, bp]);
 }
 function useBreakpointMatch(condition, breakpoints) {
@@ -1862,31 +1794,31 @@ function useBreakpointMatch(condition, breakpoints) {
     return require$$0.useMemo(() => {
         const w = size.width;
         switch (condition) {
-            case "xs-only":
+            case 'xs-only':
                 return w < bp.sm;
-            case "sm-only":
+            case 'sm-only':
                 return w >= bp.sm && w < bp.md;
-            case "md-only":
+            case 'md-only':
                 return w >= bp.md && w < bp.lg;
-            case "lg-only":
+            case 'lg-only':
                 return w >= bp.lg && w < bp.xl;
-            case "xl-only":
+            case 'xl-only':
                 return w >= bp.xl;
-            case "xs-up":
+            case 'xs-up':
                 return w >= bp.xs;
-            case "sm-up":
+            case 'sm-up':
                 return w >= bp.sm;
-            case "md-up":
+            case 'md-up':
                 return w >= bp.md;
-            case "lg-up":
+            case 'lg-up':
                 return w >= bp.lg;
-            case "xl-up":
+            case 'xl-up':
                 return w >= bp.xl;
-            case "sm-down":
+            case 'sm-down':
                 return w < bp.md;
-            case "md-down":
+            case 'md-down':
                 return w < bp.lg;
-            case "lg-down":
+            case 'lg-down':
                 return w < bp.xl;
             default:
                 return false;
@@ -1903,10 +1835,12 @@ function readCurrent() {
     const padding = readSafeArea();
     const viewInsets = readViewInsets();
     const textScaleFactor = readTextScaleFactor();
-    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const highContrast = window.matchMedia("(prefers-contrast: more)").matches || window.matchMedia("(prefers-contrast: high)").matches || window.matchMedia("(forced-colors: active)").matches;
-    const supportsTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const highContrast = window.matchMedia('(prefers-contrast: more)').matches ||
+        window.matchMedia('(prefers-contrast: high)').matches ||
+        window.matchMedia('(forced-colors: active)').matches;
+    const supportsTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     return {
         size: { width, height },
         devicePixelRatio,
@@ -1922,11 +1856,11 @@ function readCurrent() {
 }
 function readSafeArea() {
     const cs = getComputedStyle(document.documentElement);
-    const toNum = (v) => Number.parseFloat(v || "0") || 0;
-    const top = toNum(cs.getPropertyValue("--safe-area-inset-top"));
-    const right = toNum(cs.getPropertyValue("--safe-area-inset-right"));
-    const bottom = toNum(cs.getPropertyValue("--safe-area-inset-bottom"));
-    const left = toNum(cs.getPropertyValue("--safe-area-inset-left"));
+    const toNum = (v) => Number.parseFloat(v || '0') || 0;
+    const top = toNum(cs.getPropertyValue('--safe-area-inset-top'));
+    const right = toNum(cs.getPropertyValue('--safe-area-inset-right'));
+    const bottom = toNum(cs.getPropertyValue('--safe-area-inset-bottom'));
+    const left = toNum(cs.getPropertyValue('--safe-area-inset-left'));
     return { top, right, bottom, left };
 }
 function readViewInsets() {
@@ -1937,11 +1871,11 @@ function readViewInsets() {
     return { top: 0, right: 0, bottom, left: 0 };
 }
 function readTextScaleFactor() {
-    const el = document.createElement("div");
-    el.style.fontSize = "16px";
-    el.style.position = "absolute";
-    el.style.visibility = "hidden";
-    el.textContent = "x";
+    const el = document.createElement('div');
+    el.style.fontSize = '16px';
+    el.style.position = 'absolute';
+    el.style.visibility = 'hidden';
+    el.textContent = 'x';
     document.body.appendChild(el);
     const computed = Number.parseFloat(getComputedStyle(el).fontSize);
     document.body.removeChild(el);

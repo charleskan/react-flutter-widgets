@@ -88,9 +88,6 @@ function AnimatedContainer(props: AnimatedContainerProps) {
     height,
     padding,
     margin,
-    paddingAll,
-    paddingHorizontal,
-    paddingVertical,
     backgroundColor,
     borderRadius,
     borderWidth = 0,
@@ -117,20 +114,9 @@ function AnimatedContainer(props: AnimatedContainerProps) {
     return value
   }
 
-  // Calculate effective padding using same logic as Container
+  // Padding is now directly provided as EdgeInsets result
   const calculateEffectivePadding = (): string => {
-    if (padding) return padding
-
-    const top = paddingVertical ?? paddingAll ?? 0
-    const right = paddingHorizontal ?? paddingAll ?? 0
-    const bottom = paddingVertical ?? paddingAll ?? 0
-    const left = paddingHorizontal ?? paddingAll ?? 0
-
-    if (top === right && right === bottom && bottom === left) {
-      return typeof top === 'number' ? `${top}px` : top
-    }
-
-    return `${normalizeValue(top)} ${normalizeValue(right)} ${normalizeValue(bottom)} ${normalizeValue(left)}`
+    return padding || '0'
   }
 
   // Calculate animated styles based on current props
@@ -159,9 +145,6 @@ function AnimatedContainer(props: AnimatedContainerProps) {
       height !== prev.height ||
       padding !== prev.padding ||
       margin !== prev.margin ||
-      paddingAll !== prev.paddingAll ||
-      paddingHorizontal !== prev.paddingHorizontal ||
-      paddingVertical !== prev.paddingVertical ||
       backgroundColor !== prev.backgroundColor ||
       borderRadius !== prev.borderRadius ||
       borderWidth !== prev.borderWidth ||
@@ -213,9 +196,6 @@ function AnimatedContainer(props: AnimatedContainerProps) {
     height,
     padding,
     margin,
-    paddingAll,
-    paddingHorizontal,
-    paddingVertical,
     backgroundColor,
     borderRadius,
     borderWidth,

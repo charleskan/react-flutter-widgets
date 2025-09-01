@@ -15,6 +15,12 @@ import type { ReactNode } from 'react';
  *   <div>Content goes here</div>
  * </Container>
  * ```
+ *
+ * EdgeInsets methods:
+ * - EdgeInsets.all(16) - uniform spacing on all sides
+ * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
+ * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
+ * - EdgeInsets.zero() - no spacing
  */
 export interface ContainerProps {
     /** Child content to render inside the container */
@@ -23,16 +29,10 @@ export interface ContainerProps {
     width?: number | string;
     /** Fixed height of the container */
     height?: number | string;
-    /** Padding inside the container */
+    /** Padding inside the container - must use EdgeInsets methods */
     padding?: string;
-    /** Margin outside the container */
+    /** Margin outside the container - must use EdgeInsets methods */
     margin?: string;
-    /** Convenience prop for uniform padding on all sides */
-    paddingAll?: number | string;
-    /** Convenience prop for horizontal padding */
-    paddingHorizontal?: number | string;
-    /** Convenience prop for vertical padding */
-    paddingVertical?: number | string;
     /** Background color of the container */
     backgroundColor?: string;
     /** Border radius for rounded corners */

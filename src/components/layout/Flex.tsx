@@ -11,7 +11,7 @@ import { CrossAxisAlignment, Flex as FlexUtils, MainAxisAlignment } from '../../
  *   direction="row"
  *   mainAxisAlignment={MainAxisAlignment.SPACE_BETWEEN}
  *   crossAxisAlignment={CrossAxisAlignment.CENTER}
- *   paddingAll={16}
+ *   padding={EdgeInsets.all(16)}
  * >
  *   <div>Item 1</div>
  *   <div>Item 2</div>
@@ -34,24 +34,12 @@ function Flex(props: FlexComponentProps) {
     textBaseline,
     padding,
     margin,
-    paddingAll,
-    paddingHorizontal,
-    paddingVertical,
     flex,
     expanded,
     flexible,
     width,
     height,
   } = props
-
-  const effectivePadding = FlexUtils.calculatePadding({
-    paddingAll,
-    paddingHorizontal,
-    paddingVertical,
-    padding,
-  })
-
-  const effectiveMargin = FlexUtils.calculateMargin(margin)
 
   const flexStyles = FlexUtils.buildFlexStyles({
     flex,
@@ -72,8 +60,8 @@ function Flex(props: FlexComponentProps) {
 
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
-    padding: effectivePadding,
-    margin: effectiveMargin,
+    padding,
+    margin,
     direction: textDirection,
     alignItems:
       textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,

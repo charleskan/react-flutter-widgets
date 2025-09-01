@@ -49,36 +49,36 @@ export declare enum TextBaseline {
     IDEOGRAPHIC = "ideographic"
 }
 /**
- * EdgeInsets provides methods for creating padding values in different configurations
+ * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
  */
 export declare const EdgeInsets: {
     /**
-     * Creates uniform padding for all sides
-     * @param value - The padding value (number will be converted to px)
+     * Creates uniform spacing for all sides
+     * @param value - The spacing value (number will be converted to px)
      */
-    readonly all: (value: number | string) => CSSProperties["padding"];
+    readonly all: (value: number | string) => string;
     /**
-     * Creates symmetric padding for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical padding values
+     * Creates symmetric spacing for horizontal and/or vertical sides
+     * @param options - Object containing horizontal and/or vertical spacing values
      */
     readonly symmetric: (options: {
         horizontal?: number | string;
         vertical?: number | string;
-    }) => CSSProperties["padding"];
+    }) => string;
     /**
-     * Creates padding with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom padding values
+     * Creates spacing with individual control for each side
+     * @param options - Object containing left, top, right, and/or bottom spacing values
      */
     readonly only: (options: {
         left?: number | string;
         top?: number | string;
         right?: number | string;
         bottom?: number | string;
-    }) => CSSProperties["padding"];
+    }) => string;
     /**
-     * Creates zero padding for all sides
+     * Creates zero spacing for all sides
      */
-    readonly zero: () => CSSProperties["padding"];
+    readonly zero: () => string;
 };
 /**
  * Common flex container props interface following Flutter's layout model
@@ -106,16 +106,10 @@ export interface FlexProps {
     width?: number | string;
     /** Fixed height of the container */
     height?: number | string;
-    /** Padding inside the container */
-    padding?: CSSProperties['padding'];
-    /** Margin outside the container */
-    margin?: CSSProperties['margin'];
-    /** Convenience prop for uniform padding on all sides */
-    paddingAll?: number | string;
-    /** Convenience prop for horizontal padding */
-    paddingHorizontal?: number | string;
-    /** Convenience prop for vertical padding */
-    paddingVertical?: number | string;
+    /** Padding inside the container - must use EdgeInsets methods */
+    padding?: string;
+    /** Margin outside the container - must use EdgeInsets methods */
+    margin?: string;
 }
 /**
  * Column component props extending FlexProps with column-specific options
@@ -132,23 +126,6 @@ export interface RowProps extends FlexProps {
     textDirection?: TextDirection;
 }
 export declare namespace Flex {
-    /**
-     * Calculates the effective padding from various padding options
-     * @param options - Padding configuration options
-     * @returns Computed CSS padding value
-     */
-    function calculatePadding(options: {
-        paddingAll?: number | string;
-        paddingHorizontal?: number | string;
-        paddingVertical?: number | string;
-        padding?: CSSProperties['padding'];
-    }): CSSProperties['padding'];
-    /**
-     * Calculates the effective margin from margin prop
-     * @param margin - Margin value
-     * @returns Computed CSS margin value
-     */
-    function calculateMargin(margin?: CSSProperties['margin']): CSSProperties['margin'];
     /**
      * Builds flex-related CSS styles based on Flutter flex properties
      * @param options - Flutter flex configuration
