@@ -30,11 +30,22 @@ export {
 // Data Display Components
 export {
   ListView,
+  Axis,
+  ScrollPhysics as ListViewScrollPhysics,
+  type BaseProps,
+  type ListViewProps as ListViewComponentProps,
+  type BuilderProps,
+  type SeparatedProps,
+  type ListViewHandle
+} from './components/data'
+
+// Legacy exports for backward compatibility
+export {
   ScrollDirection,
   ScrollPhysics,
   PaddingDirection,
   type ListViewProps,
-} from './components/data'
+} from './types/ListView.type'
 
 // Interactive Components
 export {

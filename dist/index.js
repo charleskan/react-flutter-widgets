@@ -846,6 +846,153 @@ function Spacer({ flex = 1 }) {
 }
 
 /**
+ * Defines the scroll direction for ListView components.
+ * @enum {string}
+ */
+exports.Axis = void 0;
+(function (Axis) {
+    /** Vertical scrolling (default) */
+    Axis["VERTICAL"] = "vertical";
+    /** Horizontal scrolling */
+    Axis["HORIZONTAL"] = "horizontal";
+})(exports.Axis || (exports.Axis = {}));
+/**
+ * Defines the scroll physics behavior for ListView components.
+ * @enum {string}
+ */
+exports.ListViewScrollPhysics = void 0;
+(function (ScrollPhysics) {
+    /** Default scrolling behavior (allows scrolling) */
+    ScrollPhysics["DEFAULT"] = "default";
+    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
+    ScrollPhysics["NEVER"] = "never";
+    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
+    ScrollPhysics["BOUNCING"] = "bouncing";
+    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
+    ScrollPhysics["CLAMPING"] = "clamping";
+})(exports.ListViewScrollPhysics || (exports.ListViewScrollPhysics = {}));
+/**
+ * Converts EdgeInsets to CSS padding properties.
+ * @param p - EdgeInsets value (number or object with top/right/bottom/left)
+ * @returns CSS padding properties or undefined if no padding specified
+ */
+function toPadding(p) {
+    if (p == null)
+        return undefined;
+    if (typeof p === 'number')
+        return { padding: p };
+    const { top = 0, right = 0, bottom = 0, left = 0 } = p;
+    return { paddingTop: top, paddingRight: right, paddingBottom: bottom, paddingLeft: left };
+}
+/**
+ * Generates container styles for ListView - determines scrolling behavior and layout.
+ * This is where the core scrolling logic is implemented.
+ * @param axis - Scroll direction (vertical or horizontal)
+ * @param reverse - Whether to reverse item order
+ * @param shrinkWrap - Whether to size to content instead of filling space
+ * @param physics - Scroll physics behavior
+ * @param clip - Clipping behavior for overflow
+ * @param paddingStyle - Processed padding styles
+ * @param userStyle - User-provided custom styles
+ * @param itemExtent - Fixed item size for uniform items
+ * @returns Complete CSS properties for the container
+ */
+function buildContainerStyle(axis, reverse, shrinkWrap, physics, clip, paddingStyle, userStyle, itemExtent) {
+    const isVertical = axis === exports.Axis.VERTICAL;
+    const enableScroll = physics !== exports.ListViewScrollPhysics.NEVER && !shrinkWrap;
+    const overflow = enableScroll
+        ? isVertical
+            ? { overflowY: 'auto', overflowX: 'hidden' }
+            : { overflowX: 'auto', overflowY: 'hidden' }
+        : { overflow: 'hidden' };
+    const direction = reverse
+        ? isVertical
+            ? 'column-reverse'
+            : 'row-reverse'
+        : isVertical
+            ? 'column'
+            : 'row';
+    const clipStyle = clip === 'hidden' ? { overflowClipMargin: 'content-box' } : {};
+    const momentum = physics === exports.ListViewScrollPhysics.BOUNCING
+        ? { WebkitOverflowScrolling: 'touch' }
+        : {};
+    const extentStyle = itemExtent ? (isVertical ? { rowGap: 0 } : { columnGap: 0 }) : undefined;
+    return {
+        display: 'flex',
+        flexDirection: direction,
+        margin: 0,
+        listStyle: 'none',
+        ...(paddingStyle ? {} : { padding: 0 }),
+        ...overflow,
+        ...(shrinkWrap ? { flex: '0 0 auto', maxHeight: 'none' } : { flex: '1 1 auto' }),
+        ...(clip === 'hidden' ? { overflow: enableScroll ? 'auto' : 'hidden' } : {}),
+        ...clipStyle,
+        ...momentum,
+        ...extentStyle,
+        ...paddingStyle,
+        ...userStyle,
+    };
+}
+/**
+ * Wrapper component for ListView items.
+ * Handles itemExtent (fixed item sizing) and provides semantic listitem role.
+ * @param axis - Scroll direction to determine which dimension to fix
+ * @param itemExtent - Fixed size for the item in the main axis
+ * @param children - Child content to wrap
+ */
+const ItemWrap = ({ axis, itemExtent, children, }) => {
+    const style = itemExtent
+        ? axis === exports.Axis.VERTICAL
+            ? { height: itemExtent }
+            : { width: itemExtent }
+        : undefined;
+    return jsxRuntimeExports.jsx("li", { style: style, children: children });
+};
+/**
+ * Base ListView component implementation.
+ * Handles the core functionality for children-based ListView (equivalent to Flutter's ListView(...)).
+ * @param props - ListView properties
+ * @param ref - Forward ref for imperative operations
+ */
+const ListViewBase = require$$0.forwardRef(function ListView({ children = [], scrollDirection = exports.Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = exports.ListViewScrollPhysics.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
+    const elRef = require$$0.useRef(null);
+    require$$0.useImperativeHandle(ref, () => ({
+        scrollTo: (opts) => elRef.current?.scrollTo(opts),
+        getScrollElement: () => elRef.current,
+    }), []);
+    const paddingStyle = require$$0.useMemo(() => toPadding(padding), [padding]);
+    const containerStyle = require$$0.useMemo(() => buildContainerStyle(scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent), [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent]);
+    return (jsxRuntimeExports.jsx("ul", { ref: elRef, className: className, style: containerStyle, "aria-orientation": scrollDirection === exports.Axis.VERTICAL ? 'vertical' : 'horizontal', ...aria, "data-primary": primary ? 'true' : undefined, children: children?.map((child, i) => (jsxRuntimeExports.jsx(ItemWrap, { axis: scrollDirection, itemExtent: itemExtent, children: child }, child?.key ?? i))) }));
+});
+/**
+ * Builder function for dynamic ListView variants (builder and separated).
+ * Creates items on-demand using provided builder functions.
+ * @template T - Type parameter for future extensibility
+ * @param props - Builder props including itemCount and builder functions
+ * @param ref - Forward ref for imperative operations
+ */
+function Builder({ itemCount, itemBuilder, separatorBuilder, ...rest }, ref) {
+    const items = require$$0.useMemo(() => {
+        const out = [];
+        for (let i = 0; i < itemCount; i++) {
+            out.push(itemBuilder(i));
+            if (separatorBuilder && i < itemCount - 1)
+                out.push(separatorBuilder(i));
+        }
+        return out;
+    }, [itemCount, itemBuilder, separatorBuilder]);
+    return (jsxRuntimeExports.jsx(ListViewBase, { ref: ref, ...rest, children: items }));
+}
+/**
+ * Flutter-inspired ListView component with multiple variants.
+ * Supports basic children, builder pattern, and separated items.
+ */
+const ListView$1 = Object.assign(ListViewBase, {
+    builder: require$$0.forwardRef((p, ref) => Builder(p, ref)),
+    separated: require$$0.forwardRef((p, ref) => Builder(p, ref)),
+});
+
+/**
  * Scroll direction for ListView
  */
 exports.ScrollDirection = void 0;
@@ -874,7 +1021,7 @@ exports.PaddingDirection = void 0;
     PaddingDirection["VERTICAL"] = "vertical";
     PaddingDirection["NONE"] = "none";
 })(exports.PaddingDirection || (exports.PaddingDirection = {}));
-var ListView$1;
+var ListView;
 (function (ListView) {
     function getPhysicsClassName(physics) {
         switch (physics) {
@@ -948,111 +1095,7 @@ var ListView$1;
         return padding;
     }
     ListView.calculatePadding = calculatePadding;
-})(ListView$1 || (ListView$1 = {}));
-
-function useListViewHook({ items = [], itemCount, itemBuilder, separatorBuilder, keyExtractor, }) {
-    const effectiveItemCount = itemCount ?? items.length;
-    const effectiveItems = items.length > 0 ? items : Array(effectiveItemCount).fill(null);
-    const rendered = require$$0.useMemo(() => {
-        const out = [];
-        for (let index = 0; index < effectiveItemCount; index++) {
-            const item = effectiveItems[index] || null;
-            const itemKey = keyExtractor ? keyExtractor(item, index) : `item-${index}`;
-            out.push({
-                key: itemKey,
-                element: itemBuilder(item, index),
-            });
-            if (index < effectiveItemCount - 1 && separatorBuilder) {
-                out.push({
-                    key: `separator-${index}`,
-                    element: separatorBuilder(index),
-                });
-            }
-        }
-        return out;
-    }, [effectiveItems, effectiveItemCount, itemBuilder, separatorBuilder, keyExtractor]);
-    return {
-        rendered,
-        itemCount: effectiveItemCount,
-    };
-}
-/**
- * ListView component equivalent to Flutter's ListView widget.
- * Efficiently renders a scrollable list of items with customizable layout and behavior.
- *
- * @example
- * ```tsx
- * // Basic list with items array
- * <ListView
- *   items={['Item 1', 'Item 2', 'Item 3']}
- *   itemBuilder={(item, index) => <div key={index}>{item}</div>}
- *   scrollDirection={ScrollDirection.VERTICAL}
- * />
- *
- * // Builder pattern with itemCount
- * <ListView
- *   itemCount={100}
- *   itemBuilder={(_, index) => <div key={index}>Item {index}</div>}
- *   separatorBuilder={(index) => <div key={`sep-${index}`} style={{height: 1, background: '#ccc'}} />}
- * />
- *
- * // Horizontal scrolling list
- * <ListView
- *   items={data}
- *   itemBuilder={(item, index) => <Card key={index} data={item} />}
- *   scrollDirection={ScrollDirection.HORIZONTAL}
- *   padding={EdgeInsets.all(16)}
- * />
- * ```
- */
-function ListView(props) {
-    const { items, itemCount, itemBuilder, separatorBuilder, keyExtractor, scrollDirection = exports.ScrollDirection.VERTICAL, reverse = false, shrinkWrap = false, physics = exports.ScrollPhysics.BOUNCING, crossAxisAlignment = exports.CrossAxisAlignment.STRETCH, mainAxisAlignment = exports.MainAxisAlignment.START, padding, paddingAll, paddingHorizontal, paddingVertical, flexible, expanded, flex, clipBehavior = 'visible', } = props;
-    const { rendered } = useListViewHook({
-        items,
-        itemCount,
-        itemBuilder,
-        separatorBuilder,
-        keyExtractor,
-    });
-    const effectivePadding = ListView$1.calculatePadding({
-        paddingAll,
-        paddingHorizontal,
-        paddingVertical,
-        padding,
-    });
-    const flexStyles = Flex$1.buildFlexStyles({
-        flex,
-        expanded,
-        flexible,
-    });
-    const scrollDirectionClasses = ListView$1.getScrollDirectionClasses(scrollDirection);
-    const physicsClassName = ListView$1.getPhysicsClassName(physics);
-    const crossAxisClass = ListView$1.getCrossAxisAlignmentClass(crossAxisAlignment, scrollDirection);
-    const mainAxisClass = ListView$1.getMainAxisAlignmentClass(mainAxisAlignment, scrollDirection);
-    const containerClasses = [
-        'flex',
-        scrollDirectionClasses,
-        physicsClassName,
-        crossAxisClass,
-        mainAxisClass,
-        shrinkWrap ? 'flex-shrink' : '',
-        clipBehavior === 'hidden' ? 'overflow-hidden' : '',
-    ]
-        .filter(Boolean)
-        .join(' ');
-    const containerStyle = {
-        ...flexStyles,
-        padding: effectivePadding,
-        ...(reverse && {
-            flexDirection: (scrollDirection === exports.ScrollDirection.VERTICAL
-                ? 'column-reverse'
-                : 'row-reverse'),
-        }),
-    };
-    return (jsxRuntimeExports.jsx("div", { className: containerClasses, style: containerStyle, children: rendered.map(({ key, element }) => (jsxRuntimeExports.jsx("div", { children: element }, key))) }));
-}
-ListView.builder = (props) => ListView(props);
-ListView.separated = (props) => ListView(props);
+})(ListView || (ListView = {}));
 
 function InkWell(props) {
     const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = 'rgba(0, 0, 0, 0.12)', hoverColor = 'rgba(0, 0, 0, 0.04)', focusColor = 'rgba(0, 0, 0, 0.12)', highlightColor = 'rgba(0, 0, 0, 0.08)', borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = '', style = {}, role = 'button', tabIndex = 0, } = props;
@@ -2992,7 +3035,7 @@ exports.Flex = Flex;
 exports.GestureDetector = GestureDetector;
 exports.InkWell = InkWell;
 exports.LayoutBuilder = LayoutBuilder;
-exports.ListView = ListView;
+exports.ListView = ListView$1;
 exports.Matrix4 = Matrix4;
 exports.MediaQuery = MediaQuery;
 exports.Opacity = Opacity;

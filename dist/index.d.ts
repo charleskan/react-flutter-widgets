@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React$1, { ReactNode, Key, CSSProperties } from 'react';
+import React$1, { ReactNode, CSSProperties, Key } from 'react';
 
 interface ContainerProps {
     /** Child content to render inside the container */
@@ -115,7 +115,7 @@ declare enum TextBaseline {
 /**
  * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
  */
-declare const EdgeInsets$1: {
+declare const EdgeInsets$2: {
     /**
      * Creates uniform spacing for all sides
      * @param value - The spacing value (number will be converted to px)
@@ -306,6 +306,119 @@ interface SpacerProps {
 declare function Spacer({ flex }: SpacerProps): react_jsx_runtime.JSX.Element;
 
 /**
+ * Defines the scroll direction for ListView components.
+ * @enum {string}
+ */
+declare enum Axis {
+    /** Vertical scrolling (default) */
+    VERTICAL = "vertical",
+    /** Horizontal scrolling */
+    HORIZONTAL = "horizontal"
+}
+/**
+ * Defines the scroll physics behavior for ListView components.
+ * @enum {string}
+ */
+declare enum ScrollPhysics$1 {
+    /** Default scrolling behavior (allows scrolling) */
+    DEFAULT = "default",
+    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
+    NEVER = "never",
+    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
+    BOUNCING = "bouncing",
+    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
+    CLAMPING = "clamping"
+}
+/**
+ * Defines padding values that can be applied to ListView components.
+ * Can be a single number for uniform padding or an object specifying individual sides.
+ */
+type EdgeInsets$1 = number | {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+};
+/**
+ * Base properties shared by all ListView variants.
+ * Provides common configuration options for scrolling behavior, styling, and accessibility.
+ */
+interface BaseProps {
+    /** Scroll direction (default: vertical) */
+    scrollDirection?: Axis;
+    /** Reverse the order of items visually and logically (note: affects accessibility) */
+    reverse?: boolean;
+    /** Size to content instead of filling available space (disables scrolling) */
+    shrinkWrap?: boolean;
+    /** Mark this ListView as primary (semantic only on Web; doesn't affect behavior) */
+    primary?: boolean;
+    /** Scrolling physics behavior (set to NEVER to disable scrolling) */
+    physics?: ScrollPhysics$1;
+    /** Internal padding (supports number or individual sides) */
+    padding?: EdgeInsets$1;
+    /** Fixed height/width for child items (corresponds to itemExtent) */
+    itemExtent?: number;
+    /** Template item to derive itemExtent from (measures first item only) */
+    prototypeItem?: ReactNode;
+    /** Clipping behavior for overflow content */
+    clipBehavior?: 'visible' | 'hidden';
+    /** Additional CSS class name */
+    className?: string;
+    /** Additional CSS styles */
+    style?: CSSProperties;
+    /** Accessible label for the list */
+    'aria-label'?: string;
+    /** ID of element that labels this list */
+    'aria-labelledby'?: string;
+}
+/**
+ * Props for the main ListView component that accepts children directly.
+ * This is the equivalent of Flutter's ListView(...) constructor.
+ */
+interface ListViewProps$1 extends BaseProps {
+    /** Array of child elements to render */
+    children?: ReactNode[];
+    /** Semantic child count for accessibility (equivalent to semanticChildCount) */
+    semanticChildCount?: number;
+}
+/**
+ * Props for ListView.builder - creates items dynamically using a builder function.
+ * @template T - Type parameter for future extensibility
+ */
+interface BuilderProps<_T> extends BaseProps {
+    /** Total number of items to build */
+    itemCount: number;
+    /** Function that builds an item at the given index */
+    itemBuilder: (index: number) => ReactNode;
+}
+/**
+ * Props for ListView.separated - like builder but with separators between items.
+ * @template T - Type parameter for future extensibility
+ */
+interface SeparatedProps<T> extends BuilderProps<T> {
+    /** Function that builds a separator at the given index */
+    separatorBuilder: (index: number) => ReactNode;
+}
+/**
+ * Handle interface for imperative ListView operations.
+ * Equivalent to a subset of Flutter's ScrollController functionality.
+ */
+interface ListViewHandle {
+    /** Scroll to a specific position with animation options */
+    scrollTo: (options: ScrollToOptions) => void;
+    /** Get the underlying scroll element for advanced operations */
+    getScrollElement: () => HTMLUListElement | null;
+}
+/**
+ * Flutter-inspired ListView component with multiple variants.
+ * Supports basic children, builder pattern, and separated items.
+ */
+declare const ListView: React$1.ForwardRefExoticComponent<ListViewProps$1 & React$1.RefAttributes<ListViewHandle>> & {
+    builder: React$1.ForwardRefExoticComponent<BuilderProps<unknown> & React$1.RefAttributes<ListViewHandle>>;
+    separated: React$1.ForwardRefExoticComponent<SeparatedProps<unknown> & React$1.RefAttributes<ListViewHandle>>;
+};
+
+/**
  * Scroll direction for ListView
  */
 declare enum ScrollDirection {
@@ -389,44 +502,6 @@ interface ListViewProps<T> extends ListViewBuilder<T> {
     /** Number of semantic children for accessibility */
     semanticChildCount?: number;
 }
-
-/**
- * ListView component equivalent to Flutter's ListView widget.
- * Efficiently renders a scrollable list of items with customizable layout and behavior.
- *
- * @example
- * ```tsx
- * // Basic list with items array
- * <ListView
- *   items={['Item 1', 'Item 2', 'Item 3']}
- *   itemBuilder={(item, index) => <div key={index}>{item}</div>}
- *   scrollDirection={ScrollDirection.VERTICAL}
- * />
- *
- * // Builder pattern with itemCount
- * <ListView
- *   itemCount={100}
- *   itemBuilder={(_, index) => <div key={index}>Item {index}</div>}
- *   separatorBuilder={(index) => <div key={`sep-${index}`} style={{height: 1, background: '#ccc'}} />}
- * />
- *
- * // Horizontal scrolling list
- * <ListView
- *   items={data}
- *   itemBuilder={(item, index) => <Card key={index} data={item} />}
- *   scrollDirection={ScrollDirection.HORIZONTAL}
- *   padding={EdgeInsets.all(16)}
- * />
- * ```
- */
-declare function ListView<T>(props: ListViewProps<T>): react_jsx_runtime.JSX.Element;
-declare namespace ListView {
-    var builder: <T>(props: ListViewProps<T>) => react_jsx_runtime.JSX.Element;
-    var separated: <T>(props: ListViewProps<T> & {
-        separatorBuilder: (index: number) => ReactNode;
-    }) => react_jsx_runtime.JSX.Element;
-}
-//# sourceMappingURL=ListView.d.ts.map
 
 /**
  * InkWell component equivalent to Flutter's InkWell widget.
@@ -1350,5 +1425,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, textWidthBasis, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BoxConstraints, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$2 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, ScrollPhysics$1 as ListViewScrollPhysics, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
