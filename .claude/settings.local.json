@@ -1,10 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(npm run lint:fix)",
-      "Bash(git init)",
-      "Bash(git add .)"
-    ],
+    "allow": ["Bash(npm run lint:fix)", "Bash(git init)", "Bash(git add .)"],
     "deny": [],
     "ask": []
   }

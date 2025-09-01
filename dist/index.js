@@ -1039,12 +1039,1547 @@ function ListView(props) {
 ListView.builder = (props) => ListView(props);
 ListView.separated = (props) => ListView(props);
 
+function InkWell(props) {
+    const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = 'rgba(0, 0, 0, 0.12)', hoverColor = 'rgba(0, 0, 0, 0.04)', focusColor = 'rgba(0, 0, 0, 0.12)', highlightColor = 'rgba(0, 0, 0, 0.08)', borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = '', style = {}, role = 'button', tabIndex = 0, } = props;
+    const [isHovered, setIsHovered] = require$$0.useState(false);
+    const [isFocused, setIsFocused] = require$$0.useState(false);
+    const [isPressed, setIsPressed] = require$$0.useState(false);
+    const [ripples, setRipples] = require$$0.useState([]);
+    const containerRef = require$$0.useRef(null);
+    const longPressTimerRef = require$$0.useRef();
+    const doubleTapTimerRef = require$$0.useRef();
+    const lastTapRef = require$$0.useRef(0);
+    // Clean up timers on unmount
+    require$$0.useEffect(() => {
+        return () => {
+            if (longPressTimerRef.current) {
+                clearTimeout(longPressTimerRef.current);
+            }
+            if (doubleTapTimerRef.current) {
+                clearTimeout(doubleTapTimerRef.current);
+            }
+        };
+    }, []);
+    const createRipple = require$$0.useCallback((event) => {
+        if (!containerRef.current)
+            return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        // Calculate ripple size based on distance to furthest corner
+        const maxX = Math.max(x, rect.width - x);
+        const maxY = Math.max(y, rect.height - y);
+        const size = Math.sqrt(maxX * maxX + maxY * maxY) * 2;
+        const newRipple = {
+            id: `ripple-${Date.now()}-${Math.random()}`,
+            x,
+            y,
+            size,
+            opacity: 1,
+        };
+        setRipples((prev) => [...prev, newRipple]);
+        // Remove ripple after animation
+        setTimeout(() => {
+            setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
+        }, splashDuration);
+    }, [splashDuration]);
+    const handleMouseEnter = require$$0.useCallback(() => {
+        if (!enabled)
+            return;
+        setIsHovered(true);
+        onHover?.(true);
+    }, [enabled, onHover]);
+    const handleMouseLeave = require$$0.useCallback(() => {
+        if (!enabled)
+            return;
+        setIsHovered(false);
+        setIsPressed(false);
+        onHover?.(false);
+        // Clear long press timer
+        if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+        }
+    }, [enabled, onHover]);
+    const handleMouseDown = require$$0.useCallback((event) => {
+        if (!enabled)
+            return;
+        setIsPressed(true);
+        createRipple(event);
+        // Start long press timer
+        longPressTimerRef.current = setTimeout(() => {
+            onLongPress?.();
+        }, 500); // 500ms for long press
+    }, [enabled, createRipple, onLongPress]);
+    const handleMouseUp = require$$0.useCallback(() => {
+        if (!enabled)
+            return;
+        setIsPressed(false);
+        // Clear long press timer
+        if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+        }
+    }, [enabled]);
+    const handleClick = require$$0.useCallback(() => {
+        if (!enabled)
+            return;
+        const now = Date.now();
+        const timeSinceLastTap = now - lastTapRef.current;
+        if (timeSinceLastTap < 300 && onDoubleTap) {
+            // Double tap detected
+            if (doubleTapTimerRef.current) {
+                clearTimeout(doubleTapTimerRef.current);
+            }
+            onDoubleTap();
+            lastTapRef.current = 0; // Reset to prevent triple tap
+        }
+        else {
+            // Single tap - delay execution to check for double tap
+            lastTapRef.current = now;
+            doubleTapTimerRef.current = setTimeout(() => {
+                onTap?.();
+            }, onDoubleTap ? 300 : 0);
+        }
+    }, [enabled, onTap, onDoubleTap]);
+    const handleFocus = require$$0.useCallback(() => {
+        if (!enabled)
+            return;
+        setIsFocused(true);
+        onFocusChange?.(true);
+    }, [enabled, onFocusChange]);
+    const handleBlur = require$$0.useCallback(() => {
+        if (!enabled)
+            return;
+        setIsFocused(false);
+        onFocusChange?.(false);
+    }, [enabled, onFocusChange]);
+    const handleKeyDown = require$$0.useCallback((event) => {
+        if (!enabled)
+            return;
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onTap?.();
+        }
+    }, [enabled, onTap]);
+    // Combine all overlay colors
+    const overlayColor = (() => {
+        if (isPressed)
+            return highlightColor;
+        if (isFocused)
+            return focusColor;
+        if (isHovered)
+            return hoverColor;
+        return 'transparent';
+    })();
+    const containerStyle = {
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: enabled ? 'pointer' : 'default',
+        borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
+        outline: 'none',
+        userSelect: 'none',
+        touchAction: 'manipulation',
+        ...style,
+    };
+    const overlayStyle = {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: overlayColor,
+        transition: `background-color ${hoverDuration}ms ease`,
+        pointerEvents: 'none',
+        borderRadius: 'inherit',
+    };
+    const rippleStyle = (ripple) => ({
+        position: 'absolute',
+        left: ripple.x - ripple.size / 2,
+        top: ripple.y - ripple.size / 2,
+        width: ripple.size,
+        height: ripple.size,
+        backgroundColor: splashColor,
+        borderRadius: '50%',
+        opacity: ripple.opacity,
+        transform: 'scale(0)',
+        animation: `inkwell-ripple ${splashDuration}ms ease-out`,
+        pointerEvents: 'none',
+    });
+    return (jsxRuntimeExports.jsxs("div", { ref: containerRef, className: className, style: containerStyle, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onMouseDown: handleMouseDown, onMouseUp: handleMouseUp, onClick: handleClick, onFocus: handleFocus, onBlur: handleBlur, onKeyDown: handleKeyDown, role: excludeFromSemantics ? undefined : role, tabIndex: enabled && !excludeFromSemantics ? tabIndex : -1, "aria-disabled": !enabled, children: [jsxRuntimeExports.jsx("div", { style: overlayStyle }), ripples.map((ripple) => (jsxRuntimeExports.jsx("div", { style: rippleStyle(ripple) }, ripple.id))), jsxRuntimeExports.jsx("div", { style: { position: 'relative', zIndex: 1 }, children: children }), jsxRuntimeExports.jsx("style", { children: `
+        @keyframes inkwell-ripple {
+          from {
+            transform: scale(0);
+            opacity: 1;
+          }
+          to {
+            transform: scale(1);
+            opacity: 0;
+          }
+        }
+      ` })] }));
+}
+
+exports.HitTestBehavior = void 0;
+(function (HitTestBehavior) {
+    /** Only hit test if the widget has content */
+    HitTestBehavior["deferToChild"] = "deferToChild";
+    /** Always hit test, even if no visible content */
+    HitTestBehavior["opaque"] = "opaque";
+    /** Never hit test */
+    HitTestBehavior["translucent"] = "translucent";
+})(exports.HitTestBehavior || (exports.HitTestBehavior = {}));
+function GestureDetector(props) {
+    const { children, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, excludeFromSemantics = false, behavior = exports.HitTestBehavior.deferToChild, className = '', style = {}, } = props;
+    const [gestureState, setGestureState] = require$$0.useState({
+        isPressed: false,
+        startTime: 0,
+        lastTapTime: 0,
+        tapCount: 0,
+    });
+    const containerRef = require$$0.useRef(null);
+    const longPressTimerRef = require$$0.useRef();
+    const tapTimerRef = require$$0.useRef();
+    const isLongPressRef = require$$0.useRef(false);
+    const isPanningRef = require$$0.useRef(false);
+    // Constants
+    const LONG_PRESS_TIMEOUT = 500; // ms
+    const DOUBLE_TAP_TIMEOUT = 300; // ms
+    const PAN_THRESHOLD = 10; // pixels
+    const TAP_THRESHOLD = 10; // pixels
+    const getLocalPosition = require$$0.useCallback((globalX, globalY) => {
+        if (!containerRef.current)
+            return { dx: globalX, dy: globalY };
+        const rect = containerRef.current.getBoundingClientRect();
+        return {
+            dx: globalX - rect.left,
+            dy: globalY - rect.top,
+        };
+    }, []);
+    const getDistance = require$$0.useCallback((pos1, pos2) => {
+        const dx = pos1.dx - pos2.dx;
+        const dy = pos1.dy - pos2.dy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }, []);
+    const clearTimers = require$$0.useCallback(() => {
+        if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+            longPressTimerRef.current = undefined;
+        }
+        if (tapTimerRef.current) {
+            clearTimeout(tapTimerRef.current);
+            tapTimerRef.current = undefined;
+        }
+    }, []);
+    const handlePointerDown = require$$0.useCallback((globalX, globalY) => {
+        const now = Date.now();
+        const globalPosition = { dx: globalX, dy: globalY };
+        const localPosition = getLocalPosition(globalX, globalY);
+        clearTimers();
+        isLongPressRef.current = false;
+        isPanningRef.current = false;
+        setGestureState((prev) => ({
+            ...prev,
+            isPressed: true,
+            startPosition: globalPosition,
+            lastPosition: globalPosition,
+            startTime: now,
+        }));
+        onTapDown?.({ globalPosition, localPosition });
+        // Start long press timer
+        if (onLongPress || onLongPressStart) {
+            longPressTimerRef.current = setTimeout(() => {
+                isLongPressRef.current = true;
+                if (onLongPress) {
+                    onLongPress();
+                }
+                if (onLongPressStart) {
+                    onLongPressStart({ globalPosition, localPosition });
+                }
+            }, LONG_PRESS_TIMEOUT);
+        }
+    }, [getLocalPosition, onTapDown, onLongPress, onLongPressStart, clearTimers]);
+    const handlePointerMove = require$$0.useCallback((globalX, globalY) => {
+        if (!gestureState.isPressed || !gestureState.startPosition)
+            return;
+        const globalPosition = { dx: globalX, dy: globalY };
+        const localPosition = getLocalPosition(globalX, globalY);
+        const distance = getDistance(gestureState.startPosition, globalPosition);
+        // Check if we should start panning
+        if (!isPanningRef.current && distance > PAN_THRESHOLD) {
+            isPanningRef.current = true;
+            clearTimers(); // Cancel long press
+            if (onPanStart) {
+                onPanStart({
+                    globalPosition: gestureState.startPosition,
+                    localPosition: getLocalPosition(gestureState.startPosition.dx, gestureState.startPosition.dy),
+                });
+            }
+        }
+        // Handle panning
+        if (isPanningRef.current && onPanUpdate && gestureState.lastPosition) {
+            const delta = {
+                dx: globalPosition.dx - gestureState.lastPosition.dx,
+                dy: globalPosition.dy - gestureState.lastPosition.dy,
+            };
+            onPanUpdate({ globalPosition, localPosition, delta });
+        }
+        // Handle long press move
+        if (isLongPressRef.current && onLongPressMoveUpdate && gestureState.startPosition) {
+            const offsetFromOrigin = {
+                dx: globalPosition.dx - gestureState.startPosition.dx,
+                dy: globalPosition.dy - gestureState.startPosition.dy,
+            };
+            onLongPressMoveUpdate({ globalPosition, localPosition, offsetFromOrigin });
+        }
+        setGestureState((prev) => ({
+            ...prev,
+            lastPosition: globalPosition,
+        }));
+    }, [
+        gestureState,
+        getLocalPosition,
+        getDistance,
+        onPanStart,
+        onPanUpdate,
+        onLongPressMoveUpdate,
+        clearTimers,
+    ]);
+    const handlePointerUp = require$$0.useCallback((globalX, globalY) => {
+        const now = Date.now();
+        const globalPosition = { dx: globalX, dy: globalY };
+        const localPosition = getLocalPosition(globalX, globalY);
+        clearTimers();
+        if (!gestureState.isPressed)
+            return;
+        // Handle long press end
+        if (isLongPressRef.current && onLongPressEnd) {
+            onLongPressEnd({ globalPosition, localPosition });
+        }
+        // Handle pan end
+        if (isPanningRef.current && onPanEnd) {
+            // Calculate velocity (simplified)
+            const timeDelta = now - gestureState.startTime;
+            const velocity = gestureState.lastPosition && timeDelta > 0
+                ? {
+                    dx: ((globalPosition.dx - gestureState.lastPosition.dx) / timeDelta) * 1000,
+                    dy: ((globalPosition.dy - gestureState.lastPosition.dy) / timeDelta) * 1000,
+                }
+                : { dx: 0, dy: 0 };
+            onPanEnd({ velocity });
+        }
+        // Handle tap
+        if (!isPanningRef.current && !isLongPressRef.current && gestureState.startPosition) {
+            const distance = getDistance(gestureState.startPosition, globalPosition);
+            if (distance <= TAP_THRESHOLD) {
+                onTapUp?.({ globalPosition, localPosition });
+                // Handle double tap detection
+                const timeSinceLastTap = now - gestureState.lastTapTime;
+                if (timeSinceLastTap < DOUBLE_TAP_TIMEOUT && gestureState.tapCount === 1) {
+                    // Double tap
+                    if (tapTimerRef.current) {
+                        clearTimeout(tapTimerRef.current);
+                        tapTimerRef.current = undefined;
+                    }
+                    onDoubleTap?.();
+                    setGestureState((prev) => ({
+                        ...prev,
+                        isPressed: false,
+                        tapCount: 0,
+                        lastTapTime: 0,
+                    }));
+                }
+                else {
+                    // Single tap (potentially)
+                    setGestureState((prev) => ({
+                        ...prev,
+                        isPressed: false,
+                        tapCount: 1,
+                        lastTapTime: now,
+                    }));
+                    if (onDoubleTap) {
+                        // Wait to see if there's a double tap
+                        tapTimerRef.current = setTimeout(() => {
+                            onTap?.();
+                            setGestureState((prev) => ({ ...prev, tapCount: 0 }));
+                        }, DOUBLE_TAP_TIMEOUT);
+                    }
+                    else {
+                        // No double tap expected, fire immediately
+                        onTap?.();
+                    }
+                }
+            }
+            else {
+                onTapCancel?.();
+            }
+        }
+        if (!onDoubleTap || isPanningRef.current || isLongPressRef.current) {
+            setGestureState((prev) => ({
+                ...prev,
+                isPressed: false,
+                startPosition: undefined,
+                lastPosition: undefined,
+            }));
+        }
+        isLongPressRef.current = false;
+        isPanningRef.current = false;
+    }, [
+        gestureState,
+        getLocalPosition,
+        getDistance,
+        onTapUp,
+        onTapCancel,
+        onTap,
+        onDoubleTap,
+        onLongPressEnd,
+        onPanEnd,
+        clearTimers,
+    ]);
+    const handlePointerCancel = require$$0.useCallback(() => {
+        clearTimers();
+        if (gestureState.isPressed) {
+            onTapCancel?.();
+        }
+        setGestureState((prev) => ({
+            ...prev,
+            isPressed: false,
+            startPosition: undefined,
+            lastPosition: undefined,
+        }));
+        isLongPressRef.current = false;
+        isPanningRef.current = false;
+    }, [gestureState.isPressed, onTapCancel, clearTimers]);
+    // Mouse event handlers
+    const handleMouseDown = require$$0.useCallback((event) => {
+        event.preventDefault();
+        handlePointerDown(event.clientX, event.clientY);
+    }, [handlePointerDown]);
+    const handleMouseMove = require$$0.useCallback((event) => {
+        handlePointerMove(event.clientX, event.clientY);
+    }, [handlePointerMove]);
+    const handleMouseUp = require$$0.useCallback((event) => {
+        handlePointerUp(event.clientX, event.clientY);
+    }, [handlePointerUp]);
+    // Touch event handlers
+    const handleTouchStart = require$$0.useCallback((event) => {
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            if (touch) {
+                handlePointerDown(touch.clientX, touch.clientY);
+            }
+        }
+    }, [handlePointerDown]);
+    const handleTouchMove = require$$0.useCallback((event) => {
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            if (touch) {
+                handlePointerMove(touch.clientX, touch.clientY);
+            }
+        }
+    }, [handlePointerMove]);
+    const handleTouchEnd = require$$0.useCallback((event) => {
+        if (event.changedTouches.length === 1) {
+            const touch = event.changedTouches[0];
+            if (touch) {
+                handlePointerUp(touch.clientX, touch.clientY);
+            }
+        }
+    }, [handlePointerUp]);
+    // Determine container style based on behavior
+    const getContainerStyle = () => {
+        const baseStyle = {
+            ...style,
+        };
+        switch (behavior) {
+            case exports.HitTestBehavior.opaque:
+                return {
+                    ...baseStyle,
+                    display: 'block',
+                    width: '100%',
+                    height: '100%',
+                };
+            case exports.HitTestBehavior.translucent:
+                return {
+                    ...baseStyle,
+                    pointerEvents: 'none',
+                };
+            case exports.HitTestBehavior.deferToChild:
+            default:
+                return baseStyle;
+        }
+    };
+    return (jsxRuntimeExports.jsx("div", { ref: containerRef, className: className, style: getContainerStyle(), onMouseDown: handleMouseDown, onMouseMove: gestureState.isPressed ? handleMouseMove : undefined, onMouseUp: gestureState.isPressed ? handleMouseUp : undefined, onMouseLeave: gestureState.isPressed ? handlePointerCancel : undefined, onTouchStart: handleTouchStart, onTouchMove: handleTouchMove, onTouchEnd: handleTouchEnd, onTouchCancel: handlePointerCancel, role: excludeFromSemantics ? undefined : 'button', tabIndex: excludeFromSemantics ? undefined : -1, children: children }));
+}
+
+exports.AnimationCurve = void 0;
+(function (AnimationCurve) {
+    /** Linear animation curve */
+    AnimationCurve["linear"] = "linear";
+    /** Ease animation curve (default) */
+    AnimationCurve["ease"] = "ease";
+    /** Ease-in animation curve */
+    AnimationCurve["easeIn"] = "ease-in";
+    /** Ease-out animation curve */
+    AnimationCurve["easeOut"] = "ease-out";
+    /** Ease-in-out animation curve */
+    AnimationCurve["easeInOut"] = "ease-in-out";
+    /** Bounce animation curve */
+    AnimationCurve["bounceIn"] = "cubic-bezier(0.68, -0.55, 0.265, 1.55)";
+    /** Elastic animation curve */
+    AnimationCurve["elasticIn"] = "cubic-bezier(0.68, -0.55, 0.265, 1.55)";
+    /** Fast out slow in (Material Design) */
+    AnimationCurve["fastOutSlowIn"] = "cubic-bezier(0.4, 0, 0.2, 1)";
+    /** Decelerate (Material Design) */
+    AnimationCurve["decelerate"] = "cubic-bezier(0, 0, 0.2, 1)";
+})(exports.AnimationCurve || (exports.AnimationCurve = {}));
+function AnimatedContainer(props) {
+    const { children, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, style = {}, 
+    // Container props
+    width, height, padding, margin, paddingAll, paddingHorizontal, paddingVertical, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', } = props;
+    const [currentStyles, setCurrentStyles] = require$$0.useState({});
+    const [isAnimating, setIsAnimating] = require$$0.useState(false);
+    const previousPropsRef = require$$0.useRef(props);
+    const containerRef = require$$0.useRef(null);
+    const animationTimeoutRef = require$$0.useRef();
+    // Helper function to normalize values for comparison and animation
+    const normalizeValue = (value) => {
+        if (value === undefined)
+            return '';
+        if (typeof value === 'number')
+            return `${value}px`;
+        return value;
+    };
+    // Calculate effective padding using same logic as Container
+    const calculateEffectivePadding = () => {
+        if (padding)
+            return padding;
+        const top = paddingVertical ?? paddingAll ?? 0;
+        const right = paddingHorizontal ?? paddingAll ?? 0;
+        const bottom = paddingVertical ?? paddingAll ?? 0;
+        const left = paddingHorizontal ?? paddingAll ?? 0;
+        if (top === right && right === bottom && bottom === left) {
+            return typeof top === 'number' ? `${top}px` : top;
+        }
+        return `${normalizeValue(top)} ${normalizeValue(right)} ${normalizeValue(bottom)} ${normalizeValue(left)}`;
+    };
+    // Calculate animated styles based on current props
+    const calculateTargetStyles = () => {
+        const effectivePadding = calculateEffectivePadding();
+        return {
+            width: normalizeValue(width),
+            height: normalizeValue(height),
+            padding: effectivePadding,
+            margin: normalizeValue(margin),
+            backgroundColor: backgroundColor || 'transparent',
+            borderRadius: normalizeValue(borderRadius),
+            borderWidth: borderWidth || 0,
+            borderColor: borderColor || 'transparent',
+            borderStyle: borderStyle || 'solid',
+        };
+    };
+    // Check if props have changed and need animation
+    const hasStyleChanged = () => {
+        const prev = previousPropsRef.current;
+        return (width !== prev.width ||
+            height !== prev.height ||
+            padding !== prev.padding ||
+            margin !== prev.margin ||
+            paddingAll !== prev.paddingAll ||
+            paddingHorizontal !== prev.paddingHorizontal ||
+            paddingVertical !== prev.paddingVertical ||
+            backgroundColor !== prev.backgroundColor ||
+            borderRadius !== prev.borderRadius ||
+            borderWidth !== prev.borderWidth ||
+            borderColor !== prev.borderColor ||
+            borderStyle !== prev.borderStyle);
+    };
+    // Apply animation
+    require$$0.useEffect(() => {
+        if (!hasStyleChanged())
+            return;
+        const targetStyles = calculateTargetStyles();
+        // Clear any existing timeout
+        if (animationTimeoutRef.current) {
+            clearTimeout(animationTimeoutRef.current);
+        }
+        // Start animation
+        const startAnimation = () => {
+            setIsAnimating(true);
+            setCurrentStyles(targetStyles);
+            onStart?.();
+            // Animation complete callback
+            animationTimeoutRef.current = setTimeout(() => {
+                setIsAnimating(false);
+                onEnd?.();
+            }, duration + delay);
+        };
+        if (delay > 0) {
+            animationTimeoutRef.current = setTimeout(startAnimation, delay);
+        }
+        else {
+            startAnimation();
+        }
+        // Update previous props
+        previousPropsRef.current = props;
+        return () => {
+            if (animationTimeoutRef.current) {
+                clearTimeout(animationTimeoutRef.current);
+            }
+        };
+    }, [
+        width,
+        height,
+        padding,
+        margin,
+        paddingAll,
+        paddingHorizontal,
+        paddingVertical,
+        backgroundColor,
+        borderRadius,
+        borderWidth,
+        borderColor,
+        borderStyle,
+        duration,
+        delay,
+        onStart,
+        onEnd,
+    ]);
+    // Initialize styles on mount
+    require$$0.useEffect(() => {
+        setCurrentStyles(calculateTargetStyles());
+    }, []);
+    // Build flex styles (same logic as Container)
+    const buildFlexStyles = () => {
+        const flexStyles = {};
+        if (expanded) {
+            flexStyles.flex = '1 1 0';
+        }
+        else if (flexible) {
+            flexStyles.flex = `${flex || 1} 1 auto`;
+        }
+        else if (flex !== undefined) {
+            flexStyles.flex = `${flex} 0 auto`;
+        }
+        if (width !== undefined) {
+            flexStyles.width = typeof width === 'number' ? `${width}px` : width;
+        }
+        if (height !== undefined) {
+            flexStyles.height = typeof height === 'number' ? `${height}px` : height;
+        }
+        if (flexShrink === false) {
+            flexStyles.flexShrink = 0;
+        }
+        return flexStyles;
+    };
+    // Combine all styles
+    const containerStyle = {
+        ...buildFlexStyles(),
+        ...currentStyles,
+        borderRadius: typeof currentStyles.borderRadius === 'number'
+            ? `${currentStyles.borderRadius}px`
+            : currentStyles.borderRadius,
+        borderWidth: currentStyles.borderWidth && currentStyles.borderWidth > 0
+            ? `${currentStyles.borderWidth}px`
+            : undefined,
+        borderColor: currentStyles.borderWidth && currentStyles.borderWidth > 0
+            ? currentStyles.borderColor
+            : undefined,
+        borderStyle: currentStyles.borderWidth && currentStyles.borderWidth > 0
+            ? currentStyles.borderStyle
+            : undefined,
+        alignSelf,
+        transition: isAnimating || hasStyleChanged() ? `all ${duration}ms ${curve}` : undefined,
+        ...style,
+    };
+    return (jsxRuntimeExports.jsx("div", { ref: containerRef, className: className, style: containerStyle, children: children }));
+}
+
+function AnimatedOpacity(props) {
+    const { children, opacity, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, alwaysIncludeSemantics = false, className = '', style = {}, } = props;
+    const [currentOpacity, setCurrentOpacity] = require$$0.useState(opacity);
+    const [isAnimating, setIsAnimating] = require$$0.useState(false);
+    const previousOpacityRef = require$$0.useRef(opacity);
+    const animationTimeoutRef = require$$0.useRef();
+    const startTimeoutRef = require$$0.useRef();
+    // Clamp opacity value between 0 and 1
+    const clampedOpacity = Math.max(0, Math.min(1, opacity));
+    // Check if opacity has changed
+    const hasOpacityChanged = () => {
+        return Math.abs(clampedOpacity - previousOpacityRef.current) > 0.001;
+    };
+    // Apply opacity animation
+    require$$0.useEffect(() => {
+        if (!hasOpacityChanged())
+            return;
+        // Clear any existing timeouts
+        if (animationTimeoutRef.current) {
+            clearTimeout(animationTimeoutRef.current);
+        }
+        if (startTimeoutRef.current) {
+            clearTimeout(startTimeoutRef.current);
+        }
+        // Start animation
+        const startAnimation = () => {
+            setIsAnimating(true);
+            setCurrentOpacity(clampedOpacity);
+            onStart?.();
+            // Animation complete callback
+            animationTimeoutRef.current = setTimeout(() => {
+                setIsAnimating(false);
+                onEnd?.();
+            }, duration);
+        };
+        if (delay > 0) {
+            startTimeoutRef.current = setTimeout(startAnimation, delay);
+        }
+        else {
+            startAnimation();
+        }
+        // Update previous opacity
+        previousOpacityRef.current = clampedOpacity;
+        return () => {
+            if (animationTimeoutRef.current) {
+                clearTimeout(animationTimeoutRef.current);
+            }
+            if (startTimeoutRef.current) {
+                clearTimeout(startTimeoutRef.current);
+            }
+        };
+    }, [clampedOpacity, duration, delay, onStart, onEnd]);
+    // Initialize opacity on mount
+    require$$0.useEffect(() => {
+        setCurrentOpacity(clampedOpacity);
+        previousOpacityRef.current = clampedOpacity;
+    }, []);
+    // Determine if content should be visible to screen readers
+    const shouldIncludeSemantics = alwaysIncludeSemantics || currentOpacity > 0;
+    // Container styles
+    const containerStyle = {
+        opacity: currentOpacity,
+        transition: isAnimating || hasOpacityChanged() ? `opacity ${duration}ms ${curve}` : undefined,
+        // Maintain layout space even when opacity is 0
+        visibility: shouldIncludeSemantics ? 'visible' : 'hidden',
+        ...style,
+    };
+    return (jsxRuntimeExports.jsx("div", { className: className, style: containerStyle, "aria-hidden": !shouldIncludeSemantics, children: children }));
+}
+
+exports.Orientation = void 0;
+(function (Orientation) {
+    Orientation["portrait"] = "portrait";
+    Orientation["landscape"] = "landscape";
+})(exports.Orientation || (exports.Orientation = {}));
+exports.Brightness = void 0;
+(function (Brightness) {
+    Brightness["light"] = "light";
+    Brightness["dark"] = "dark";
+})(exports.Brightness || (exports.Brightness = {}));
+const defaultBreakpoints = { xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 };
+const MediaQueryContext = require$$0.createContext(undefined);
+const isBrowser = typeof window !== "undefined";
+const DEFAULT_DATA = {
+    size: { width: 0, height: 0 },
+    devicePixelRatio: 1,
+    orientation: exports.Orientation.portrait,
+    padding: { top: 0, right: 0, bottom: 0, left: 0 },
+    viewInsets: { top: 0, right: 0, bottom: 0, left: 0 },
+    textScaleFactor: 1,
+    platformBrightness: exports.Brightness.light,
+    disableAnimations: false,
+    highContrast: false,
+    supportsTouch: false,
+};
+function MediaQuery({ children, breakpoints = defaultBreakpoints, data }) {
+    const [mediaQueryData, setMediaQueryData] = require$$0.useState(() => data ?? DEFAULT_DATA);
+    require$$0.useEffect(() => {
+        if (data) {
+            setMediaQueryData(data);
+            return;
+        }
+        if (!isBrowser)
+            return;
+        const root = document.documentElement;
+        root.style.setProperty("--safe-area-inset-top", getComputedStyle(root).getPropertyValue("env(safe-area-inset-top)"));
+        root.style.setProperty("--safe-area-inset-right", getComputedStyle(root).getPropertyValue("env(safe-area-inset-right)"));
+        root.style.setProperty("--safe-area-inset-bottom", getComputedStyle(root).getPropertyValue("env(safe-area-inset-bottom)"));
+        root.style.setProperty("--safe-area-inset-left", getComputedStyle(root).getPropertyValue("env(safe-area-inset-left)"));
+        const update = () => setMediaQueryData(readCurrent());
+        update();
+        window.addEventListener("resize", update);
+        window.addEventListener("orientationchange", update);
+        const orientationMQ = window.matchMedia("(orientation: portrait)");
+        const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
+        const reduceMotionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const highContrastMQ = window.matchMedia("(prefers-contrast: more), (prefers-contrast: high)");
+        const forcedColorsMQ = window.matchMedia("(forced-colors: active)");
+        orientationMQ.addEventListener("change", update);
+        darkMQ.addEventListener("change", update);
+        reduceMotionMQ.addEventListener("change", update);
+        highContrastMQ.addEventListener("change", update);
+        forcedColorsMQ.addEventListener("change", update);
+        const vv = window.visualViewport;
+        vv?.addEventListener("resize", update);
+        vv?.addEventListener("scroll", update);
+        return () => {
+            window.removeEventListener("resize", update);
+            window.removeEventListener("orientationchange", update);
+            orientationMQ.removeEventListener("change", update);
+            darkMQ.removeEventListener("change", update);
+            reduceMotionMQ.removeEventListener("change", update);
+            highContrastMQ.removeEventListener("change", update);
+            forcedColorsMQ.removeEventListener("change", update);
+            vv?.removeEventListener("resize", update);
+            vv?.removeEventListener("scroll", update);
+        };
+    }, [data]);
+    const contextValue = require$$0.useMemo(() => ({ ...mediaQueryData, breakpoints }), [mediaQueryData, breakpoints]);
+    return jsxRuntimeExports.jsx(MediaQueryContext.Provider, { value: contextValue, children: children });
+}
+function useMediaQuery() {
+    const ctx = require$$0.useContext(MediaQueryContext);
+    if (!ctx)
+        throw new Error("useMediaQuery must be used within a <MediaQuery> provider");
+    return ctx;
+}
+function useBreakpoint(breakpoints) {
+    const { size, breakpoints: ctxBp } = useMediaQuery();
+    const bp = breakpoints || ctxBp;
+    return require$$0.useMemo(() => {
+        const w = size.width;
+        if (w >= bp.xl)
+            return "xl";
+        if (w >= bp.lg)
+            return "lg";
+        if (w >= bp.md)
+            return "md";
+        if (w >= bp.sm)
+            return "sm";
+        return "xs";
+    }, [size.width, bp]);
+}
+function useBreakpointMatch(condition, breakpoints) {
+    const { size, breakpoints: ctxBp } = useMediaQuery();
+    const bp = breakpoints || ctxBp;
+    return require$$0.useMemo(() => {
+        const w = size.width;
+        switch (condition) {
+            case "xs-only":
+                return w < bp.sm;
+            case "sm-only":
+                return w >= bp.sm && w < bp.md;
+            case "md-only":
+                return w >= bp.md && w < bp.lg;
+            case "lg-only":
+                return w >= bp.lg && w < bp.xl;
+            case "xl-only":
+                return w >= bp.xl;
+            case "xs-up":
+                return w >= bp.xs;
+            case "sm-up":
+                return w >= bp.sm;
+            case "md-up":
+                return w >= bp.md;
+            case "lg-up":
+                return w >= bp.lg;
+            case "xl-up":
+                return w >= bp.xl;
+            case "sm-down":
+                return w < bp.md;
+            case "md-down":
+                return w < bp.lg;
+            case "lg-down":
+                return w < bp.xl;
+            default:
+                return false;
+        }
+    }, [condition, size.width, bp]);
+}
+function readCurrent() {
+    if (!isBrowser)
+        return DEFAULT_DATA;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    const orientation = width > height ? exports.Orientation.landscape : exports.Orientation.portrait;
+    const padding = readSafeArea();
+    const viewInsets = readViewInsets();
+    const textScaleFactor = readTextScaleFactor();
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const highContrast = window.matchMedia("(prefers-contrast: more)").matches || window.matchMedia("(prefers-contrast: high)").matches || window.matchMedia("(forced-colors: active)").matches;
+    const supportsTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    return {
+        size: { width, height },
+        devicePixelRatio,
+        orientation,
+        padding,
+        viewInsets,
+        textScaleFactor,
+        platformBrightness: dark ? exports.Brightness.dark : exports.Brightness.light,
+        disableAnimations: reduce,
+        highContrast,
+        supportsTouch,
+    };
+}
+function readSafeArea() {
+    const cs = getComputedStyle(document.documentElement);
+    const toNum = (v) => Number.parseFloat(v || "0") || 0;
+    const top = toNum(cs.getPropertyValue("--safe-area-inset-top"));
+    const right = toNum(cs.getPropertyValue("--safe-area-inset-right"));
+    const bottom = toNum(cs.getPropertyValue("--safe-area-inset-bottom"));
+    const left = toNum(cs.getPropertyValue("--safe-area-inset-left"));
+    return { top, right, bottom, left };
+}
+function readViewInsets() {
+    const vv = window.visualViewport;
+    if (!vv)
+        return { top: 0, right: 0, bottom: 0, left: 0 };
+    const bottom = Math.max(0, window.innerHeight - vv.height);
+    return { top: 0, right: 0, bottom, left: 0 };
+}
+function readTextScaleFactor() {
+    const el = document.createElement("div");
+    el.style.fontSize = "16px";
+    el.style.position = "absolute";
+    el.style.visibility = "hidden";
+    el.textContent = "x";
+    document.body.appendChild(el);
+    const computed = Number.parseFloat(getComputedStyle(el).fontSize);
+    document.body.removeChild(el);
+    return computed / 16 || 1;
+}
+
+function LayoutBuilder({ builder, className = '', style = {} }) {
+    const [constraints, setConstraints] = require$$0.useState(() => createDefaultConstraints());
+    const containerRef = require$$0.useRef(null);
+    const resizeObserverRef = require$$0.useRef();
+    // Calculate constraints from element
+    const calculateConstraints = (element) => {
+        const computedStyle = getComputedStyle(element);
+        // Get the parent's constraints or use viewport
+        const parentElement = element.parentElement;
+        let maxWidth = window.innerWidth;
+        let maxHeight = window.innerHeight;
+        if (parentElement) {
+            const parentRect = parentElement.getBoundingClientRect();
+            maxWidth = parentRect.width;
+            maxHeight = parentRect.height;
+        }
+        // Parse CSS constraints if any
+        const minWidthPx = Number.parseFloat(computedStyle.minWidth) || 0;
+        const maxWidthPx = computedStyle.maxWidth === 'none'
+            ? maxWidth
+            : Number.parseFloat(computedStyle.maxWidth) || maxWidth;
+        const minHeightPx = Number.parseFloat(computedStyle.minHeight) || 0;
+        const maxHeightPx = computedStyle.maxHeight === 'none'
+            ? maxHeight
+            : Number.parseFloat(computedStyle.maxHeight) || maxHeight;
+        return createBoxConstraints({
+            minWidth: minWidthPx,
+            maxWidth: maxWidthPx,
+            minHeight: minHeightPx,
+            maxHeight: maxHeightPx,
+        });
+    };
+    // Set up resize observer
+    require$$0.useEffect(() => {
+        if (!containerRef.current)
+            return;
+        const element = containerRef.current;
+        // Initial calculation
+        setConstraints(calculateConstraints(element));
+        // Set up ResizeObserver for dynamic updates
+        if (typeof ResizeObserver !== 'undefined') {
+            resizeObserverRef.current = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    const target = entry.target;
+                    setConstraints(calculateConstraints(target));
+                }
+            });
+            resizeObserverRef.current.observe(element);
+        }
+        else {
+            // Fallback for browsers without ResizeObserver
+            const handleResize = () => {
+                setConstraints(calculateConstraints(element));
+            };
+            window.addEventListener('resize', handleResize);
+            return () => {
+                window.removeEventListener('resize', handleResize);
+            };
+        }
+        return () => {
+            if (resizeObserverRef.current) {
+                resizeObserverRef.current.disconnect();
+            }
+        };
+    }, []);
+    // Memoize the built content
+    const content = require$$0.useMemo(() => {
+        return builder(constraints);
+    }, [builder, constraints]);
+    const containerStyle = {
+        width: '100%',
+        height: '100%',
+        ...style,
+    };
+    return (jsxRuntimeExports.jsx("div", { ref: containerRef, className: className, style: containerStyle, children: content }));
+}
+// Helper functions for creating BoxConstraints
+function createBoxConstraints({ minWidth = 0, maxWidth = Number.POSITIVE_INFINITY, minHeight = 0, maxHeight = Number.POSITIVE_INFINITY, }) {
+    const hasBoundedWidth = maxWidth !== Number.POSITIVE_INFINITY;
+    const hasBoundedHeight = maxHeight !== Number.POSITIVE_INFINITY;
+    const hasTightWidth = minWidth === maxWidth;
+    const hasTightHeight = minHeight === maxHeight;
+    const isTight = hasTightWidth && hasTightHeight;
+    const isNormalized = minWidth <= maxWidth && minHeight <= maxHeight;
+    return {
+        minWidth,
+        maxWidth,
+        minHeight,
+        maxHeight,
+        hasBoundedWidth,
+        hasBoundedHeight,
+        hasTightWidth,
+        hasTightHeight,
+        isTight,
+        isNormalized,
+    };
+}
+function createTightConstraints(width, height) {
+    return createBoxConstraints({
+        minWidth: width,
+        maxWidth: width,
+        minHeight: height,
+        maxHeight: height,
+    });
+}
+function createLooseConstraints(maxWidth, maxHeight) {
+    return createBoxConstraints({
+        minWidth: 0,
+        maxWidth: maxWidth ?? Number.POSITIVE_INFINITY,
+        minHeight: 0,
+        maxHeight: maxHeight ?? Number.POSITIVE_INFINITY,
+    });
+}
+function createExpandedConstraints() {
+    return createBoxConstraints({
+        minWidth: Number.POSITIVE_INFINITY,
+        maxWidth: Number.POSITIVE_INFINITY,
+        minHeight: Number.POSITIVE_INFINITY,
+        maxHeight: Number.POSITIVE_INFINITY,
+    });
+}
+function createDefaultConstraints() {
+    return createBoxConstraints({
+        minWidth: 0,
+        maxWidth: window.innerWidth,
+        minHeight: 0,
+        maxHeight: window.innerHeight,
+    });
+}
+// Utility functions for working with constraints
+const BoxConstraintsUtils = {
+    /**
+     * Returns the biggest size that satisfies the constraints
+     */
+    biggest(constraints) {
+        return {
+            width: constraints.hasBoundedWidth ? constraints.maxWidth : 0,
+            height: constraints.hasBoundedHeight ? constraints.maxHeight : 0,
+        };
+    },
+    /**
+     * Returns the smallest size that satisfies the constraints
+     */
+    smallest(constraints) {
+        return {
+            width: constraints.minWidth,
+            height: constraints.minHeight,
+        };
+    },
+    /**
+     * Returns a size that attempts to be the specified size within the constraints
+     */
+    constrain(constraints, width, height) {
+        return {
+            width: Math.max(constraints.minWidth, Math.min(constraints.maxWidth, width)),
+            height: Math.max(constraints.minHeight, Math.min(constraints.maxHeight, height)),
+        };
+    },
+    /**
+     * Returns constraints with width constrained to the given value
+     */
+    tighten(constraints, width, height) {
+        return createBoxConstraints({
+            minWidth: width !== undefined ? width : constraints.minWidth,
+            maxWidth: width !== undefined ? width : constraints.maxWidth,
+            minHeight: height !== undefined ? height : constraints.minHeight,
+            maxHeight: height !== undefined ? height : constraints.maxHeight,
+        });
+    },
+    /**
+     * Returns constraints with the width and height loosened
+     */
+    loosen(constraints) {
+        return createBoxConstraints({
+            minWidth: 0,
+            maxWidth: constraints.maxWidth,
+            minHeight: 0,
+            maxHeight: constraints.maxHeight,
+        });
+    },
+    /**
+     * Returns constraints with the width tightened to the given value
+     */
+    tightenWidth(constraints, width) {
+        return createBoxConstraints({
+            minWidth: width,
+            maxWidth: width,
+            minHeight: constraints.minHeight,
+            maxHeight: constraints.maxHeight,
+        });
+    },
+    /**
+     * Returns constraints with the height tightened to the given value
+     */
+    tightenHeight(constraints, height) {
+        return createBoxConstraints({
+            minWidth: constraints.minWidth,
+            maxWidth: constraints.maxWidth,
+            minHeight: height,
+            maxHeight: height,
+        });
+    },
+};
+
+function OrientationBuilder({ builder, className = '', style = {} }) {
+    const [orientation, setOrientation] = require$$0.useState(() => getCurrentOrientation());
+    require$$0.useEffect(() => {
+        const updateOrientation = () => {
+            setOrientation(getCurrentOrientation());
+        };
+        // Listen for orientation changes
+        const mediaQueryList = window.matchMedia('(orientation: portrait)');
+        // For modern browsers
+        if (mediaQueryList.addEventListener) {
+            mediaQueryList.addEventListener('change', updateOrientation);
+        }
+        else {
+            // For older browsers
+            mediaQueryList.addListener(updateOrientation);
+        }
+        // Also listen for resize events as a fallback
+        window.addEventListener('resize', updateOrientation);
+        // Listen for orientationchange event on mobile devices
+        window.addEventListener('orientationchange', () => {
+            // Small delay to ensure the orientation change is complete
+            setTimeout(updateOrientation, 100);
+        });
+        return () => {
+            if (mediaQueryList.removeEventListener) {
+                mediaQueryList.removeEventListener('change', updateOrientation);
+            }
+            else {
+                mediaQueryList.removeListener(updateOrientation);
+            }
+            window.removeEventListener('resize', updateOrientation);
+            window.removeEventListener('orientationchange', updateOrientation);
+        };
+    }, []);
+    const content = builder(orientation);
+    return (jsxRuntimeExports.jsx("div", { className: className, style: style, children: content }));
+}
+/**
+ * Hook to get the current screen orientation
+ */
+function useOrientation() {
+    const [orientation, setOrientation] = require$$0.useState(() => getCurrentOrientation());
+    require$$0.useEffect(() => {
+        const updateOrientation = () => {
+            setOrientation(getCurrentOrientation());
+        };
+        const mediaQueryList = window.matchMedia('(orientation: portrait)');
+        if (mediaQueryList.addEventListener) {
+            mediaQueryList.addEventListener('change', updateOrientation);
+        }
+        else {
+            mediaQueryList.addListener(updateOrientation);
+        }
+        window.addEventListener('resize', updateOrientation);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateOrientation, 100);
+        });
+        return () => {
+            if (mediaQueryList.removeEventListener) {
+                mediaQueryList.removeEventListener('change', updateOrientation);
+            }
+            else {
+                mediaQueryList.removeListener(updateOrientation);
+            }
+            window.removeEventListener('resize', updateOrientation);
+            window.removeEventListener('orientationchange', updateOrientation);
+        };
+    }, []);
+    return orientation;
+}
+/**
+ * Hook to check if the current orientation matches the specified orientation
+ */
+function useOrientationMatch(targetOrientation) {
+    const currentOrientation = useOrientation();
+    return currentOrientation === targetOrientation;
+}
+/**
+ * Hook that returns different values based on orientation
+ */
+function useOrientationValue(portraitValue, landscapeValue) {
+    const orientation = useOrientation();
+    return orientation === exports.Orientation.portrait ? portraitValue : landscapeValue;
+}
+// Helper functions
+function getCurrentOrientation() {
+    // First try to use the Screen Orientation API if available
+    if (typeof window !== 'undefined' &&
+        'screen' in window &&
+        window.screen &&
+        'orientation' in window.screen) {
+        const screenOrientation = window.screen.orientation;
+        if (screenOrientation && typeof screenOrientation.angle === 'number') {
+            // The Screen Orientation API provides more detailed orientation info
+            return screenOrientation.angle === 0 || screenOrientation.angle === 180
+                ? exports.Orientation.portrait
+                : exports.Orientation.landscape;
+        }
+    }
+    // Fallback to checking window dimensions
+    return typeof window !== 'undefined' && window.innerHeight >= window.innerWidth
+        ? exports.Orientation.portrait
+        : exports.Orientation.landscape;
+}
+/**
+ * Utility functions for working with orientation
+ */
+const OrientationUtils = {
+    /**
+     * Check if the current orientation is portrait
+     */
+    isPortrait() {
+        return getCurrentOrientation() === exports.Orientation.portrait;
+    },
+    /**
+     * Check if the current orientation is landscape
+     */
+    isLandscape() {
+        return getCurrentOrientation() === exports.Orientation.landscape;
+    },
+    /**
+     * Get the rotation angle (if supported)
+     */
+    getRotationAngle() {
+        if ('screen' in window && 'orientation' in window.screen && window.screen.orientation) {
+            return window.screen.orientation.angle;
+        }
+        // Fallback to deprecated window.orientation
+        if ('orientation' in window) {
+            return window.orientation || 0;
+        }
+        return 0;
+    },
+    /**
+     * Get aspect ratio of the screen
+     */
+    getAspectRatio() {
+        return window.innerWidth / window.innerHeight;
+    },
+    /**
+     * Check if the device is likely a mobile device based on orientation capabilities
+     */
+    isMobileDevice() {
+        return (typeof window !== 'undefined' &&
+            ('orientation' in window ||
+                ('screen' in window && window.screen && 'orientation' in window.screen)));
+    },
+};
+
+/**
+ * Matrix4 class for 4x4 transformation matrices
+ */
+class Matrix4 {
+    constructor(m00 = 1, m01 = 0, m02 = 0, m03 = 0, m10 = 0, m11 = 1, m12 = 0, m13 = 0, m20 = 0, m21 = 0, m22 = 1, m23 = 0, m30 = 0, m31 = 0, m32 = 0, m33 = 1) {
+        this.storage = new Float64Array([
+            m00,
+            m01,
+            m02,
+            m03,
+            m10,
+            m11,
+            m12,
+            m13,
+            m20,
+            m21,
+            m22,
+            m23,
+            m30,
+            m31,
+            m32,
+            m33,
+        ]);
+    }
+    /**
+     * Creates an identity matrix
+     */
+    static identity() {
+        return new Matrix4();
+    }
+    /**
+     * Creates a translation matrix
+     */
+    static translationValues(x, y, z = 0) {
+        return new Matrix4(1, 0, 0, x, 0, 1, 0, y, 0, 0, 1, z, 0, 0, 0, 1);
+    }
+    /**
+     * Creates a scale matrix
+     */
+    static diagonal3Values(x, y, z = 1) {
+        return new Matrix4(x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1);
+    }
+    /**
+     * Creates a rotation matrix around Z axis (degrees)
+     */
+    static rotationZ(radians) {
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+        return new Matrix4(cos, -sin, 0, 0, sin, cos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+    /**
+     * Creates a rotation matrix around X axis (radians)
+     */
+    static rotationX(radians) {
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+        return new Matrix4(1, 0, 0, 0, 0, cos, -sin, 0, 0, sin, cos, 0, 0, 0, 0, 1);
+    }
+    /**
+     * Creates a rotation matrix around Y axis (radians)
+     */
+    static rotationY(radians) {
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+        return new Matrix4(cos, 0, sin, 0, 0, 1, 0, 0, -sin, 0, cos, 0, 0, 0, 0, 1);
+    }
+    /**
+     * Creates a skew matrix
+     */
+    static skewX(radians) {
+        const tan = Math.tan(radians);
+        return new Matrix4(1, tan, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+    static skewY(radians) {
+        const tan = Math.tan(radians);
+        return new Matrix4(1, 0, 0, 0, tan, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    }
+    /**
+     * Multiplies this matrix by another matrix
+     */
+    multiply(other) {
+        const result = new Matrix4();
+        const a = this.storage;
+        const b = other.storage;
+        const r = result.storage;
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                const index = i * 4 + j;
+                r[index] =
+                    (a[i * 4 + 0] || 0) * (b[0 * 4 + j] || 0) +
+                        (a[i * 4 + 1] || 0) * (b[1 * 4 + j] || 0) +
+                        (a[i * 4 + 2] || 0) * (b[2 * 4 + j] || 0) +
+                        (a[i * 4 + 3] || 0) * (b[3 * 4 + j] || 0);
+            }
+        }
+        return result;
+    }
+    /**
+     * Converts to CSS transform matrix3d string
+     */
+    toCssMatrix3d() {
+        const m = this.storage;
+        return `matrix3d(${Array.from(m).join(', ')})`;
+    }
+    /**
+     * Converts to CSS transform matrix string (2D)
+     */
+    toCssMatrix() {
+        const m = this.storage;
+        return `matrix(${m[0]}, ${m[4]}, ${m[1]}, ${m[5]}, ${m[3]}, ${m[7]})`;
+    }
+    /**
+     * Creates a copy of this matrix
+     */
+    clone() {
+        const result = new Matrix4();
+        result.storage.set(this.storage);
+        return result;
+    }
+}
+/**
+ * Alignment enumeration for transform origin
+ */
+exports.Alignment = void 0;
+(function (Alignment) {
+    Alignment["topLeft"] = "top left";
+    Alignment["topCenter"] = "top center";
+    Alignment["topRight"] = "top right";
+    Alignment["centerLeft"] = "center left";
+    Alignment["center"] = "center";
+    Alignment["centerRight"] = "center right";
+    Alignment["bottomLeft"] = "bottom left";
+    Alignment["bottomCenter"] = "bottom center";
+    Alignment["bottomRight"] = "bottom right";
+})(exports.Alignment || (exports.Alignment = {}));
+exports.FilterQuality = void 0;
+(function (FilterQuality) {
+    /** Use browser default */
+    FilterQuality["none"] = "auto";
+    /** Low quality, fast */
+    FilterQuality["low"] = "crisp-edges";
+    /** Medium quality */
+    FilterQuality["medium"] = "auto";
+    /** High quality, slower */
+    FilterQuality["high"] = "smooth";
+})(exports.FilterQuality || (exports.FilterQuality = {}));
+function Transform({ children, transform, alignment = exports.Alignment.center, transformOrigin, filterQuality = exports.FilterQuality.medium, className = '', style = {}, }) {
+    const transformStyle = require$$0.useMemo(() => {
+        const origin = transformOrigin || alignment;
+        return {
+            transform: transform.toCssMatrix3d(),
+            transformOrigin: origin,
+            imageRendering: filterQuality,
+        };
+    }, [transform, alignment, transformOrigin, filterQuality]);
+    const containerStyle = {
+        ...transformStyle,
+        ...style,
+    };
+    return (jsxRuntimeExports.jsx("div", { className: className, style: containerStyle, children: children }));
+}
+/**
+ * Transform.rotate - Creates a rotation transformation
+ */
+Transform.rotate = ({ angle, children, alignment = exports.Alignment.center, className = '', style = {}, }) => {
+    const transform = Matrix4.rotationZ(angle);
+    return (jsxRuntimeExports.jsx(Transform, { transform: transform, alignment: alignment, className: className, style: style, children: children }));
+};
+/**
+ * Transform.scale - Creates a scale transformation
+ */
+Transform.scale = ({ scale, scaleX, scaleY, children, alignment = exports.Alignment.center, className = '', style = {}, }) => {
+    const sx = scaleX ?? scale ?? 1;
+    const sy = scaleY ?? scale ?? 1;
+    const transform = Matrix4.diagonal3Values(sx, sy);
+    return (jsxRuntimeExports.jsx(Transform, { transform: transform, alignment: alignment, className: className, style: style, children: children }));
+};
+/**
+ * Transform.translate - Creates a translation transformation
+ */
+Transform.translate = ({ offset, x = 0, y = 0, children, className = '', style = {}, }) => {
+    const offsetX = offset?.x ?? x;
+    const offsetY = offset?.y ?? y;
+    const transform = Matrix4.translationValues(offsetX, offsetY);
+    return (jsxRuntimeExports.jsx(Transform, { transform: transform, className: className, style: style, children: children }));
+};
+/**
+ * Transform.flip - Creates a flip transformation
+ */
+Transform.flip = ({ flipX = false, flipY = false, children, alignment = exports.Alignment.center, className = '', style = {}, }) => {
+    const scaleX = flipX ? -1 : 1;
+    const scaleY = flipY ? -1 : 1;
+    const transform = Matrix4.diagonal3Values(scaleX, scaleY);
+    return (jsxRuntimeExports.jsx(Transform, { transform: transform, alignment: alignment, className: className, style: style, children: children }));
+};
+/**
+ * Utility functions for creating common transformations
+ */
+const TransformUtils = {
+    /**
+     * Convert degrees to radians
+     */
+    degreesToRadians(degrees) {
+        return (degrees * Math.PI) / 180;
+    },
+    /**
+     * Convert radians to degrees
+     */
+    radiansToDegrees(radians) {
+        return (radians * 180) / Math.PI;
+    },
+    /**
+     * Create a combined transformation matrix
+     */
+    combine(...matrices) {
+        return matrices.reduce((acc, matrix) => acc.multiply(matrix), Matrix4.identity());
+    },
+    /**
+     * Create a rotation transformation from degrees
+     */
+    rotationFromDegrees(degrees) {
+        return Matrix4.rotationZ(this.degreesToRadians(degrees));
+    },
+    /**
+     * Create a complex transformation with translation, rotation, and scale
+     */
+    createComplex({ translateX = 0, translateY = 0, rotation = 0, scaleX = 1, scaleY = 1, }) {
+        const translate = Matrix4.translationValues(translateX, translateY);
+        const rotate = Matrix4.rotationZ(rotation);
+        const scale = Matrix4.diagonal3Values(scaleX, scaleY);
+        // Apply transformations in order: scale, rotate, translate
+        return translate.multiply(rotate).multiply(scale);
+    },
+};
+
+function Opacity({ children, opacity, alwaysIncludeSemantics = false, className = '', style = {}, }) {
+    // Clamp opacity value between 0 and 1
+    const clampedOpacity = Math.max(0, Math.min(1, opacity));
+    // Determine if content should be visible to screen readers
+    const shouldIncludeSemantics = alwaysIncludeSemantics || clampedOpacity > 0;
+    const containerStyle = {
+        opacity: clampedOpacity,
+        // Maintain layout space even when opacity is 0
+        visibility: shouldIncludeSemantics ? 'visible' : 'hidden',
+        ...style,
+    };
+    return (jsxRuntimeExports.jsx("div", { className: className, style: containerStyle, "aria-hidden": !shouldIncludeSemantics, children: children }));
+}
+
+exports.AnimatedContainer = AnimatedContainer;
+exports.AnimatedOpacity = AnimatedOpacity;
+exports.BoxConstraintsUtils = BoxConstraintsUtils;
 exports.Column = Column;
 exports.Container = Container;
 exports.EdgeInsets = EdgeInsets;
 exports.Flex = Flex;
+exports.GestureDetector = GestureDetector;
+exports.InkWell = InkWell;
+exports.LayoutBuilder = LayoutBuilder;
 exports.ListView = ListView;
+exports.Matrix4 = Matrix4;
+exports.MediaQuery = MediaQuery;
+exports.Opacity = Opacity;
+exports.OrientationBuilder = OrientationBuilder;
+exports.OrientationUtils = OrientationUtils;
 exports.Row = Row;
 exports.SizedBox = SizedBox;
 exports.Spacer = Spacer;
+exports.Transform = Transform;
+exports.TransformUtils = TransformUtils;
+exports.createBoxConstraints = createBoxConstraints;
+exports.createExpandedConstraints = createExpandedConstraints;
+exports.createLooseConstraints = createLooseConstraints;
+exports.createTightConstraints = createTightConstraints;
+exports.defaultBreakpoints = defaultBreakpoints;
+exports.useBreakpoint = useBreakpoint;
+exports.useBreakpointMatch = useBreakpointMatch;
+exports.useMediaQuery = useMediaQuery;
+exports.useOrientation = useOrientation;
+exports.useOrientationMatch = useOrientationMatch;
+exports.useOrientationValue = useOrientationValue;
 //# sourceMappingURL=index.js.map

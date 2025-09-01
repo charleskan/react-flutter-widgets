@@ -1,5 +1,5 @@
 import type { CSSProperties, Key, ReactNode } from 'react';
-import { MainAxisAlignment, CrossAxisAlignment } from './Flex.type';
+import { CrossAxisAlignment, MainAxisAlignment } from './Flex.type';
 export { MainAxisAlignment, CrossAxisAlignment };
 /**
  * Scroll direction for ListView

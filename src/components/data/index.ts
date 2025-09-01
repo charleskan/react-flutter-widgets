@@ -9,6 +9,4 @@ export {
 } from '../../types/ListView.type'
 
 // Export data types
-export type {
-  ListViewProps,
-} from '../../types/ListView.type'
+export type { ListViewProps } from '../../types/ListView.type'
