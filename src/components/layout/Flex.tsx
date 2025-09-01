@@ -1,6 +1,11 @@
 import type { FlexProps } from '../../types/Flex.type'
 import { CrossAxisAlignment, Flex as FlexUtils, MainAxisAlignment } from '../../types/Flex.type'
 
+interface FlexComponentProps extends FlexProps {
+  /** Direction of the flex layout */
+  direction: 'row' | 'column'
+}
+
 /**
  * Flex component that provides flexible layout container, equivalent to Flutter's Flex widget.
  * This is the base component that both Column and Row extend from.
@@ -18,11 +23,6 @@ import { CrossAxisAlignment, Flex as FlexUtils, MainAxisAlignment } from '../../
  * </Flex>
  * ```
  */
-interface FlexComponentProps extends FlexProps {
-  /** Direction of the flex layout */
-  direction: 'row' | 'column'
-}
-
 function Flex(props: FlexComponentProps) {
   const {
     children,

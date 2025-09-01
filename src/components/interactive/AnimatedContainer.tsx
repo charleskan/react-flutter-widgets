@@ -1,24 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ContainerProps } from '../layout/Container'
 
-/**
- * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
- * Automatically animates changes to its properties over a specified duration.
- *
- * @example
- * ```tsx
- * <AnimatedContainer
- *   width={isExpanded ? 200 : 100}
- *   height={isExpanded ? 200 : 100}
- *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
- *   duration={300}
- *   curve="ease-in-out"
- *   onEnd={() => console.log('Animation completed')}
- * >
- *   <span>Animated content</span>
- * </AnimatedContainer>
- * ```
- */
 export interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {
   /** Duration of the animation in milliseconds */
   duration: number
@@ -74,6 +56,24 @@ interface AnimatedStyles {
   transform?: string
 }
 
+/**
+ * AnimatedContainer component equivalent to Flutter's AnimatedContainer widget.
+ * Automatically animates changes to its properties over a specified duration.
+ *
+ * @example
+ * ```tsx
+ * <AnimatedContainer
+ *   width={isExpanded ? 200 : 100}
+ *   height={isExpanded ? 200 : 100}
+ *   backgroundColor={isExpanded ? '#ff0000' : '#0000ff'}
+ *   duration={300}
+ *   curve="ease-in-out"
+ *   onEnd={() => console.log('Animation completed')}
+ * >
+ *   <span>Animated content</span>
+ * </AnimatedContainer>
+ * ```
+ */
 function AnimatedContainer(props: AnimatedContainerProps) {
   const {
     children,
