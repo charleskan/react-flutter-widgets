@@ -9,7 +9,7 @@
  *   <Spacer />
  *   <div>Right content</div>
  * </Row>
- * 
+ *
  * // With custom flex value
  * <Column>
  *   <div>Top content</div>

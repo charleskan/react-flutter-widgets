@@ -1,4 +1,4 @@
-import require$$0, { useMemo, useState, useRef, useEffect, useCallback, createContext, useContext, forwardRef, useImperativeHandle } from 'react';
+import require$$0, { useMemo, useState, useRef, useEffect, useCallback, createContext, useContext, forwardRef, useImperativeHandle, useId } from 'react';
 
 var jsxRuntime = {exports: {}};
 
@@ -465,6 +465,7 @@ var TextDirection;
 (function (TextDirection) {
     TextDirection["LTR"] = "ltr";
     TextDirection["RTL"] = "rtl";
+    TextDirection["AUTO"] = "auto";
 })(TextDirection || (TextDirection = {}));
 /**
  * Vertical direction for column layout
@@ -728,11 +729,13 @@ function Row(props) {
     const containerClasses = ['flex', 'flex-row', mainAxisClass, crossAxisClass, sizeClass]
         .filter(Boolean)
         .join(' ');
+    // Convert TextDirection enum to CSS direction value
+    const cssDirection = textDirection === TextDirection.AUTO ? undefined : textDirection?.toLowerCase();
     const containerStyle = {
         ...flexStyles,
         padding,
         margin,
-        direction: textDirection,
+        direction: cssDirection,
         flexDirection: textDirection === TextDirection.RTL ? 'row-reverse' : 'row',
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
@@ -813,11 +816,13 @@ function Flex(props) {
     const containerClasses = ['flex', directionClass, mainAxisClass, crossAxisClass, sizeClass]
         .filter(Boolean)
         .join(' ');
+    // Convert TextDirection enum to CSS direction value
+    const cssDirection = textDirection === TextDirection.AUTO ? undefined : textDirection?.toLowerCase();
     const containerStyle = {
         ...flexStyles,
         padding,
         margin,
-        direction: textDirection,
+        direction: cssDirection,
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
     return (jsxRuntimeExports.jsx("div", { className: containerClasses, style: containerStyle, children: children }));
@@ -2587,30 +2592,30 @@ function Opacity({ children, opacity, alwaysIncludeSemantics = false, className 
 
 function mapKeyboard(type) {
     switch (type) {
-        case "emailAddress":
-            return { htmlType: "email", inputMode: "email" };
-        case "number":
-            return { htmlType: "text", inputMode: "numeric" }; // keep text to allow custom validation
-        case "phone":
-            return { htmlType: "tel", inputMode: "tel" };
-        case "url":
-            return { htmlType: "url", inputMode: "url" };
-        case "password":
-            return { htmlType: "password" };
-        case "text":
+        case 'emailAddress':
+            return { htmlType: 'email', inputMode: 'email' };
+        case 'number':
+            return { htmlType: 'text', inputMode: 'numeric' }; // keep text to allow custom validation
+        case 'phone':
+            return { htmlType: 'tel', inputMode: 'tel' };
+        case 'url':
+            return { htmlType: 'url', inputMode: 'url' };
+        case 'password':
+            return { htmlType: 'password' };
+        case 'text':
         default:
-            return { htmlType: "text" };
+            return { htmlType: 'text' };
     }
 }
 function applyCapitalization(text, mode) {
-    if (!mode || mode === "none")
+    if (!mode || mode === 'none')
         return text;
     switch (mode) {
-        case "characters":
+        case 'characters':
             return text.toUpperCase();
-        case "words":
+        case 'words':
             return text.replace(/(^|\s)([a-z])/g, (_, p1, p2) => p1 + p2.toUpperCase());
-        case "sentences":
+        case 'sentences':
             return text.replace(/(^|[.!?]\s+)([a-z])/g, (_, p1, p2) => p1 + p2.toUpperCase());
         default:
             return text;
@@ -2658,9 +2663,9 @@ function applyCapitalization(text, mode) {
  * ```
  */
 const TextField = forwardRef(function TextField(props, ref) {
-    const { value, defaultValue, onChangeText, onChanged, onEditingComplete, onSubmitted, onFocus, onBlur, onTap, style, textAlign = "start", textDirection, textCapitalization = "none", maxLength, maxLines = 1, minLines, expands = false, obscureText = false, obscuringCharacter: _, // not used directly; browser uses own mask
-    enabled = true, readOnly = false, autoFocus = false, canRequestFocus: __ = true, keyboardType = "text", textInputAction = "none", inputMode, decoration = {}, id, name, placeholder, forwardedRef, className, containerStyle, } = props;
-    const [inner, setInner] = useState(defaultValue ?? "");
+    const { value, defaultValue, onChangeText, onChanged, onEditingComplete, onSubmitted, onFocus, onBlur, onTap, style, textAlign = 'start', textDirection, textCapitalization = 'none', maxLength, maxLines = 1, minLines, expands = false, obscureText = false, obscuringCharacter: _, // not used directly; browser uses own mask
+    enabled = true, readOnly = false, autoFocus = false, canRequestFocus: __ = true, keyboardType = 'text', textInputAction = 'none', inputMode, decoration = {}, id, name, placeholder, forwardedRef, className, containerStyle, } = props;
+    const [inner, setInner] = useState(defaultValue ?? '');
     const controlled = value !== undefined;
     const currentValue = controlled ? value : inner;
     const inputRef = useRef(null);
@@ -2671,10 +2676,10 @@ const TextField = forwardRef(function TextField(props, ref) {
         select: () => inputRef.current?.select?.(),
         clear: () => {
             if (controlled) {
-                (onChangeText ?? onChanged)?.("");
+                (onChangeText ?? onChanged)?.('');
             }
             else {
-                setInner("");
+                setInner('');
             }
         },
         getValue: () => currentValue,
@@ -2684,20 +2689,21 @@ const TextField = forwardRef(function TextField(props, ref) {
         },
     }), [controlled, currentValue, onChangeText, onChanged]);
     // map Flutter keyboard type -> HTML
-    const { htmlType, inputMode: autoInputMode } = useMemo(() => mapKeyboard(obscureText ? "password" : keyboardType), [keyboardType, obscureText]);
+    const { htmlType, inputMode: autoInputMode } = useMemo(() => mapKeyboard(obscureText ? 'password' : keyboardType), [keyboardType, obscureText]);
     // compute props
     const dir = textDirection;
-    const ta = textAlign === "start" ? undefined : textAlign === "end" ? undefined : textAlign;
+    const ta = textAlign === 'start' ? undefined : textAlign === 'end' ? undefined : textAlign;
     // enterKeyHint mapping removed as it's not used in the implementation
     const handleChange = useCallback((e) => {
         let text = e.target.value;
-        if (textCapitalization && textCapitalization !== "none") {
+        if (textCapitalization && textCapitalization !== 'none') {
             const cursor = e.target.selectionStart;
             text = applyCapitalization(text, textCapitalization);
             // try to restore caret if capitalization changed length (best-effort)
             if (cursor != null) {
                 requestAnimationFrame(() => {
                     try {
+                        ;
                         e.target.setSelectionRange(cursor, cursor);
                     }
                     catch { }
@@ -2713,14 +2719,14 @@ const TextField = forwardRef(function TextField(props, ref) {
         }
     }, [controlled, onChangeText, onChanged, textCapitalization]);
     const handleKeyDown = useCallback((e) => {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
             onEditingComplete?.();
             onSubmitted?.(currentValue);
-            if (textInputAction === "next") {
+            if (textInputAction === 'next') {
                 // try to focus next focusable element
                 const form = e.currentTarget.form;
                 if (form) {
-                    const elements = Array.from(form.querySelectorAll("input, textarea, [tabindex]"));
+                    const elements = Array.from(form.querySelectorAll('input, textarea, [tabindex]'));
                     const idx = elements.indexOf(e.currentTarget);
                     if (idx >= 0 && idx + 1 < elements.length)
                         elements[idx + 1]?.focus();
@@ -2733,23 +2739,26 @@ const TextField = forwardRef(function TextField(props, ref) {
         onBlur?.();
     }, [onEditingComplete, onBlur]);
     const disabled = !enabled;
-    const showTextarea = expands || (maxLines == null || maxLines > 1 || (minLines != null && minLines > 1));
-    const { labelText, hintText, helperText, errorText, prefixIcon, suffixIcon, counterText, filled, fillColor, border } = decoration;
+    const showTextarea = expands || maxLines == null || maxLines > 1 || (minLines != null && minLines > 1);
+    const { labelText, hintText, helperText, errorText, prefixIcon, suffixIcon, counterText, filled, fillColor, border, } = decoration;
     const baseField = showTextarea ? (jsxRuntimeExports.jsx("textarea", { ref: inputRef, id: id, name: name, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, rows: minLines ?? 1, style: {
-            width: "100%",
-            resize: expands ? "none" : "vertical",
+            width: '100%',
+            resize: expands ? 'none' : 'vertical',
             flex: expands ? 1 : undefined,
             minHeight: expands ? 0 : undefined,
             textAlign: ta,
             ...style,
-        }, className: "rtf-input" })) : (jsxRuntimeExports.jsx("input", { ref: inputRef, id: id, name: name, type: obscureText ? "password" : htmlType, inputMode: inputMode ?? autoInputMode, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, style: {
-            width: "100%",
+        }, className: "rtf-input" })) : (jsxRuntimeExports.jsx("input", { ref: inputRef, id: id, name: name, type: obscureText ? 'password' : htmlType, inputMode: inputMode ?? autoInputMode, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, style: {
+            width: '100%',
             textAlign: ta,
             ...style,
         }, className: "rtf-input" }));
     const showCounter = maxLength != null || counterText;
     const computedCounterText = counterText ?? (maxLength != null ? `${currentValue.length} / ${maxLength}` : undefined);
-    return (jsxRuntimeExports.jsxs("label", { className: "rtf-container " + (className ?? ""), style: { display: "block", ...containerStyle }, children: [labelText && (jsxRuntimeExports.jsx("span", { className: "rtf-label", children: labelText })), jsxRuntimeExports.jsxs("div", { className: "rtf-wrapper " + (errorText ? "rtf-error " : "") + (filled ? "rtf-filled " : "") + (border ? `rtf-border-${border} ` : "rtf-border-outline "), style: { background: filled ? (fillColor ?? "#f6f6f6") : undefined }, children: [prefixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-prefix", children: prefixIcon }), baseField, suffixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-suffix", children: suffixIcon })] }), helperText && !errorText && jsxRuntimeExports.jsx("div", { className: "rtf-helper", children: helperText }), errorText && jsxRuntimeExports.jsx("div", { className: "rtf-error-text", children: errorText }), showCounter && jsxRuntimeExports.jsx("div", { className: "rtf-counter", children: computedCounterText }), jsxRuntimeExports.jsx("style", { children: `
+    return (jsxRuntimeExports.jsxs("label", { className: 'rtf-container ' + (className ?? ''), style: { display: 'block', ...containerStyle }, children: [labelText && jsxRuntimeExports.jsx("span", { className: "rtf-label", children: labelText }), jsxRuntimeExports.jsxs("div", { className: 'rtf-wrapper ' +
+                    (errorText ? 'rtf-error ' : '') +
+                    (filled ? 'rtf-filled ' : '') +
+                    (border ? `rtf-border-${border} ` : 'rtf-border-outline '), style: { background: filled ? (fillColor ?? '#f6f6f6') : undefined }, children: [prefixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-prefix", children: prefixIcon }), baseField, suffixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-suffix", children: suffixIcon })] }), helperText && !errorText && jsxRuntimeExports.jsx("div", { className: "rtf-helper", children: helperText }), errorText && jsxRuntimeExports.jsx("div", { className: "rtf-error-text", children: errorText }), showCounter && jsxRuntimeExports.jsx("div", { className: "rtf-counter", children: computedCounterText }), jsxRuntimeExports.jsx("style", { children: `
         .rtf-container { font: inherit; color: inherit; }
         .rtf-label { display:block; margin-bottom: 4px; font-size: 0.875rem; color: #555; }
         .rtf-wrapper { display:flex; align-items:center; gap:8px; padding: 10px 12px; border-radius: 8px; }
@@ -2767,5 +2776,209 @@ const TextField = forwardRef(function TextField(props, ref) {
       ` })] }));
 });
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+/**
+ * A Flutter Text widget-inspired React component for displaying text with advanced styling and layout options.
+ *
+ * NOTE: This mirrors Flutter's Text widget behavior including text overflow handling, line clamping,
+ * text scaling, and advanced typography features. Some Flutter features are adapted for web compatibility
+ * using modern CSS techniques like -webkit-line-clamp and CSS mask-image for fade effects.
+ *
+ * Key implementation details:
+ * - maxLines: Uses -webkit-line-clamp for multi-line truncation or single-line techniques
+ * - overflow: "ellipsis" uses text-overflow; "fade" uses CSS mask-image for fade effect
+ * - softWrap: Controls white-space and word-wrap behavior
+ * - textAlign: "start"/"end" converts to left/right based on text direction
+ * - textScaleFactor/textScaler: Multiplies font-size by the scale factor
+ * - selectionColor: Creates dynamic CSS class with ::selection rules
+ *
+ * @example
+ * ```tsx
+ * // Basic text display
+ * <Text data="Hello, World!" />
+ *
+ * // Styled text with custom styling
+ * <Text
+ *   data="Styled Text"
+ *   style={{
+ *     fontSize: 18,
+ *     fontWeight: 600,
+ *     color: '#2563eb'
+ *   }}
+ *   textAlign="center"
+ * />
+ *
+ * // Rich text with children
+ * <Text>
+ *   Hello <span style={{ fontWeight: 'bold' }}>World</span>!
+ * </Text>
+ *
+ * // Text with line clamping and overflow
+ * <Text
+ *   data="This is a very long text that will be truncated after 2 lines with an ellipsis..."
+ *   maxLines={2}
+ *   overflow="ellipsis"
+ *   softWrap={true}
+ * />
+ *
+ * // Text with fade overflow effect
+ * <Text
+ *   data="This text will fade out at the end instead of being cut off abruptly"
+ *   maxLines={1}
+ *   overflow="fade"
+ * />
+ *
+ * // Scaled text
+ * <Text
+ *   data="Large text"
+ *   textScaler={1.5}
+ *   style={{ fontSize: 16 }}
+ * />
+ *
+ * // Text with custom selection color
+ * <Text
+ *   data="Select this text to see custom selection color"
+ *   selectionColor="#fbbf24"
+ * />
+ * ```
+ */
+const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'clip', maxLines, textScaleFactor, textScaler, locale, textDirection = TextDirection.AUTO, semanticsLabel, semanticsIdentifier, selectionColor, textWidthBasis = 'parent', className, }) => {
+    const id = useId(); // Used for selectionColor class generation
+    // Calculate scaled style with font-size scaling
+    const scaledStyle = useMemo(() => {
+        const css = {};
+        if (style) {
+            const { color, fontSize, fontWeight, fontStyle, fontFamily, letterSpacing, wordSpacing, height, decoration, decorationColor, decorationStyle, decorationThickness, } = style;
+            Object.assign(css, {
+                color,
+                fontStyle,
+                fontFamily,
+                fontWeight,
+                letterSpacing,
+                wordSpacing,
+                textDecoration: decoration,
+                textDecorationColor: decorationColor,
+                textDecorationStyle: decorationStyle,
+                textDecorationThickness: decorationThickness,
+            });
+            if (height !== undefined) {
+                // Flutter's height is a line-height multiplier
+                css.lineHeight = height;
+            }
+            // Text scaling: textScaler takes precedence over textScaleFactor
+            const scale = textScaler ?? textScaleFactor ?? 1;
+            if (fontSize !== undefined) {
+                css.fontSize = Math.max(0, fontSize * scale);
+            }
+            else if (scale !== 1) {
+                // Use relative scaling (em) when no explicit fontSize
+                css.fontSize = `${scale}em`;
+            }
+        }
+        // textAlign: map start/end based on text direction
+        if (textAlign) {
+            if (textAlign === 'start')
+                css.textAlign = textDirection === TextDirection.RTL ? 'right' : 'left';
+            else if (textAlign === 'end')
+                css.textAlign = textDirection === TextDirection.RTL ? 'left' : 'right';
+            else
+                css.textAlign = textAlign;
+        }
+        // softWrap and white-space control
+        // - softWrap=true: normal line wrapping
+        // - softWrap=false: single line, no wrapping (or with maxLines=1)
+        if (!softWrap) {
+            css.whiteSpace = 'nowrap';
+        }
+        else {
+            // Allow text to wrap at whitespace and within words, closer to Flutter behavior
+            css.whiteSpace = 'pre-wrap';
+            css.overflowWrap = 'anywhere';
+        }
+        // overflow and maxLines handling
+        if (maxLines && maxLines > 0) {
+            // Multi-line clamp using webkit-line-clamp
+            css.display = '-webkit-box';
+            Object.assign(css, {
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: maxLines,
+            });
+            css.overflow = 'hidden';
+            if (overflow === 'ellipsis') ;
+            else if (overflow === 'clip') ;
+            else if (overflow === 'fade') {
+                // Use mask-image for bottom fade effect
+                // Note: Some browsers may not support line-clamp + mask combination well
+                Object.assign(css, {
+                    WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+                    maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+                });
+            }
+        }
+        else {
+            // Single line or unlimited lines scenario
+            if (!softWrap || maxLines === 1) {
+                css.whiteSpace = 'nowrap';
+                if (overflow === 'ellipsis') {
+                    css.overflow = 'hidden';
+                    css.textOverflow = 'ellipsis';
+                }
+                else if (overflow === 'clip') {
+                    css.overflow = 'hidden';
+                }
+                else if (overflow === 'fade') {
+                    // Right-side fade effect
+                    css.overflow = 'hidden';
+                    Object.assign(css, {
+                        WebkitMaskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)',
+                        maskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)',
+                    });
+                }
+            }
+            else {
+                // Multi-line without line limit
+                if (overflow === 'clip') ;
+                else if (overflow === 'ellipsis') ;
+                else if (overflow === 'fade') {
+                    // Multi-line fade effect without clamp (visual only)
+                    Object.assign(css, {
+                        WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%)',
+                        maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%)',
+                    });
+                }
+            }
+        }
+        return css;
+    }, [
+        style,
+        textAlign,
+        softWrap,
+        overflow,
+        maxLines,
+        textScaleFactor,
+        textScaler,
+        textDirection,
+        textWidthBasis,
+    ]);
+    // Generate unique class name for selection color
+    const selectionClass = useMemo(() => {
+        if (!selectionColor)
+            return undefined;
+        // Use useId to generate collision-resistant class name
+        return `text-selection-${id.replace(/[:]/g, '-')}`;
+    }, [selectionColor, id]);
+    // Dynamic style injection for selection color
+    const selectionStyleTag = selectionColor && selectionClass ? (jsxRuntimeExports.jsx("style", { children: `
+      .${selectionClass}::selection { background: ${selectionColor}; }
+      .${selectionClass}::-moz-selection { background: ${selectionColor}; }
+    ` })) : null;
+    // Accessibility and semantic attributes
+    const ariaLabel = semanticsLabel;
+    const elemId = semanticsIdentifier || undefined;
+    // Combine CSS classes
+    const combinedClassName = [selectionClass, className].filter(Boolean).join(' ') || undefined;
+    // Render the text component using span element
+    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("span", { id: elemId, className: combinedClassName, style: scaledStyle, lang: locale, dir: textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
+};
+
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map

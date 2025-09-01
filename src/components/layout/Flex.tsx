@@ -1,5 +1,5 @@
 import type { FlexProps } from '../../types/Flex.type'
-import { CrossAxisAlignment, Flex as FlexUtils, MainAxisAlignment } from '../../types/Flex.type'
+import { CrossAxisAlignment, Flex as FlexUtils, MainAxisAlignment, TextDirection } from '../../types/Flex.type'
 
 interface FlexComponentProps extends FlexProps {
   /** Direction of the flex layout */
@@ -58,11 +58,14 @@ function Flex(props: FlexComponentProps) {
     .filter(Boolean)
     .join(' ')
 
+  // Convert TextDirection enum to CSS direction value
+  const cssDirection = textDirection === TextDirection.AUTO ? undefined : textDirection?.toLowerCase() as "ltr" | "rtl" | undefined;
+
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
     padding,
     margin,
-    direction: textDirection,
+    direction: cssDirection,
     alignItems:
       textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
   }

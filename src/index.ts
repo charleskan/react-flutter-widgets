@@ -115,9 +115,17 @@ export {
   type InputDecoration,
   type TextInputType,
   type TextInputAction,
-  type TextAlign,
   type TextCapitalization,
 } from './components/form'
+
+// Text Components
+export {
+  Text,
+  type TextProps,
+  type TextStyle,
+  type TextAlign,
+  type TextOverflow,
+} from './components/text'
 
 // Core Utilities and Types
 export { EdgeInsets } from './types/Flex.type'

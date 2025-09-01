@@ -6,13 +6,13 @@
  * ```tsx
  * // Fixed size box
  * <SizedBox width={100} height={50} />
- * 
+ *
  * // Width only
  * <SizedBox width="100%" />
- * 
- * // Height only  
+ *
+ * // Height only
  * <SizedBox height={20} />
- * 
+ *
  * // Using string values
  * <SizedBox width="200px" height="10rem" />
  * ```

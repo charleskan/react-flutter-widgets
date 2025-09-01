@@ -1,4 +1,5 @@
-import React from "react";
+import type React from 'react';
+import type { TextAlign, TextCapitalization } from '../../types/Text.types';
 export interface InputDecoration {
     labelText?: string;
     hintText?: string;
@@ -9,12 +10,10 @@ export interface InputDecoration {
     counterText?: string;
     filled?: boolean;
     fillColor?: string;
-    border?: "none" | "outline" | "underline";
+    border?: 'none' | 'outline' | 'underline';
 }
-export type TextInputType = "text" | "emailAddress" | "number" | "phone" | "url" | "password";
-export type TextInputAction = "done" | "search" | "next" | "send" | "go" | "none";
-export type TextAlign = "start" | "end" | "left" | "right" | "center";
-export type TextCapitalization = "none" | "characters" | "words" | "sentences";
+export type TextInputType = 'text' | 'emailAddress' | 'number' | 'phone' | 'url' | 'password';
+export type TextInputAction = 'done' | 'search' | 'next' | 'send' | 'go' | 'none';
 export interface TextFieldProps {
     /** Controls the text being edited (controlled mode). If provided, component is controlled. */
     value?: string;
@@ -30,7 +29,7 @@ export interface TextFieldProps {
     onTap?: () => void;
     style?: React.CSSProperties;
     textAlign?: TextAlign;
-    textDirection?: "ltr" | "rtl";
+    textDirection?: 'ltr' | 'rtl';
     textCapitalization?: TextCapitalization;
     maxLength?: number;
     maxLines?: number | null;
@@ -44,7 +43,7 @@ export interface TextFieldProps {
     canRequestFocus?: boolean;
     keyboardType?: TextInputType;
     textInputAction?: TextInputAction;
-    inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+    inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
     decoration?: InputDecoration;
     id?: string;
     name?: string;

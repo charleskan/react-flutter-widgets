@@ -32,7 +32,8 @@ export declare enum MainAxisSize {
  */
 export declare enum TextDirection {
     LTR = "ltr",
-    RTL = "rtl"
+    RTL = "rtl",
+    AUTO = "auto"
 }
 /**
  * Vertical direction for column layout

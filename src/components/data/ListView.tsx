@@ -64,14 +64,14 @@ function useListViewHook<T>({
  *   itemBuilder={(item, index) => <div key={index}>{item}</div>}
  *   scrollDirection={ScrollDirection.VERTICAL}
  * />
- * 
+ *
  * // Builder pattern with itemCount
  * <ListView
  *   itemCount={100}
  *   itemBuilder={(_, index) => <div key={index}>Item {index}</div>}
  *   separatorBuilder={(index) => <div key={`sep-${index}`} style={{height: 1, background: '#ccc'}} />}
  * />
- * 
+ *
  * // Horizontal scrolling list
  * <ListView
  *   items={data}

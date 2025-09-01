@@ -6,6 +6,5 @@ export type {
   InputDecoration,
   TextInputType,
   TextInputAction,
-  TextAlign,
-  TextCapitalization,
 } from './TextField'
+export type { TextAlign, TextCapitalization } from '../../types/Text.types'

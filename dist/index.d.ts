@@ -95,7 +95,8 @@ declare enum MainAxisSize {
  */
 declare enum TextDirection {
     LTR = "ltr",
-    RTL = "rtl"
+    RTL = "rtl",
+    AUTO = "auto"
 }
 /**
  * Vertical direction for column layout
@@ -1095,6 +1096,16 @@ interface OpacityProps {
 }
 declare function Opacity({ children, opacity, alwaysIncludeSemantics, className, style, }: OpacityProps): react_jsx_runtime.JSX.Element;
 
+/**
+ * Shared text-related type definitions for Flutter-React UI components
+ */
+/** Text alignment options compatible with Flutter's TextAlign enum */
+type TextAlign = 'start' | 'end' | 'left' | 'right' | 'center' | 'justify';
+/** Text overflow handling options compatible with Flutter's TextOverflow enum */
+type TextOverflow = 'clip' | 'ellipsis' | 'fade';
+/** Text capitalization options for form inputs */
+type TextCapitalization = 'none' | 'characters' | 'words' | 'sentences';
+
 interface InputDecoration {
     labelText?: string;
     hintText?: string;
@@ -1105,12 +1116,10 @@ interface InputDecoration {
     counterText?: string;
     filled?: boolean;
     fillColor?: string;
-    border?: "none" | "outline" | "underline";
+    border?: 'none' | 'outline' | 'underline';
 }
-type TextInputType = "text" | "emailAddress" | "number" | "phone" | "url" | "password";
-type TextInputAction = "done" | "search" | "next" | "send" | "go" | "none";
-type TextAlign = "start" | "end" | "left" | "right" | "center";
-type TextCapitalization = "none" | "characters" | "words" | "sentences";
+type TextInputType = 'text' | 'emailAddress' | 'number' | 'phone' | 'url' | 'password';
+type TextInputAction = 'done' | 'search' | 'next' | 'send' | 'go' | 'none';
 interface TextFieldProps {
     /** Controls the text being edited (controlled mode). If provided, component is controlled. */
     value?: string;
@@ -1126,7 +1135,7 @@ interface TextFieldProps {
     onTap?: () => void;
     style?: React$1.CSSProperties;
     textAlign?: TextAlign;
-    textDirection?: "ltr" | "rtl";
+    textDirection?: 'ltr' | 'rtl';
     textCapitalization?: TextCapitalization;
     maxLength?: number;
     maxLines?: number | null;
@@ -1140,7 +1149,7 @@ interface TextFieldProps {
     canRequestFocus?: boolean;
     keyboardType?: TextInputType;
     textInputAction?: TextInputAction;
-    inputMode?: React$1.HTMLAttributes<HTMLInputElement>["inputMode"];
+    inputMode?: React$1.HTMLAttributes<HTMLInputElement>['inputMode'];
     decoration?: InputDecoration;
     id?: string;
     name?: string;
@@ -1201,5 +1210,145 @@ interface TextFieldHandle {
  */
 declare const TextField: React$1.ForwardRefExoticComponent<TextFieldProps & React$1.RefAttributes<TextFieldHandle>>;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BoxConstraints, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TransformProps };
+/**
+ * A minimal TextStyle interface mapped to CSSProperties
+ * Aligns with Flutter's TextStyle common properties
+ */
+interface TextStyle {
+    /** Text color */
+    color?: string;
+    /** Font size in pixels */
+    fontSize?: number;
+    /** Font weight (CSS values or numeric) */
+    fontWeight?: CSSProperties['fontWeight'] | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+    /** Font style (normal, italic, etc.) */
+    fontStyle?: CSSProperties['fontStyle'];
+    /** Font family name */
+    fontFamily?: string;
+    /** Letter spacing in pixels */
+    letterSpacing?: number;
+    /** Word spacing in pixels */
+    wordSpacing?: number;
+    /** Line height multiplier (e.g., 1.2) */
+    height?: number;
+    /** Text decoration (underline, strikethrough, etc.) */
+    decoration?: CSSProperties['textDecoration'];
+    /** Text decoration color */
+    decorationColor?: string;
+    /** Text decoration style */
+    decorationStyle?: CSSProperties['textDecorationStyle'];
+    /** Text decoration thickness in pixels */
+    decorationThickness?: number;
+}
+/**
+ * Props interface aligning with Flutter's Text widget
+ * - data: Text string (equivalent to Flutter's data parameter)
+ * - children: Equivalent to Flutter's Text.rich with InlineSpan (use React spans and styles)
+ */
+interface TextProps {
+    /** Text string to display (Flutter Text(data)) */
+    data?: string;
+    /** Rich text content (Flutter Text.rich equivalent) */
+    children?: ReactNode;
+    /** Text styling options */
+    style?: TextStyle;
+    /** Text alignment within its container */
+    textAlign?: TextAlign;
+    /** Whether text should wrap to new lines (default: true) */
+    softWrap?: boolean;
+    /** How to handle text overflow (default: "clip") */
+    overflow?: TextOverflow;
+    /** Maximum number of lines to display */
+    maxLines?: number;
+    /** Text scale factor (deprecated in Flutter, kept for compatibility) */
+    textScaleFactor?: number;
+    /**
+     * Text scaler equivalent to Flutter's TextScaler
+     * Simple multiplier implementation (non-linear scaling can be customized)
+     * Takes precedence over textScaleFactor if both provided
+     */
+    textScaler?: number;
+    /** Locale for the text (maps to HTML lang attribute) */
+    locale?: string;
+    /** Text direction control (maps to HTML dir attribute) */
+    textDirection?: TextDirection;
+    /** Semantic label for screen readers (maps to aria-label) */
+    semanticsLabel?: string;
+    /** Semantic identifier (maps to HTML id or data attribute) */
+    semanticsIdentifier?: string;
+    /** Background color for text selection */
+    selectionColor?: string;
+    /** How to measure text width - "parent" or "longestLine" */
+    textWidthBasis?: 'parent' | 'longestLine';
+    /** Custom CSS class name (use sparingly) */
+    className?: string;
+}
+/**
+ * A Flutter Text widget-inspired React component for displaying text with advanced styling and layout options.
+ *
+ * NOTE: This mirrors Flutter's Text widget behavior including text overflow handling, line clamping,
+ * text scaling, and advanced typography features. Some Flutter features are adapted for web compatibility
+ * using modern CSS techniques like -webkit-line-clamp and CSS mask-image for fade effects.
+ *
+ * Key implementation details:
+ * - maxLines: Uses -webkit-line-clamp for multi-line truncation or single-line techniques
+ * - overflow: "ellipsis" uses text-overflow; "fade" uses CSS mask-image for fade effect
+ * - softWrap: Controls white-space and word-wrap behavior
+ * - textAlign: "start"/"end" converts to left/right based on text direction
+ * - textScaleFactor/textScaler: Multiplies font-size by the scale factor
+ * - selectionColor: Creates dynamic CSS class with ::selection rules
+ *
+ * @example
+ * ```tsx
+ * // Basic text display
+ * <Text data="Hello, World!" />
+ *
+ * // Styled text with custom styling
+ * <Text
+ *   data="Styled Text"
+ *   style={{
+ *     fontSize: 18,
+ *     fontWeight: 600,
+ *     color: '#2563eb'
+ *   }}
+ *   textAlign="center"
+ * />
+ *
+ * // Rich text with children
+ * <Text>
+ *   Hello <span style={{ fontWeight: 'bold' }}>World</span>!
+ * </Text>
+ *
+ * // Text with line clamping and overflow
+ * <Text
+ *   data="This is a very long text that will be truncated after 2 lines with an ellipsis..."
+ *   maxLines={2}
+ *   overflow="ellipsis"
+ *   softWrap={true}
+ * />
+ *
+ * // Text with fade overflow effect
+ * <Text
+ *   data="This text will fade out at the end instead of being cut off abruptly"
+ *   maxLines={1}
+ *   overflow="fade"
+ * />
+ *
+ * // Scaled text
+ * <Text
+ *   data="Large text"
+ *   textScaler={1.5}
+ *   style={{ fontSize: 16 }}
+ * />
+ *
+ * // Text with custom selection color
+ * <Text
+ *   data="Select this text to see custom selection color"
+ *   selectionColor="#fbbf24"
+ * />
+ * ```
+ */
+declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, textWidthBasis, className, }: TextProps) => react_jsx_runtime.JSX.Element;
+
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BoxConstraints, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
