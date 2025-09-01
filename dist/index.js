@@ -2618,6 +2618,47 @@ function applyCapitalization(text, mode) {
             return text;
     }
 }
+/**
+ * A Flutter TextField–inspired React component.
+ *
+ * NOTE: This mirrors common TextField props & behaviors from Flutter's material.TextField
+ * (controller, decoration, obscureText, maxLength, minLines, maxLines, expands, enabled, readOnly,
+ * autofocus, textInputAction-like submit on Enter, onEditingComplete, onSubmitted, etc.).
+ * Some Flutter features don't map 1:1 to the web; where not possible, we emulate sensible equivalents.
+ *
+ * @example
+ * ```tsx
+ * // Basic text field
+ * <TextField
+ *   value={text}
+ *   onChangeText={setText}
+ *   decoration={{
+ *     labelText: "Enter your name",
+ *     hintText: "Type here..."
+ *   }}
+ * />
+ *
+ * // Multiline text field
+ * <TextField
+ *   maxLines={null}
+ *   minLines={3}
+ *   decoration={{
+ *     labelText: "Description",
+ *     border: "outline"
+ *   }}
+ * />
+ *
+ * // Password field
+ * <TextField
+ *   obscureText={true}
+ *   keyboardType="password"
+ *   decoration={{
+ *     labelText: "Password",
+ *     suffixIcon: <EyeIcon />
+ *   }}
+ * />
+ * ```
+ */
 const TextField = require$$0.forwardRef(function TextField(props, ref) {
     const { value, defaultValue, onChangeText, onChanged, onEditingComplete, onSubmitted, onFocus, onBlur, onTap, style, textAlign = "start", textDirection, textCapitalization = "none", maxLength, maxLines = 1, minLines, expands = false, obscureText = false, obscuringCharacter: _, // not used directly; browser uses own mask
     enabled = true, readOnly = false, autoFocus = false, canRequestFocus: __ = true, keyboardType = "text", textInputAction = "none", inputMode, decoration = {}, id, name, placeholder, forwardedRef, className, containerStyle, } = props;

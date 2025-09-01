@@ -1,14 +1,5 @@
 import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from "react";
 
-/**
- * A Flutter TextField–inspired React component.
- * 
- * NOTE: This mirrors common TextField props & behaviors from Flutter's material.TextField
- * (controller, decoration, obscureText, maxLength, minLines, maxLines, expands, enabled, readOnly,
- * autofocus, textInputAction-like submit on Enter, onEditingComplete, onSubmitted, etc.).
- * Some Flutter features don't map 1:1 to the web; where not possible, we emulate sensible equivalents.
- */
-
 // ===== Decoration (rough InputDecoration analogue) =====
 export interface InputDecoration {
   labelText?: string;
@@ -136,6 +127,47 @@ function applyCapitalization(text: string, mode?: TextCapitalization) {
   }
 }
 
+/**
+ * A Flutter TextField–inspired React component.
+ * 
+ * NOTE: This mirrors common TextField props & behaviors from Flutter's material.TextField
+ * (controller, decoration, obscureText, maxLength, minLines, maxLines, expands, enabled, readOnly,
+ * autofocus, textInputAction-like submit on Enter, onEditingComplete, onSubmitted, etc.).
+ * Some Flutter features don't map 1:1 to the web; where not possible, we emulate sensible equivalents.
+ *
+ * @example
+ * ```tsx
+ * // Basic text field
+ * <TextField
+ *   value={text}
+ *   onChangeText={setText}
+ *   decoration={{
+ *     labelText: "Enter your name",
+ *     hintText: "Type here..."
+ *   }}
+ * />
+ * 
+ * // Multiline text field
+ * <TextField
+ *   maxLines={null}
+ *   minLines={3}
+ *   decoration={{
+ *     labelText: "Description",
+ *     border: "outline"
+ *   }}
+ * />
+ * 
+ * // Password field
+ * <TextField
+ *   obscureText={true}
+ *   keyboardType="password"
+ *   decoration={{
+ *     labelText: "Password",
+ *     suffixIcon: <EyeIcon />
+ *   }}
+ * />
+ * ```
+ */
 export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(function TextField(
   props, ref
 ) {
