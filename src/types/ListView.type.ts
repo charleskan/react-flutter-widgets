@@ -1,8 +1,12 @@
 import type { CSSProperties, Key, ReactNode } from 'react'
 import { CrossAxisAlignment, MainAxisAlignment } from './Flex.type'
+import { ScrollPhysics } from '../components/data/ListView'
 
 // Re-export enums from Flex.type.ts for ListView usage
 export { MainAxisAlignment, CrossAxisAlignment }
+
+// Re-export ScrollPhysics from the main ListView component
+export { ScrollPhysics }
 
 /**
  * Scroll direction for ListView
@@ -10,20 +14,6 @@ export { MainAxisAlignment, CrossAxisAlignment }
 export enum ScrollDirection {
   VERTICAL = 'vertical',
   HORIZONTAL = 'horizontal',
-}
-
-/**
- * Scroll physics behavior controls how the list responds to user scroll gestures
- */
-export enum ScrollPhysics {
-  /** Default scrolling behavior (allows scrolling) */
-  DEFAULT = 'default',
-  /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
-  NEVER = 'never',
-  /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
-  BOUNCING = 'bouncing',
-  /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
-  CLAMPING = 'clamping',
 }
 
 // MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication

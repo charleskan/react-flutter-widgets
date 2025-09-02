@@ -1021,20 +1021,6 @@ exports.ScrollDirection = void 0;
     ScrollDirection["VERTICAL"] = "vertical";
     ScrollDirection["HORIZONTAL"] = "horizontal";
 })(exports.ScrollDirection || (exports.ScrollDirection = {}));
-/**
- * Scroll physics behavior controls how the list responds to user scroll gestures
- */
-var ScrollPhysics;
-(function (ScrollPhysics) {
-    /** Default scrolling behavior (allows scrolling) */
-    ScrollPhysics["DEFAULT"] = "default";
-    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
-    ScrollPhysics["NEVER"] = "never";
-    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
-    ScrollPhysics["BOUNCING"] = "bouncing";
-    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
-    ScrollPhysics["CLAMPING"] = "clamping";
-})(ScrollPhysics || (ScrollPhysics = {}));
 // MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 /**
  * Padding direction options for convenience methods
@@ -1050,13 +1036,13 @@ var ListView;
 (function (ListView) {
     function getPhysicsClassName(physics) {
         switch (physics) {
-            case ScrollPhysics.BOUNCING:
+            case exports.ScrollPhysics.BOUNCING:
                 return 'scroll-smooth';
-            case ScrollPhysics.CLAMPING:
+            case exports.ScrollPhysics.CLAMPING:
                 return 'scroll-auto';
-            case ScrollPhysics.NEVER:
+            case exports.ScrollPhysics.NEVER:
                 return 'overflow-hidden';
-            case ScrollPhysics.DEFAULT:
+            case exports.ScrollPhysics.DEFAULT:
                 return 'overflow-scroll';
             default:
                 return 'scroll-auto';

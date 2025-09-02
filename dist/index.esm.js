@@ -858,7 +858,7 @@ var Axis;
  * Defines the scroll physics behavior for ListView components.
  * @enum {string}
  */
-var ScrollPhysics$1;
+var ScrollPhysics;
 (function (ScrollPhysics) {
     /** Default scrolling behavior (allows scrolling) */
     ScrollPhysics["DEFAULT"] = "default";
@@ -868,7 +868,7 @@ var ScrollPhysics$1;
     ScrollPhysics["BOUNCING"] = "bouncing";
     /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
     ScrollPhysics["CLAMPING"] = "clamping";
-})(ScrollPhysics$1 || (ScrollPhysics$1 = {}));
+})(ScrollPhysics || (ScrollPhysics = {}));
 /**
  * Converts EdgeInsets to CSS padding properties.
  * @param p - EdgeInsets value (number or object with top/right/bottom/left)
@@ -897,7 +897,7 @@ function toPadding(p) {
  */
 function buildContainerStyle(axis, reverse, shrinkWrap, physics, clip, paddingStyle, userStyle, itemExtent) {
     const isVertical = axis === Axis.VERTICAL;
-    const enableScroll = physics !== ScrollPhysics$1.NEVER && !shrinkWrap;
+    const enableScroll = physics !== ScrollPhysics.NEVER && !shrinkWrap;
     const overflow = enableScroll
         ? isVertical
             ? { overflowY: 'auto', overflowX: 'hidden' }
@@ -911,7 +911,7 @@ function buildContainerStyle(axis, reverse, shrinkWrap, physics, clip, paddingSt
             ? 'column'
             : 'row';
     const clipStyle = clip === 'hidden' ? { overflowClipMargin: 'content-box' } : {};
-    const momentum = physics === ScrollPhysics$1.BOUNCING
+    const momentum = physics === ScrollPhysics.BOUNCING
         ? { WebkitOverflowScrolling: 'touch' }
         : {};
     const extentStyle = itemExtent ? (isVertical ? { rowGap: 0 } : { columnGap: 0 }) : undefined;
@@ -952,7 +952,7 @@ const ItemWrap = ({ axis, itemExtent, children, }) => {
  * @param props - ListView properties
  * @param ref - Forward ref for imperative operations
  */
-const ListViewBase = forwardRef(function ListView({ children = [], scrollDirection = Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = ScrollPhysics$1.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
+const ListViewBase = forwardRef(function ListView({ children = [], scrollDirection = Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = ScrollPhysics.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
     const elRef = useRef(null);
     useImperativeHandle(ref, () => ({
         scrollTo: (opts) => elRef.current?.scrollTo(opts),
@@ -1019,20 +1019,6 @@ var ScrollDirection;
     ScrollDirection["VERTICAL"] = "vertical";
     ScrollDirection["HORIZONTAL"] = "horizontal";
 })(ScrollDirection || (ScrollDirection = {}));
-/**
- * Scroll physics behavior controls how the list responds to user scroll gestures
- */
-var ScrollPhysics;
-(function (ScrollPhysics) {
-    /** Default scrolling behavior (allows scrolling) */
-    ScrollPhysics["DEFAULT"] = "default";
-    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
-    ScrollPhysics["NEVER"] = "never";
-    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
-    ScrollPhysics["BOUNCING"] = "bouncing";
-    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
-    ScrollPhysics["CLAMPING"] = "clamping";
-})(ScrollPhysics || (ScrollPhysics = {}));
 // MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 /**
  * Padding direction options for convenience methods
@@ -3048,5 +3034,5 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
     return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("span", { id: elemId, className: combinedClassName, style: scaledStyle, lang: locale, dir: textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
 };
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics$1 as ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map

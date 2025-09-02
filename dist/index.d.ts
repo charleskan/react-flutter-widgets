@@ -319,7 +319,7 @@ declare enum Axis {
  * Defines the scroll physics behavior for ListView components.
  * @enum {string}
  */
-declare enum ScrollPhysics$1 {
+declare enum ScrollPhysics {
     /** Default scrolling behavior (allows scrolling) */
     DEFAULT = "default",
     /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
@@ -365,7 +365,7 @@ interface BaseProps {
     /** Mark this ListView as primary (semantic only on Web; doesn't affect behavior) */
     primary?: boolean;
     /** Scrolling physics behavior (set to NEVER to disable scrolling) */
-    physics?: ScrollPhysics$1;
+    physics?: ScrollPhysics;
     /** Internal padding (supports number or individual sides) */
     padding?: EdgeInsets$1;
     /** Fixed height/width for child items (corresponds to itemExtent) */
@@ -457,19 +457,6 @@ declare const ListView: React$1.ForwardRefExoticComponent<ListViewProps$1 & Reac
 declare enum ScrollDirection {
     VERTICAL = "vertical",
     HORIZONTAL = "horizontal"
-}
-/**
- * Scroll physics behavior controls how the list responds to user scroll gestures
- */
-declare enum ScrollPhysics {
-    /** Default scrolling behavior (allows scrolling) */
-    DEFAULT = "default",
-    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
-    NEVER = "never",
-    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
-    BOUNCING = "bouncing",
-    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
-    CLAMPING = "clamping"
 }
 /**
  * Padding direction options for convenience methods
@@ -1462,5 +1449,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, textWidthBasis, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$2 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics$1 as ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$2 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
