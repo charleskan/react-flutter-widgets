@@ -344,11 +344,11 @@ export const Text = ({
   // Combine CSS classes
   const combinedClassName = [selectionClass, className].filter(Boolean).join(' ') || undefined
 
-  // Render the text component using span element
+  // Render the text component using div element to avoid baseline alignment issues
   return (
     <>
       {selectionStyleTag}
-      <span
+      <div
         id={elemId}
         className={combinedClassName}
         style={scaledStyle}
@@ -357,7 +357,7 @@ export const Text = ({
         aria-label={ariaLabel}
       >
         {children ?? data}
-      </span>
+      </div>
     </>
   )
 }

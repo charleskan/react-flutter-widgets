@@ -3056,8 +3056,8 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
     const elemId = semanticsIdentifier || undefined;
     // Combine CSS classes
     const combinedClassName = [selectionClass, className].filter(Boolean).join(' ') || undefined;
-    // Render the text component using span element
-    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("span", { id: elemId, className: combinedClassName, style: scaledStyle, lang: locale, dir: textDirection === exports.TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
+    // Render the text component using div element to avoid baseline alignment issues
+    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("div", { id: elemId, className: combinedClassName, style: scaledStyle, lang: locale, dir: textDirection === exports.TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
 };
 
 exports.AnimatedContainer = AnimatedContainer;

@@ -1,6 +1,13 @@
 {
   "permissions": {
-    "allow": ["Bash(npm run lint:fix)", "Bash(git init)", "Bash(git add .)"],
+    "allow": [
+      "Bash(npm run lint:fix)",
+      "Bash(git init)",
+      "Bash(git add .)",
+      "Bash(npm run type-check)",
+      "Bash(npx tsc --noEmit test-unified-enum.tsx --jsx react-jsx --esModuleInterop)",
+      "Bash(npm run build)"
+    ],
     "deny": [],
     "ask": []
   }
