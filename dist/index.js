@@ -571,20 +571,132 @@ var Flex$1;
     Flex.getMainAxisSizeClass = getMainAxisSizeClass;
 })(Flex$1 || (Flex$1 = {}));
 
+function alignmentToTailwind(alignment) {
+    if (!alignment)
+        return [];
+    const classes = ['flex'];
+    // Justify content (x-axis)
+    if (alignment.x === -1)
+        classes.push('justify-start');
+    else if (alignment.x === 0)
+        classes.push('justify-center');
+    else if (alignment.x === 1)
+        classes.push('justify-end');
+    // Align items (y-axis)
+    if (alignment.y === -1)
+        classes.push('items-start');
+    else if (alignment.y === 0)
+        classes.push('items-center');
+    else if (alignment.y === 1)
+        classes.push('items-end');
+    return classes;
+}
+function clipBehaviorToTailwind(clipBehavior) {
+    if (!clipBehavior || clipBehavior === 'none')
+        return [];
+    switch (clipBehavior) {
+        case 'hardEdge':
+            return ['overflow-hidden'];
+        case 'antiAlias':
+            return ['overflow-hidden', 'rounded-inherit'];
+        case 'antiAliasWithSaveLayer':
+            return ['overflow-hidden', 'rounded-inherit', 'isolate'];
+        default:
+            return [];
+    }
+}
+function constraintsToCSS(constraints) {
+    if (!constraints)
+        return {};
+    const styles = {};
+    if (constraints.minWidth !== undefined)
+        styles.minWidth = constraints.minWidth;
+    if (constraints.maxWidth !== undefined)
+        styles.maxWidth = constraints.maxWidth;
+    if (constraints.minHeight !== undefined)
+        styles.minHeight = constraints.minHeight;
+    if (constraints.maxHeight !== undefined)
+        styles.maxHeight = constraints.maxHeight;
+    return styles;
+}
+function transformToCSS(transform, transformAlignment) {
+    if (!transform)
+        return {};
+    const transforms = [];
+    if (transform.translateX !== undefined)
+        transforms.push(`translateX(${transform.translateX}px)`);
+    if (transform.translateY !== undefined)
+        transforms.push(`translateY(${transform.translateY}px)`);
+    if (transform.scaleX !== undefined)
+        transforms.push(`scaleX(${transform.scaleX})`);
+    if (transform.scaleY !== undefined)
+        transforms.push(`scaleY(${transform.scaleY})`);
+    if (transform.rotateX !== undefined)
+        transforms.push(`rotateX(${transform.rotateX}rad)`);
+    if (transform.rotateY !== undefined)
+        transforms.push(`rotateY(${transform.rotateY}rad)`);
+    if (transform.rotateZ !== undefined)
+        transforms.push(`rotateZ(${transform.rotateZ}rad)`);
+    const styles = {};
+    if (transforms.length > 0) {
+        styles.transform = transforms.join(' ');
+    }
+    if (transformAlignment) {
+        const originX = transformAlignment.x === -1 ? 'left' : transformAlignment.x === 0 ? 'center' : 'right';
+        const originY = transformAlignment.y === -1 ? 'top' : transformAlignment.y === 0 ? 'center' : 'bottom';
+        styles.transformOrigin = `${originX} ${originY}`;
+    }
+    return styles;
+}
+function decorationToCSS(decoration) {
+    if (!decoration)
+        return {};
+    const styles = {};
+    if (decoration.color)
+        styles.backgroundColor = decoration.color;
+    if (decoration.borderRadius) {
+        styles.borderRadius = typeof decoration.borderRadius === 'number' ? `${decoration.borderRadius}px` : decoration.borderRadius;
+    }
+    if (decoration.borderWidth && decoration.borderWidth > 0) {
+        styles.borderWidth = `${decoration.borderWidth}px`;
+        styles.borderColor = decoration.borderColor;
+        styles.borderStyle = decoration.borderStyle || 'solid';
+    }
+    if (decoration.boxShadow)
+        styles.boxShadow = decoration.boxShadow;
+    if (decoration.gradient)
+        styles.background = decoration.gradient;
+    return styles;
+}
 /**
  * Container component equivalent to Flutter's Container widget.
  * Provides a convenient way to create a widget with common painting, positioning, and sizing properties.
  *
  * @example
  * ```tsx
+ * // Basic usage with decoration
  * <Container
  *   padding={EdgeInsets.all(16)}
  *   margin={EdgeInsets.symmetric({ horizontal: 8 })}
  *   width="100%"
- *   backgroundColor="#f5f5f5"
- *   borderRadius={8}
+ *   decoration={{
+ *     color: "#f5f5f5",
+ *     borderRadius: 8,
+ *     boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+ *   }}
+ *   alignment={Alignment.center}
  * >
  *   <div>Content goes here</div>
+ * </Container>
+ *
+ * // With transform and constraints
+ * <Container
+ *   constraints={{ minHeight: 200, maxWidth: 400 }}
+ *   transform={{ rotateZ: 0.1, scaleX: 1.1 }}
+ *   transformAlignment={Alignment.center}
+ *   clipBehavior="antiAlias"
+ * >
+ *   <div>Transformed content</div>
  * </Container>
  * ```
  *
@@ -595,7 +707,11 @@ var Flex$1;
  * - EdgeInsets.zero() - no spacing
  */
 function Container(props) {
-    const { children, width, height, padding, margin, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', style = {}, } = props;
+    const { children, alignment, padding, color, decoration, foregroundDecoration, width, height, constraints, margin, transform, transformAlignment, clipBehavior, 
+    // Legacy properties (with fallback support)
+    backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', 
+    // Flex properties
+    flex, expanded, flexible, flexShrink, alignSelf, className = '', style = {}, } = props;
     // Build flex styles
     const flexStyles = Flex$1.buildFlexStyles({
         flex,
@@ -608,20 +724,54 @@ function Container(props) {
     if (flexShrink === false) {
         flexStyles.flexShrink = 0;
     }
+    // Create effective decoration (merge decoration with legacy props)
+    const effectiveDecoration = {
+        ...decoration,
+        // Legacy fallbacks
+        color: decoration?.color || color || backgroundColor,
+        borderRadius: decoration?.borderRadius || borderRadius,
+        borderWidth: decoration?.borderWidth || (borderWidth > 0 ? borderWidth : undefined),
+        borderColor: decoration?.borderColor || borderColor,
+        borderStyle: decoration?.borderStyle || borderStyle,
+    };
+    // Build Tailwind classes
+    const alignmentClasses = alignmentToTailwind(alignment);
+    const clipClasses = clipBehaviorToTailwind(clipBehavior);
+    // Build CSS styles for properties that don't have good Tailwind equivalents
+    const constraintStyles = constraintsToCSS(constraints);
+    const transformStyles = transformToCSS(transform, transformAlignment);
+    const decorationStyles = decorationToCSS(effectiveDecoration);
+    // Combine all CSS classes
+    const allClasses = [
+        ...alignmentClasses,
+        ...clipClasses,
+        foregroundDecoration ? 'relative' : '', // Required for foregroundDecoration positioning
+        className,
+    ].filter(Boolean).join(' ');
     // Container styles combining all properties
     const containerStyle = {
         ...flexStyles,
+        ...constraintStyles,
+        ...decorationStyles,
+        ...transformStyles,
         padding,
         margin,
-        backgroundColor,
-        borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
-        borderWidth: borderWidth > 0 ? `${borderWidth}px` : undefined,
-        borderColor: borderWidth > 0 ? borderColor : undefined,
-        borderStyle: borderWidth > 0 ? borderStyle : undefined,
         alignSelf,
         ...style,
     };
-    return (jsxRuntimeExports.jsx("div", { className: className, style: containerStyle, children: children }));
+    // Create foreground decoration element if specified
+    const foregroundElement = foregroundDecoration ? (jsxRuntimeExports.jsx("div", { style: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            pointerEvents: 'none',
+            ...decorationToCSS(foregroundDecoration),
+            backgroundColor: 'transparent', // Don't paint background for foreground
+            background: foregroundDecoration.gradient, // But allow gradient
+        } })) : null;
+    return (jsxRuntimeExports.jsxs("div", { className: allClasses, style: containerStyle, children: [children, foregroundElement] }));
 }
 
 /**
