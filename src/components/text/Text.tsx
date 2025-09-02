@@ -99,7 +99,7 @@ export interface TextProps {
  * NOTE: This mirrors Flutter's Text widget behavior including text overflow handling, line clamping,
  * text scaling, and advanced typography features. Some Flutter features are adapted for web compatibility
  * using modern CSS techniques like -webkit-line-clamp and CSS mask-image for fade effects.
- * 
+ *
  * Key implementation details:
  * - maxLines: Uses -webkit-line-clamp for multi-line truncation or single-line techniques
  * - overflow: "ellipsis" uses text-overflow; "fade" uses CSS mask-image for fade effect
@@ -173,15 +173,16 @@ export const Text = ({
   semanticsLabel,
   semanticsIdentifier,
   selectionColor,
-  textWidthBasis = 'parent',
   className,
 }: TextProps) => {
   const id = useId() // Used for selectionColor class generation
 
-  // Calculate scaled style with font-size scaling
-  const scaledStyle = useMemo<CSSProperties>(() => {
+  // Generate Tailwind classes and custom styles
+  const { tailwindClasses, customStyle } = useMemo(() => {
+    const classes: string[] = []
     const css: CSSProperties = {}
 
+    // Handle text styling
     if (style) {
       const {
         color,
@@ -212,7 +213,6 @@ export const Text = ({
       })
 
       if (height !== undefined) {
-        // Flutter's height is a line-height multiplier
         css.lineHeight = height
       }
 
@@ -221,78 +221,69 @@ export const Text = ({
       if (fontSize !== undefined) {
         css.fontSize = Math.max(0, fontSize * scale)
       } else if (scale !== 1) {
-        // Use relative scaling (em) when no explicit fontSize
         css.fontSize = `${scale}em`
       }
     }
 
-    // textAlign: map start/end based on text direction
+    // Handle text alignment with Tailwind classes
     if (textAlign) {
-      if (textAlign === 'start')
-        css.textAlign = textDirection === TextDirection.RTL ? 'right' : 'left'
-      else if (textAlign === 'end')
-        css.textAlign = textDirection === TextDirection.RTL ? 'left' : 'right'
-      else css.textAlign = textAlign
+      if (textAlign === 'start') {
+        classes.push(textDirection === TextDirection.RTL ? 'text-right' : 'text-left')
+      } else if (textAlign === 'end') {
+        classes.push(textDirection === TextDirection.RTL ? 'text-left' : 'text-right')
+      } else if (textAlign === 'center') {
+        classes.push('text-center')
+      } else if (textAlign === 'justify') {
+        classes.push('text-justify')
+      }
     }
 
-    // softWrap and white-space control
-    // - softWrap=true: normal line wrapping
-    // - softWrap=false: single line, no wrapping (or with maxLines=1)
+    // Handle line wrapping and clamping with Tailwind
     if (!softWrap) {
-      css.whiteSpace = 'nowrap'
-    } else {
-      // Allow text to wrap at whitespace and within words, closer to Flutter behavior
-      css.whiteSpace = 'pre-wrap'
-      css.overflowWrap = 'anywhere'
-    }
-
-    // overflow and maxLines handling
-    if (maxLines && maxLines > 0) {
-      // Multi-line clamp using webkit-line-clamp
-      css.display = '-webkit-box'
-      Object.assign(css, {
-        WebkitBoxOrient: 'vertical',
-        WebkitLineClamp: maxLines,
-      })
-      css.overflow = 'hidden'
-
+      classes.push('whitespace-nowrap')
       if (overflow === 'ellipsis') {
-        // -webkit-line-clamp provides built-in ellipsis
+        classes.push('overflow-hidden', 'text-ellipsis')
       } else if (overflow === 'clip') {
-        // Already set to hidden
+        classes.push('overflow-hidden')
       } else if (overflow === 'fade') {
-        // Use mask-image for bottom fade effect
-        // Note: Some browsers may not support line-clamp + mask combination well
+        classes.push('overflow-hidden')
         Object.assign(css, {
-          WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
-          maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)',
+          maskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)',
         })
       }
     } else {
-      // Single line or unlimited lines scenario
-      if (!softWrap || maxLines === 1) {
-        css.whiteSpace = 'nowrap'
-        if (overflow === 'ellipsis') {
-          css.overflow = 'hidden'
-          css.textOverflow = 'ellipsis'
-        } else if (overflow === 'clip') {
-          css.overflow = 'hidden'
-        } else if (overflow === 'fade') {
-          // Right-side fade effect
-          css.overflow = 'hidden'
+      // Normal text wrapping behavior (default)
+      if (maxLines && maxLines > 0) {
+        // Use Tailwind line-clamp utilities
+        if (maxLines <= 6) {
+          classes.push(`line-clamp-${maxLines}`)
+        } else {
+          // For maxLines > 6, use custom line-clamp
+          classes.push('overflow-hidden')
           Object.assign(css, {
-            WebkitMaskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)',
-            maskImage: 'linear-gradient(90deg, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: maxLines,
           })
         }
-      } else {
-        // Multi-line without line limit
+
+        // Handle overflow with line-clamp
         if (overflow === 'clip') {
-          // Default behavior, no special handling
-        } else if (overflow === 'ellipsis') {
-          // HTML has no native multi-line ellipsis without line-clamp
+          // Remove ellipsis from line-clamp
+          Object.assign(css, {
+            textOverflow: 'clip',
+          })
         } else if (overflow === 'fade') {
-          // Multi-line fade effect without clamp (visual only)
+          Object.assign(css, {
+            WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+            maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+          })
+        }
+        // overflow === 'ellipsis' is handled by default line-clamp behavior
+      } else {
+        // No line limit, normal wrapping
+        if (overflow === 'fade') {
           Object.assign(css, {
             WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%)',
             maskImage: 'linear-gradient(180deg, rgba(0,0,0,1) 90%, rgba(0,0,0,0) 100%)',
@@ -301,25 +292,11 @@ export const Text = ({
       }
     }
 
-    // textWidthBasis: Web has no direct equivalent for Flutter's behavior
-    // "longestLine" behavior is complex to implement accurately in web
-    if (textWidthBasis === 'longestLine') {
-      // Could use inline-block + content-box approximation, but it's unstable
-      // Left as no-op for now
+    return {
+      tailwindClasses: classes.join(' '),
+      customStyle: css,
     }
-
-    return css
-  }, [
-    style,
-    textAlign,
-    softWrap,
-    overflow,
-    maxLines,
-    textScaleFactor,
-    textScaler,
-    textDirection,
-    textWidthBasis,
-  ])
+  }, [style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, textDirection])
 
   // Generate unique class name for selection color
   const selectionClass = useMemo(() => {
@@ -342,7 +319,8 @@ export const Text = ({
   const elemId = semanticsIdentifier || undefined
 
   // Combine CSS classes
-  const combinedClassName = [selectionClass, className].filter(Boolean).join(' ') || undefined
+  const combinedClassName =
+    [tailwindClasses, selectionClass, className].filter(Boolean).join(' ') || undefined
 
   // Render the text component using div element to avoid baseline alignment issues
   return (
@@ -351,7 +329,7 @@ export const Text = ({
       <div
         id={elemId}
         className={combinedClassName}
-        style={scaledStyle}
+        style={customStyle}
         lang={locale}
         dir={textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase()}
         aria-label={ariaLabel}

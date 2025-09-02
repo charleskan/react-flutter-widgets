@@ -71,15 +71,15 @@ export const EdgeInsets = {
   /**
    * Creates spacing by specifying all four sides explicitly (Left, Top, Right, Bottom)
    * @param left - Left spacing value
-   * @param top - Top spacing value  
+   * @param top - Top spacing value
    * @param right - Right spacing value
    * @param bottom - Bottom spacing value
    */
   fromLTRB(
     left: number | string,
     top: number | string,
-    right: number | string, 
-    bottom: number | string
+    right: number | string,
+    bottom: number | string,
   ): string {
     const topValue = typeof top === 'number' ? `${top}px` : top
     const rightValue = typeof right === 'number' ? `${right}px` : right

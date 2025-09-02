@@ -1,5 +1,5 @@
 // Data Display Components - Flutter-style data presentation
-export { 
+export {
   ListView,
   Axis,
   ScrollPhysics,
@@ -8,5 +8,5 @@ export {
   type ListViewProps,
   type BuilderProps,
   type SeparatedProps,
-  type ListViewHandle
+  type ListViewHandle,
 } from './ListView'

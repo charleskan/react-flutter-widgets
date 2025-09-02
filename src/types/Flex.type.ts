@@ -1,11 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { 
-  MainAxisAlignment, 
-  CrossAxisAlignment, 
-  MainAxisSize 
-} from './Layout'
+import { CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from './Layout'
 import type { VerticalDirection } from './Layout'
-import type { TextDirection, TextBaseline } from './Text'
+import type { TextBaseline, TextDirection } from './Text'
 
 /**
  * Common flex container props interface following Flutter's layout model

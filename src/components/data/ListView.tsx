@@ -36,15 +36,15 @@ export enum ScrollPhysics {
 /**
  * Defines padding values that can be applied to ListView components.
  * Equivalent to Flutter's EdgeInsets class - supports uniform padding or individual sides.
- * 
+ *
  * @example
  * ```tsx
  * // Uniform padding (equivalent to EdgeInsets.all(16))
  * padding={16}
- * 
+ *
  * // Individual sides (equivalent to EdgeInsets.only())
  * padding={{ top: 8, bottom: 16, left: 12, right: 12 }}
- * 
+ *
  * // Symmetric padding can be achieved with:
  * padding={{ top: 8, bottom: 8, left: 16, right: 16 }}
  * ```
@@ -332,7 +332,7 @@ function Builder<T>(
 
 /**
  * Flutter-inspired ListView component with multiple variants. Supports basic children, builder pattern, and separated items.
- * 
+ *
  * @example
  * ```tsx
  * // Basic ListView with children
@@ -340,13 +340,13 @@ function Builder<T>(
  *   <div>Item 1</div>
  *   <div>Item 2</div>
  * </ListView>
- * 
+ *
  * // Builder pattern
  * <ListView.builder
  *   itemCount={100}
  *   itemBuilder={(index) => <div key={index}>Item {index}</div>}
  * />
- * 
+ *
  * // With separators
  * <ListView.separated
  *   itemCount={10}

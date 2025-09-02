@@ -1,2 +1,2 @@
-export { ListView, Axis, ScrollPhysics, type EdgeInsets, type BaseProps, type ListViewProps, type BuilderProps, type SeparatedProps, type ListViewHandle } from './ListView';
+export { ListView, Axis, ScrollPhysics, type EdgeInsets, type BaseProps, type ListViewProps, type BuilderProps, type SeparatedProps, type ListViewHandle, } from './ListView';
 //# sourceMappingURL=index.d.ts.map

@@ -1,6 +1,9 @@
 // Flutter-React UI Library
 // A comprehensive Flutter-style component library for React applications
 
+// Import CSS for Tailwind
+import './index.css'
+
 // Layout Components
 export {
   Container,
@@ -30,7 +33,7 @@ export {
   type ListViewProps as ListViewComponentProps,
   type BuilderProps,
   type SeparatedProps,
-  type ListViewHandle
+  type ListViewHandle,
 } from './components/data'
 
 // Legacy exports for backward compatibility

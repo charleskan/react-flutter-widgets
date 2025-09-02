@@ -139,5 +139,5 @@ export interface TextProps {
  * />
  * ```
  */
-export declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, textWidthBasis, className, }: TextProps) => import("react/jsx-runtime").JSX.Element;
+export declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Text.d.ts.map

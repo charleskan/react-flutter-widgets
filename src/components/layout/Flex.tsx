@@ -61,7 +61,10 @@ function Flex(props: FlexComponentProps) {
     .join(' ')
 
   // Convert TextDirection enum to CSS direction value
-  const cssDirection = textDirection === TextDirection.AUTO ? undefined : textDirection?.toLowerCase() as "ltr" | "rtl" | undefined;
+  const cssDirection =
+    textDirection === TextDirection.AUTO
+      ? undefined
+      : (textDirection?.toLowerCase() as 'ltr' | 'rtl' | undefined)
 
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
