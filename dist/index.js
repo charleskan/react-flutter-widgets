@@ -2991,7 +2991,8 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
             }
         }
         else {
-            // Normal text wrapping behavior (default)
+            // Normal text wrapping behavior (default) - preserve line breaks with pre-wrap
+            classes.push('whitespace-pre-wrap');
             if (maxLines && maxLines > 0) {
                 // Use Tailwind line-clamp utilities
                 if (maxLines <= 6) {
