@@ -1,5 +1,7 @@
 export { default as Container } from './Container';
 export type { ContainerProps } from './Container';
+export { Divider } from './Divider';
+export type { DividerProps } from './Divider';
 export { default as Row } from './Row';
 export { default as Column } from './Column';
 export { default as Flex } from './Flex';
