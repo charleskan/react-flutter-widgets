@@ -13,6 +13,9 @@ export {
   type DragStartDetails,
   type DragUpdateDetails,
   type DragEndDetails,
+  type ScaleStartDetails,
+  type ScaleUpdateDetails,
+  type ScaleEndDetails,
 } from './GestureDetector'
 
 // Animation Components

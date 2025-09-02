@@ -59,6 +59,9 @@ export {
   type DragStartDetails,
   type DragUpdateDetails,
   type DragEndDetails,
+  type ScaleStartDetails,
+  type ScaleUpdateDetails,
+  type ScaleEndDetails,
 } from './components/interactive'
 
 // Animation Components

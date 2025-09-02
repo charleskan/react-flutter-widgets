@@ -1,61 +1,18 @@
-import type { ReactNode } from 'react';
+import type React from "react";
+import { type ReactNode } from "react";
 /**
- * GestureDetector component equivalent to Flutter's GestureDetector widget.
- * Detects various gestures like tap, double tap, long press, and provides callbacks.
- *
- * @example
- * ```tsx
- * <GestureDetector
- *   onTap={() => console.log('Tapped!')}
- *   onDoubleTap={() => console.log('Double tapped!')}
- *   onLongPress={() => console.log('Long pressed!')}
- * >
- *   <div>Gesture detection area</div>
- * </GestureDetector>
- * ```
+ * Flutter-style GestureDetector for the web (React + PointerEvents)
+ * - Approximates Flutter's GestureDetector semantics for websites.
+ * - Uses Pointer Events to unify mouse, touch, pen.
+ * - Implements: tap, double tap, long press (with slop), pan/drag, optional scale (pinch/rotate alt.).
+ * - Attempts to mirror HitTestBehavior semantics.
  */
-export interface GestureDetectorProps {
-    /** Child content to render inside the GestureDetector */
-    children?: ReactNode;
-    /** Callback function when a tap is detected */
-    onTap?: () => void;
-    /** Callback function when the gesture starts (mouse/touch down) */
-    onTapDown?: (details: TapDownDetails) => void;
-    /** Callback function when the gesture is released */
-    onTapUp?: (details: TapUpDetails) => void;
-    /** Callback function when a tap is cancelled */
-    onTapCancel?: () => void;
-    /** Callback function when a double tap is detected */
-    onDoubleTap?: () => void;
-    /** Callback function when a long press is detected */
-    onLongPress?: () => void;
-    /** Callback function when a long press starts */
-    onLongPressStart?: (details: LongPressStartDetails) => void;
-    /** Callback function when a long press moves */
-    onLongPressMoveUpdate?: (details: LongPressMoveUpdateDetails) => void;
-    /** Callback function when a long press ends */
-    onLongPressEnd?: (details: LongPressEndDetails) => void;
-    /** Callback function when a pan/drag starts */
-    onPanStart?: (details: DragStartDetails) => void;
-    /** Callback function when a pan/drag updates */
-    onPanUpdate?: (details: DragUpdateDetails) => void;
-    /** Callback function when a pan/drag ends */
-    onPanEnd?: (details: DragEndDetails) => void;
-    /** Whether the gesture detector should exclude semantics */
-    excludeFromSemantics?: boolean;
-    /** Behavior for hit testing */
-    behavior?: HitTestBehavior;
-    /** Custom CSS class name */
-    className?: string;
-    /** Custom inline styles */
-    style?: React.CSSProperties;
-}
 export declare enum HitTestBehavior {
-    /** Only hit test if the widget has content */
+    /** Only hit test if a child is hit. */
     deferToChild = "deferToChild",
-    /** Always hit test, even if no visible content */
+    /** Treat as hit even if it has no visible content. */
     opaque = "opaque",
-    /** Never hit test */
+    /** Consider hit even if it is transparent; do not block children. */
     translucent = "translucent"
 }
 export interface Offset {
@@ -96,6 +53,51 @@ export interface DragEndDetails {
     velocity: Offset;
     primaryVelocity?: number;
 }
-declare function GestureDetector(props: GestureDetectorProps): import("react/jsx-runtime").JSX.Element;
-export default GestureDetector;
+export interface ScaleStartDetails {
+    focalPoint: Offset;
+    localFocalPoint: Offset;
+    pointers: number;
+}
+export interface ScaleUpdateDetails {
+    focalPoint: Offset;
+    localFocalPoint: Offset;
+    scale: number;
+    rotation: number;
+    horizontalScale: number;
+    verticalScale: number;
+    pointers: number;
+}
+export interface ScaleEndDetails {
+    velocity: Offset;
+    pointers: number;
+}
+export interface GestureDetectorProps {
+    children?: ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
+    behavior?: HitTestBehavior;
+    excludeFromSemantics?: boolean;
+    ariaLabel?: string;
+    onTap?: () => void;
+    onTapDown?: (d: TapDownDetails) => void;
+    onTapUp?: (d: TapUpDetails) => void;
+    onTapCancel?: () => void;
+    onDoubleTap?: () => void;
+    onLongPress?: () => void;
+    onLongPressStart?: (d: LongPressStartDetails) => void;
+    onLongPressMoveUpdate?: (d: LongPressMoveUpdateDetails) => void;
+    onLongPressEnd?: (d: LongPressEndDetails) => void;
+    onPanStart?: (d: DragStartDetails) => void;
+    onPanUpdate?: (d: DragUpdateDetails) => void;
+    onPanEnd?: (d: DragEndDetails) => void;
+    onScaleStart?: (d: ScaleStartDetails) => void;
+    onScaleUpdate?: (d: ScaleUpdateDetails) => void;
+    onScaleEnd?: (d: ScaleEndDetails) => void;
+    longPressDelay?: number;
+    doubleTapDelay?: number;
+    tapSlop?: number;
+    panSlop?: number;
+    longPressMoveTolerance?: number;
+}
+export default function GestureDetector({ children, className, style, behavior, excludeFromSemantics, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay, doubleTapDelay, tapSlop, panSlop, longPressMoveTolerance }: GestureDetectorProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=GestureDetector.d.ts.map
