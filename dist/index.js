@@ -1446,9 +1446,9 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
     const onPointerDown = require$$0.useCallback((e) => {
         if (e.pointerType === "mouse" && e.button !== 0)
             return; // primary only
-        // Respect deferToChild: if direct target is not the container and behavior is deferToChild, ignore
-        if (behavior === exports.HitTestBehavior.deferToChild && e.target !== ref.current) {
-            // Let child handle; do not start gesture here
+        // Respect deferToChild: only handle if a child is hit, not the container itself
+        if (behavior === exports.HitTestBehavior.deferToChild && e.target === ref.current) {
+            // Don't handle gestures when clicking directly on container (only when child is clicked)
             return;
         }
         e.target.setPointerCapture?.(e.pointerId);
