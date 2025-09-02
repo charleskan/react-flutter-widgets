@@ -1,5 +1,5 @@
 import './index.css';
-export { Container, Row, Column, Flex, type ContainerProps, type RowProps, type ColumnProps, type FlexProps, } from './components/layout';
+export { Container, Divider, Row, Column, Flex, type ContainerProps, type DividerProps, type RowProps, type ColumnProps, type FlexProps, } from './components/layout';
 export { SizedBox, Spacer, type SizedBoxProps, type SpacerProps, } from './components/spacing';
 export { ListView, Axis, ScrollPhysics, type BaseProps, type ListViewProps as ListViewComponentProps, type BuilderProps, type SeparatedProps, type ListViewHandle, } from './components/data';
 export { ScrollDirection, PaddingDirection, type ListViewProps, } from './types/ListView.type';

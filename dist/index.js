@@ -625,6 +625,62 @@ function Container(props) {
 }
 
 /**
+ * A Flutter Divider widget-inspired React component for creating horizontal dividers.
+ *
+ * A thin horizontal line, with padding on either side.
+ * In the Material Design language, this represents a divider.
+ * Dividers can be used in lists, Drawers, and elsewhere to separate content.
+ *
+ * The box's total height is controlled by height. The appropriate padding is automatically computed from the height.
+ *
+ * @example
+ * ```tsx
+ * // Basic divider
+ * <Divider />
+ *
+ * // Custom styled divider
+ * <Divider
+ *   height={20}
+ *   thickness={5}
+ *   indent={20}
+ *   color="#000000"
+ * />
+ *
+ * // Divider with rounded corners
+ * <Divider
+ *   thickness={2}
+ *   color="#e5e7eb"
+ *   radius={1}
+ * />
+ * ```
+ */
+const Divider = ({ height = 16, thickness = 1, indent = 0, endIndent = 0, color = '#e5e7eb', radius = 0, className, }) => {
+    const { containerStyle, lineStyle } = require$$0.useMemo(() => {
+        // Calculate padding for the container to achieve the desired height
+        const lineHeight = thickness;
+        const totalPadding = Math.max(0, height - lineHeight);
+        const verticalPadding = totalPadding / 2;
+        const containerCSS = {
+            height: `${height}px`,
+            paddingTop: `${verticalPadding}px`,
+            paddingBottom: `${verticalPadding}px`,
+            paddingLeft: `${indent}px`,
+            paddingRight: `${endIndent}px`,
+        };
+        const lineCSS = {
+            height: `${thickness}px`,
+            backgroundColor: color,
+            borderRadius: radius > 0 ? `${radius}px` : undefined,
+        };
+        return {
+            containerStyle: containerCSS,
+            lineStyle: lineCSS,
+        };
+    }, [height, thickness, indent, endIndent, color, radius]);
+    return (jsxRuntimeExports.jsx("div", { className: `w-full ${className || ''}`.trim(), style: containerStyle, children: jsxRuntimeExports.jsx("div", { className: "w-full", style: lineStyle }) }));
+};
+
+/**
  * Text-related enums following Flutter's text system
  */
 /**
@@ -3138,6 +3194,7 @@ exports.AnimatedOpacity = AnimatedOpacity;
 exports.BoxConstraintsUtils = BoxConstraintsUtils;
 exports.Column = Column;
 exports.Container = Container;
+exports.Divider = Divider;
 exports.EdgeInsets = EdgeInsets;
 exports.Flex = Flex;
 exports.GestureDetector = GestureDetector;

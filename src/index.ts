@@ -7,10 +7,12 @@ import './index.css'
 // Layout Components
 export {
   Container,
+  Divider,
   Row,
   Column,
   Flex,
   type ContainerProps,
+  type DividerProps,
   type RowProps,
   type ColumnProps,
   type FlexProps,

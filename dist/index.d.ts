@@ -63,6 +63,57 @@ interface ContainerProps {
 declare function Container(props: ContainerProps): react_jsx_runtime.JSX.Element;
 
 /**
+ * Props interface aligning with Flutter's Divider widget
+ */
+interface DividerProps {
+    /** The divider's height extent */
+    height?: number;
+    /** The thickness of the line drawn within the divider */
+    thickness?: number;
+    /** The amount of empty space to the leading edge of the divider */
+    indent?: number;
+    /** The amount of empty space to the trailing edge of the divider */
+    endIndent?: number;
+    /** The color to use when painting the line */
+    color?: string;
+    /** The amount of radius for the border of the divider */
+    radius?: number;
+    /** Custom CSS class name */
+    className?: string;
+}
+/**
+ * A Flutter Divider widget-inspired React component for creating horizontal dividers.
+ *
+ * A thin horizontal line, with padding on either side.
+ * In the Material Design language, this represents a divider.
+ * Dividers can be used in lists, Drawers, and elsewhere to separate content.
+ *
+ * The box's total height is controlled by height. The appropriate padding is automatically computed from the height.
+ *
+ * @example
+ * ```tsx
+ * // Basic divider
+ * <Divider />
+ *
+ * // Custom styled divider
+ * <Divider
+ *   height={20}
+ *   thickness={5}
+ *   indent={20}
+ *   color="#000000"
+ * />
+ *
+ * // Divider with rounded corners
+ * <Divider
+ *   thickness={2}
+ *   color="#e5e7eb"
+ *   radius={1}
+ * />
+ * ```
+ */
+declare const Divider: ({ height, thickness, indent, endIndent, color, radius, className, }: DividerProps) => react_jsx_runtime.JSX.Element;
+
+/**
  * Layout alignment and sizing enums following Flutter's layout system
  */
 /**
@@ -1469,5 +1520,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
