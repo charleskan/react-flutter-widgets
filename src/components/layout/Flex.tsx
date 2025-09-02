@@ -1,5 +1,7 @@
 import type { FlexProps } from '../../types/Flex.type'
-import { CrossAxisAlignment, Flex as FlexUtils, MainAxisAlignment, TextDirection } from '../../types/Flex.type'
+import { Flex as FlexUtils } from '../../types/Flex.type'
+import { CrossAxisAlignment, MainAxisAlignment } from '../../types/Layout'
+import { TextDirection } from '../../types/Text'
 
 interface FlexComponentProps extends FlexProps {
   /** Direction of the flex layout */

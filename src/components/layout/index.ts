@@ -13,12 +13,15 @@ export type {
   FlexProps,
 } from '../../types/Flex.type'
 
-// Export layout enums
+// Export layout enums from their dedicated files
 export {
   MainAxisAlignment,
   CrossAxisAlignment,
   MainAxisSize,
-  TextDirection,
   VerticalDirection,
+} from '../../types/Layout'
+
+export {
+  TextDirection,
   TextBaseline,
-} from '../../types/Flex.type'
+} from '../../types/Text'

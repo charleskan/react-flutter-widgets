@@ -1,4 +1,4 @@
-export { Container, Row, Column, Flex, MainAxisAlignment, CrossAxisAlignment, MainAxisSize, TextDirection, VerticalDirection, TextBaseline, type ContainerProps, type RowProps, type ColumnProps, type FlexProps, } from './components/layout';
+export { Container, Row, Column, Flex, type ContainerProps, type RowProps, type ColumnProps, type FlexProps, } from './components/layout';
 export { SizedBox, Spacer, type SizedBoxProps, type SpacerProps, } from './components/spacing';
 export { ListView, Axis, ScrollPhysics, type BaseProps, type ListViewProps as ListViewComponentProps, type BuilderProps, type SeparatedProps, type ListViewHandle } from './components/data';
 export { ScrollDirection, PaddingDirection, type ListViewProps, } from './types/ListView.type';
@@ -8,5 +8,7 @@ export { MediaQuery, LayoutBuilder, OrientationBuilder, Orientation, Brightness,
 export { Transform, Opacity, Matrix4, Alignment, FilterQuality, TransformUtils, type TransformProps, type OpacityProps, } from './components/interactive';
 export { TextField, type TextFieldProps, type TextFieldHandle, type InputDecoration, type TextInputType, type TextInputAction, type TextCapitalization, } from './components/form';
 export { Text, type TextProps, type TextStyle, type TextAlign, type TextOverflow, } from './components/text';
-export { EdgeInsets } from './types/Flex.type';
+export { EdgeInsets } from './types/EdgeInsets';
+export { MainAxisAlignment, CrossAxisAlignment, MainAxisSize, VerticalDirection, } from './types/Layout';
+export { TextDirection, TextBaseline, } from './types/Text';
 //# sourceMappingURL=index.d.ts.map

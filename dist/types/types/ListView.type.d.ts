@@ -1,5 +1,5 @@
 import type { CSSProperties, Key, ReactNode } from 'react';
-import { CrossAxisAlignment, MainAxisAlignment } from './Flex.type';
+import { CrossAxisAlignment, MainAxisAlignment } from './Layout';
 import { ScrollPhysics } from '../components/data/ListView';
 export { MainAxisAlignment, CrossAxisAlignment };
 export { ScrollPhysics };
@@ -19,7 +19,7 @@ export declare enum PaddingDirection {
     VERTICAL = "vertical",
     NONE = "none"
 }
-import { EdgeInsets } from './Flex.type';
+import { EdgeInsets } from './EdgeInsets';
 export { EdgeInsets };
 /**
  * Core ListView builder interface defining how items are rendered

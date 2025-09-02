@@ -1,10 +1,10 @@
 import type { ColumnProps } from '../../types/Flex.type'
+import { Flex } from '../../types/Flex.type'
 import {
   CrossAxisAlignment,
-  Flex,
   MainAxisAlignment,
   VerticalDirection,
-} from '../../types/Flex.type'
+} from '../../types/Layout'
 
 /**
  * Column component that arranges children vertically, equivalent to Flutter's Column widget.

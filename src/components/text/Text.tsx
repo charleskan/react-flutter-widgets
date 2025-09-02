@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useId, useMemo } from 'react'
 
-import { TextDirection } from '../../types/Flex.type'
+import { TextDirection } from '../../types/Text'
 import type { TextAlign, TextOverflow } from '../../types/Text.types'
 
 /**

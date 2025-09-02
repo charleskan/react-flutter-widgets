@@ -63,6 +63,9 @@ interface ContainerProps {
 declare function Container(props: ContainerProps): react_jsx_runtime.JSX.Element;
 
 /**
+ * Layout alignment and sizing enums following Flutter's layout system
+ */
+/**
  * Main axis alignment controls how children are positioned along the main axis
  */
 declare enum MainAxisAlignment {
@@ -91,6 +94,17 @@ declare enum MainAxisSize {
     MAX = "max-content"
 }
 /**
+ * Vertical direction for column layout
+ */
+declare enum VerticalDirection {
+    UP = "column-reverse",
+    DOWN = "column"
+}
+
+/**
+ * Text-related enums following Flutter's text system
+ */
+/**
  * Text direction for layout purposes
  */
 declare enum TextDirection {
@@ -99,51 +113,13 @@ declare enum TextDirection {
     AUTO = "auto"
 }
 /**
- * Vertical direction for column layout
- */
-declare enum VerticalDirection {
-    UP = "column-reverse",
-    DOWN = "column"
-}
-/**
  * Text baseline for alignment
  */
 declare enum TextBaseline {
     ALPHABETIC = "alphabetic",
     IDEOGRAPHIC = "ideographic"
 }
-/**
- * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
- */
-declare const EdgeInsets$2: {
-    /**
-     * Creates uniform spacing for all sides
-     * @param value - The spacing value (number will be converted to px)
-     */
-    readonly all: (value: number | string) => string;
-    /**
-     * Creates symmetric spacing for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical spacing values
-     */
-    readonly symmetric: (options: {
-        horizontal?: number | string;
-        vertical?: number | string;
-    }) => string;
-    /**
-     * Creates spacing with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom spacing values
-     */
-    readonly only: (options: {
-        left?: number | string;
-        top?: number | string;
-        right?: number | string;
-        bottom?: number | string;
-    }) => string;
-    /**
-     * Creates zero spacing for all sides
-     */
-    readonly zero: () => string;
-};
+
 /**
  * Common flex container props interface following Flutter's layout model
  */
@@ -345,7 +321,7 @@ declare enum ScrollPhysics {
  * padding={{ top: 8, bottom: 8, left: 16, right: 16 }}
  * ```
  */
-type EdgeInsets$1 = number | {
+type EdgeInsets$2 = number | {
     top?: number;
     right?: number;
     bottom?: number;
@@ -367,7 +343,7 @@ interface BaseProps {
     /** Scrolling physics behavior (set to NEVER to disable scrolling) */
     physics?: ScrollPhysics;
     /** Internal padding (supports number or individual sides) */
-    padding?: EdgeInsets$1;
+    padding?: EdgeInsets$2;
     /** Fixed height/width for child items (corresponds to itemExtent) */
     itemExtent?: number;
     /** Template item to derive itemExtent from (measures first item only) */
@@ -449,6 +425,48 @@ interface ListViewHandle {
 declare const ListView: React$1.ForwardRefExoticComponent<ListViewProps$1 & React$1.RefAttributes<ListViewHandle>> & {
     builder: React$1.ForwardRefExoticComponent<BuilderProps<unknown> & React$1.RefAttributes<ListViewHandle>>;
     separated: React$1.ForwardRefExoticComponent<SeparatedProps<unknown> & React$1.RefAttributes<ListViewHandle>>;
+};
+
+/**
+ * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
+ * Following Flutter's EdgeInsets class API for consistent spacing management
+ */
+declare const EdgeInsets$1: {
+    /**
+     * Creates uniform spacing for all sides
+     * @param value - The spacing value (number will be converted to px)
+     */
+    readonly all: (value: number | string) => string;
+    /**
+     * Creates symmetric spacing for horizontal and/or vertical sides
+     * @param options - Object containing horizontal and/or vertical spacing values
+     */
+    readonly symmetric: (options: {
+        horizontal?: number | string;
+        vertical?: number | string;
+    }) => string;
+    /**
+     * Creates spacing with individual control for each side
+     * @param options - Object containing left, top, right, and/or bottom spacing values
+     */
+    readonly only: (options: {
+        left?: number | string;
+        top?: number | string;
+        right?: number | string;
+        bottom?: number | string;
+    }) => string;
+    /**
+     * Creates spacing by specifying all four sides explicitly (Left, Top, Right, Bottom)
+     * @param left - Left spacing value
+     * @param top - Top spacing value
+     * @param right - Right spacing value
+     * @param bottom - Bottom spacing value
+     */
+    readonly fromLTRB: (left: number | string, top: number | string, right: number | string, bottom: number | string) => string;
+    /**
+     * Creates zero spacing for all sides
+     */
+    readonly zero: () => string;
 };
 
 /**
@@ -1449,5 +1467,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, textWidthBasis, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$2 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };

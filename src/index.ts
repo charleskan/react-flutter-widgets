@@ -7,12 +7,6 @@ export {
   Row,
   Column,
   Flex,
-  MainAxisAlignment,
-  CrossAxisAlignment,
-  MainAxisSize,
-  TextDirection,
-  VerticalDirection,
-  TextBaseline,
   type ContainerProps,
   type RowProps,
   type ColumnProps,
@@ -138,6 +132,20 @@ export {
 } from './components/text'
 
 // Core Utilities and Types
-export { EdgeInsets } from './types/Flex.type'
+export { EdgeInsets } from './types/EdgeInsets'
+
+// Layout System Types
+export {
+  MainAxisAlignment,
+  CrossAxisAlignment,
+  MainAxisSize,
+  VerticalDirection,
+} from './types/Layout'
+
+// Text System Types
+export {
+  TextDirection,
+  TextBaseline,
+} from './types/Text'
 
 // Note: Enums are already exported via the component exports above

@@ -428,6 +428,9 @@ function requireJsxRuntime () {
 var jsxRuntimeExports = requireJsxRuntime();
 
 /**
+ * Layout alignment and sizing enums following Flutter's layout system
+ */
+/**
  * Main axis alignment controls how children are positioned along the main axis
  */
 var MainAxisAlignment;
@@ -459,15 +462,6 @@ var MainAxisSize;
     MainAxisSize["MAX"] = "max-content";
 })(MainAxisSize || (MainAxisSize = {}));
 /**
- * Text direction for layout purposes
- */
-var TextDirection;
-(function (TextDirection) {
-    TextDirection["LTR"] = "ltr";
-    TextDirection["RTL"] = "rtl";
-    TextDirection["AUTO"] = "auto";
-})(TextDirection || (TextDirection = {}));
-/**
  * Vertical direction for column layout
  */
 var VerticalDirection;
@@ -475,77 +469,7 @@ var VerticalDirection;
     VerticalDirection["UP"] = "column-reverse";
     VerticalDirection["DOWN"] = "column";
 })(VerticalDirection || (VerticalDirection = {}));
-/**
- * Text baseline for alignment
- */
-var TextBaseline;
-(function (TextBaseline) {
-    TextBaseline["ALPHABETIC"] = "alphabetic";
-    TextBaseline["IDEOGRAPHIC"] = "ideographic";
-})(TextBaseline || (TextBaseline = {}));
-/**
- * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
- */
-const EdgeInsets = {
-    /**
-     * Creates uniform spacing for all sides
-     * @param value - The spacing value (number will be converted to px)
-     */
-    all(value) {
-        const spacingValue = typeof value === 'number' ? `${value}px` : value;
-        return spacingValue;
-    },
-    /**
-     * Creates symmetric spacing for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical spacing values
-     */
-    symmetric(options) {
-        const horizontal = options.horizontal
-            ? typeof options.horizontal === 'number'
-                ? `${options.horizontal}px`
-                : options.horizontal
-            : '0';
-        const vertical = options.vertical
-            ? typeof options.vertical === 'number'
-                ? `${options.vertical}px`
-                : options.vertical
-            : '0';
-        return `${vertical} ${horizontal}`;
-    },
-    /**
-     * Creates spacing with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom spacing values
-     */
-    only(options) {
-        const top = options.top
-            ? typeof options.top === 'number'
-                ? `${options.top}px`
-                : options.top
-            : '0';
-        const right = options.right
-            ? typeof options.right === 'number'
-                ? `${options.right}px`
-                : options.right
-            : '0';
-        const bottom = options.bottom
-            ? typeof options.bottom === 'number'
-                ? `${options.bottom}px`
-                : options.bottom
-            : '0';
-        const left = options.left
-            ? typeof options.left === 'number'
-                ? `${options.left}px`
-                : options.left
-            : '0';
-        return `${top} ${right} ${bottom} ${left}`;
-    },
-    /**
-     * Creates zero spacing for all sides
-     */
-    zero() {
-        return '0';
-    },
-};
+
 var Flex$1;
 (function (Flex) {
     /**
@@ -697,6 +621,27 @@ function Container(props) {
     };
     return (jsxRuntimeExports.jsx("div", { className: className, style: containerStyle, children: children }));
 }
+
+/**
+ * Text-related enums following Flutter's text system
+ */
+/**
+ * Text direction for layout purposes
+ */
+var TextDirection;
+(function (TextDirection) {
+    TextDirection["LTR"] = "ltr";
+    TextDirection["RTL"] = "rtl";
+    TextDirection["AUTO"] = "auto";
+})(TextDirection || (TextDirection = {}));
+/**
+ * Text baseline for alignment
+ */
+var TextBaseline;
+(function (TextBaseline) {
+    TextBaseline["ALPHABETIC"] = "alphabetic";
+    TextBaseline["IDEOGRAPHIC"] = "ideographic";
+})(TextBaseline || (TextBaseline = {}));
 
 /**
  * Row component that arranges children horizontally, equivalent to Flutter's Row widget.
@@ -1012,6 +957,85 @@ const ListView$1 = Object.assign(ListViewBase, {
 });
 
 /**
+ * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
+ * Following Flutter's EdgeInsets class API for consistent spacing management
+ */
+const EdgeInsets = {
+    /**
+     * Creates uniform spacing for all sides
+     * @param value - The spacing value (number will be converted to px)
+     */
+    all(value) {
+        const spacingValue = typeof value === 'number' ? `${value}px` : value;
+        return spacingValue;
+    },
+    /**
+     * Creates symmetric spacing for horizontal and/or vertical sides
+     * @param options - Object containing horizontal and/or vertical spacing values
+     */
+    symmetric(options) {
+        const horizontal = options.horizontal
+            ? typeof options.horizontal === 'number'
+                ? `${options.horizontal}px`
+                : options.horizontal
+            : '0';
+        const vertical = options.vertical
+            ? typeof options.vertical === 'number'
+                ? `${options.vertical}px`
+                : options.vertical
+            : '0';
+        return `${vertical} ${horizontal}`;
+    },
+    /**
+     * Creates spacing with individual control for each side
+     * @param options - Object containing left, top, right, and/or bottom spacing values
+     */
+    only(options) {
+        const top = options.top
+            ? typeof options.top === 'number'
+                ? `${options.top}px`
+                : options.top
+            : '0';
+        const right = options.right
+            ? typeof options.right === 'number'
+                ? `${options.right}px`
+                : options.right
+            : '0';
+        const bottom = options.bottom
+            ? typeof options.bottom === 'number'
+                ? `${options.bottom}px`
+                : options.bottom
+            : '0';
+        const left = options.left
+            ? typeof options.left === 'number'
+                ? `${options.left}px`
+                : options.left
+            : '0';
+        return `${top} ${right} ${bottom} ${left}`;
+    },
+    /**
+     * Creates spacing by specifying all four sides explicitly (Left, Top, Right, Bottom)
+     * @param left - Left spacing value
+     * @param top - Top spacing value
+     * @param right - Right spacing value
+     * @param bottom - Bottom spacing value
+     */
+    fromLTRB(left, top, right, bottom) {
+        const topValue = typeof top === 'number' ? `${top}px` : top;
+        const rightValue = typeof right === 'number' ? `${right}px` : right;
+        const bottomValue = typeof bottom === 'number' ? `${bottom}px` : bottom;
+        const leftValue = typeof left === 'number' ? `${left}px` : left;
+        return `${topValue} ${rightValue} ${bottomValue} ${leftValue}`;
+    },
+    /**
+     * Creates zero spacing for all sides
+     */
+    zero() {
+        return '0';
+    },
+};
+
+/**
  * Scroll direction for ListView
  */
 var ScrollDirection;
@@ -1019,7 +1043,7 @@ var ScrollDirection;
     ScrollDirection["VERTICAL"] = "vertical";
     ScrollDirection["HORIZONTAL"] = "horizontal";
 })(ScrollDirection || (ScrollDirection = {}));
-// MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
+// MainAxisAlignment and CrossAxisAlignment are imported from Layout.ts to avoid duplication
 /**
  * Padding direction options for convenience methods
  */

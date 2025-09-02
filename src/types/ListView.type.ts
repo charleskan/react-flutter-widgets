@@ -1,8 +1,8 @@
 import type { CSSProperties, Key, ReactNode } from 'react'
-import { CrossAxisAlignment, MainAxisAlignment } from './Flex.type'
+import { CrossAxisAlignment, MainAxisAlignment } from './Layout'
 import { ScrollPhysics } from '../components/data/ListView'
 
-// Re-export enums from Flex.type.ts for ListView usage
+// Re-export enums from Layout.ts for ListView usage
 export { MainAxisAlignment, CrossAxisAlignment }
 
 // Re-export ScrollPhysics from the main ListView component
@@ -16,7 +16,7 @@ export enum ScrollDirection {
   HORIZONTAL = 'horizontal',
 }
 
-// MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
+// MainAxisAlignment and CrossAxisAlignment are imported from Layout.ts to avoid duplication
 
 /**
  * Padding direction options for convenience methods
@@ -29,7 +29,7 @@ export enum PaddingDirection {
 }
 
 // Import and re-export EdgeInsets from Flex types for backward compatibility
-import { EdgeInsets } from './Flex.type'
+import { EdgeInsets } from './EdgeInsets'
 export { EdgeInsets }
 
 /**

@@ -1,5 +1,7 @@
 import type { RowProps } from '../../types/Flex.type'
-import { CrossAxisAlignment, Flex, MainAxisAlignment, TextDirection } from '../../types/Flex.type'
+import { Flex } from '../../types/Flex.type'
+import { CrossAxisAlignment, MainAxisAlignment } from '../../types/Layout'
+import { TextDirection } from '../../types/Text'
 
 /**
  * Row component that arranges children horizontally, equivalent to Flutter's Row widget.
