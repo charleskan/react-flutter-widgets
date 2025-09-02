@@ -16,10 +16,14 @@ export enum ScrollDirection {
  * Scroll physics behavior controls how the list responds to user scroll gestures
  */
 export enum ScrollPhysics {
+  /** Default scrolling behavior (allows scrolling) */
+  DEFAULT = 'default',
+  /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
+  NEVER = 'never',
+  /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
   BOUNCING = 'bouncing',
+  /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
   CLAMPING = 'clamping',
-  NEVER_SCROLLABLE = 'never_scrollable',
-  ALWAYS_SCROLLABLE = 'always_scrollable',
 }
 
 // MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
@@ -140,9 +144,9 @@ export namespace ListView {
         return 'scroll-smooth'
       case ScrollPhysics.CLAMPING:
         return 'scroll-auto'
-      case ScrollPhysics.NEVER_SCROLLABLE:
+      case ScrollPhysics.NEVER:
         return 'overflow-hidden'
-      case ScrollPhysics.ALWAYS_SCROLLABLE:
+      case ScrollPhysics.DEFAULT:
         return 'overflow-scroll'
       default:
         return 'scroll-auto'

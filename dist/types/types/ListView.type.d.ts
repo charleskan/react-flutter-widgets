@@ -12,10 +12,14 @@ export declare enum ScrollDirection {
  * Scroll physics behavior controls how the list responds to user scroll gestures
  */
 export declare enum ScrollPhysics {
+    /** Default scrolling behavior (allows scrolling) */
+    DEFAULT = "default",
+    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
+    NEVER = "never",
+    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
     BOUNCING = "bouncing",
-    CLAMPING = "clamping",
-    NEVER_SCROLLABLE = "never_scrollable",
-    ALWAYS_SCROLLABLE = "always_scrollable"
+    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
+    CLAMPING = "clamping"
 }
 /**
  * Padding direction options for convenience methods

@@ -1024,10 +1024,14 @@ var ScrollDirection;
  */
 var ScrollPhysics;
 (function (ScrollPhysics) {
+    /** Default scrolling behavior (allows scrolling) */
+    ScrollPhysics["DEFAULT"] = "default";
+    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
+    ScrollPhysics["NEVER"] = "never";
+    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
     ScrollPhysics["BOUNCING"] = "bouncing";
+    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
     ScrollPhysics["CLAMPING"] = "clamping";
-    ScrollPhysics["NEVER_SCROLLABLE"] = "never_scrollable";
-    ScrollPhysics["ALWAYS_SCROLLABLE"] = "always_scrollable";
 })(ScrollPhysics || (ScrollPhysics = {}));
 // MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 /**
@@ -1048,9 +1052,9 @@ var ListView;
                 return 'scroll-smooth';
             case ScrollPhysics.CLAMPING:
                 return 'scroll-auto';
-            case ScrollPhysics.NEVER_SCROLLABLE:
+            case ScrollPhysics.NEVER:
                 return 'overflow-hidden';
-            case ScrollPhysics.ALWAYS_SCROLLABLE:
+            case ScrollPhysics.DEFAULT:
                 return 'overflow-scroll';
             default:
                 return 'scroll-auto';
@@ -3044,5 +3048,5 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
     return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("span", { id: elemId, className: combinedClassName, style: scaledStyle, lang: locale, dir: textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
 };
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView$1 as ListView, ScrollPhysics$1 as ListViewScrollPhysics, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics$1 as ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map

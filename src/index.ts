@@ -31,7 +31,7 @@ export {
 export {
   ListView,
   Axis,
-  ScrollPhysics as ListViewScrollPhysics,
+  ScrollPhysics,
   type BaseProps,
   type ListViewProps as ListViewComponentProps,
   type BuilderProps,
@@ -42,7 +42,6 @@ export {
 // Legacy exports for backward compatibility
 export {
   ScrollDirection,
-  ScrollPhysics,
   PaddingDirection,
   type ListViewProps,
 } from './types/ListView.type'

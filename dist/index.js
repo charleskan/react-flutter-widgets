@@ -860,7 +860,7 @@ exports.Axis = void 0;
  * Defines the scroll physics behavior for ListView components.
  * @enum {string}
  */
-exports.ListViewScrollPhysics = void 0;
+exports.ScrollPhysics = void 0;
 (function (ScrollPhysics) {
     /** Default scrolling behavior (allows scrolling) */
     ScrollPhysics["DEFAULT"] = "default";
@@ -870,7 +870,7 @@ exports.ListViewScrollPhysics = void 0;
     ScrollPhysics["BOUNCING"] = "bouncing";
     /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
     ScrollPhysics["CLAMPING"] = "clamping";
-})(exports.ListViewScrollPhysics || (exports.ListViewScrollPhysics = {}));
+})(exports.ScrollPhysics || (exports.ScrollPhysics = {}));
 /**
  * Converts EdgeInsets to CSS padding properties.
  * @param p - EdgeInsets value (number or object with top/right/bottom/left)
@@ -899,7 +899,7 @@ function toPadding(p) {
  */
 function buildContainerStyle(axis, reverse, shrinkWrap, physics, clip, paddingStyle, userStyle, itemExtent) {
     const isVertical = axis === exports.Axis.VERTICAL;
-    const enableScroll = physics !== exports.ListViewScrollPhysics.NEVER && !shrinkWrap;
+    const enableScroll = physics !== exports.ScrollPhysics.NEVER && !shrinkWrap;
     const overflow = enableScroll
         ? isVertical
             ? { overflowY: 'auto', overflowX: 'hidden' }
@@ -913,7 +913,7 @@ function buildContainerStyle(axis, reverse, shrinkWrap, physics, clip, paddingSt
             ? 'column'
             : 'row';
     const clipStyle = clip === 'hidden' ? { overflowClipMargin: 'content-box' } : {};
-    const momentum = physics === exports.ListViewScrollPhysics.BOUNCING
+    const momentum = physics === exports.ScrollPhysics.BOUNCING
         ? { WebkitOverflowScrolling: 'touch' }
         : {};
     const extentStyle = itemExtent ? (isVertical ? { rowGap: 0 } : { columnGap: 0 }) : undefined;
@@ -954,7 +954,7 @@ const ItemWrap = ({ axis, itemExtent, children, }) => {
  * @param props - ListView properties
  * @param ref - Forward ref for imperative operations
  */
-const ListViewBase = require$$0.forwardRef(function ListView({ children = [], scrollDirection = exports.Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = exports.ListViewScrollPhysics.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
+const ListViewBase = require$$0.forwardRef(function ListView({ children = [], scrollDirection = exports.Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = exports.ScrollPhysics.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
     const elRef = require$$0.useRef(null);
     require$$0.useImperativeHandle(ref, () => ({
         scrollTo: (opts) => elRef.current?.scrollTo(opts),
@@ -1024,13 +1024,17 @@ exports.ScrollDirection = void 0;
 /**
  * Scroll physics behavior controls how the list responds to user scroll gestures
  */
-exports.ScrollPhysics = void 0;
+var ScrollPhysics;
 (function (ScrollPhysics) {
+    /** Default scrolling behavior (allows scrolling) */
+    ScrollPhysics["DEFAULT"] = "default";
+    /** Disables user scrolling (equivalent to NeverScrollableScrollPhysics) */
+    ScrollPhysics["NEVER"] = "never";
+    /** iOS-style bouncing scrolling (Safari supports; other browsers ignore) */
     ScrollPhysics["BOUNCING"] = "bouncing";
+    /** Android/desktop-style clamping scrolling (Web roughly equivalent to default) */
     ScrollPhysics["CLAMPING"] = "clamping";
-    ScrollPhysics["NEVER_SCROLLABLE"] = "never_scrollable";
-    ScrollPhysics["ALWAYS_SCROLLABLE"] = "always_scrollable";
-})(exports.ScrollPhysics || (exports.ScrollPhysics = {}));
+})(ScrollPhysics || (ScrollPhysics = {}));
 // MainAxisAlignment and CrossAxisAlignment are imported from Flex.type.ts to avoid duplication
 /**
  * Padding direction options for convenience methods
@@ -1046,13 +1050,13 @@ var ListView;
 (function (ListView) {
     function getPhysicsClassName(physics) {
         switch (physics) {
-            case exports.ScrollPhysics.BOUNCING:
+            case ScrollPhysics.BOUNCING:
                 return 'scroll-smooth';
-            case exports.ScrollPhysics.CLAMPING:
+            case ScrollPhysics.CLAMPING:
                 return 'scroll-auto';
-            case exports.ScrollPhysics.NEVER_SCROLLABLE:
+            case ScrollPhysics.NEVER:
                 return 'overflow-hidden';
-            case exports.ScrollPhysics.ALWAYS_SCROLLABLE:
+            case ScrollPhysics.DEFAULT:
                 return 'overflow-scroll';
             default:
                 return 'scroll-auto';
