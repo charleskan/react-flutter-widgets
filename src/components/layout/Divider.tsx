@@ -25,7 +25,7 @@ export interface DividerProps {
  * A Flutter Divider widget-inspired React component for creating horizontal dividers.
  *
  * A thin horizontal line, with padding on either side.
- * In the Material Design language, this represents a divider. 
+ * In the Material Design language, this represents a divider.
  * Dividers can be used in lists, Drawers, and elsewhere to separate content.
  *
  * The box's total height is controlled by height. The appropriate padding is automatically computed from the height.
@@ -87,14 +87,8 @@ export const Divider = ({
   }, [height, thickness, indent, endIndent, color, radius])
 
   return (
-    <div
-      className={`w-full ${className || ''}`.trim()}
-      style={containerStyle}
-    >
-      <div
-        className="w-full"
-        style={lineStyle}
-      />
+    <div className={`w-full ${className || ''}`.trim()} style={containerStyle}>
+      <div className="w-full" style={lineStyle} />
     </div>
   )
 }

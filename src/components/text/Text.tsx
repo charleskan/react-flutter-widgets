@@ -255,7 +255,7 @@ export const Text = ({
     } else {
       // Normal text wrapping behavior (default) - preserve line breaks with pre-wrap
       classes.push('whitespace-pre-wrap')
-      
+
       if (maxLines && maxLines > 0) {
         // Use Tailwind line-clamp utilities
         if (maxLines <= 6) {

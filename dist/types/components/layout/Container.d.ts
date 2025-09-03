@@ -1,84 +1,19 @@
 import type { ReactNode } from 'react';
-export interface AlignmentGeometry {
-    x: number;
-    y: number;
-}
-export interface BoxConstraints {
-    minWidth?: number;
-    maxWidth?: number;
-    minHeight?: number;
-    maxHeight?: number;
-}
-export interface Decoration {
-    color?: string;
-    borderRadius?: number | string;
-    borderWidth?: number;
-    borderColor?: string;
-    borderStyle?: 'solid' | 'dashed' | 'dotted';
-    boxShadow?: string;
-    gradient?: string;
-}
-export type Clip = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
-export interface Matrix4 {
-    rotateX?: number;
-    rotateY?: number;
-    rotateZ?: number;
-    scaleX?: number;
-    scaleY?: number;
-    translateX?: number;
-    translateY?: number;
-}
-export declare const Alignment: {
-    topLeft: {
-        x: number;
-        y: number;
-    };
-    topCenter: {
-        x: number;
-        y: number;
-    };
-    topRight: {
-        x: number;
-        y: number;
-    };
-    centerLeft: {
-        x: number;
-        y: number;
-    };
-    center: {
-        x: number;
-        y: number;
-    };
-    centerRight: {
-        x: number;
-        y: number;
-    };
-    bottomLeft: {
-        x: number;
-        y: number;
-    };
-    bottomCenter: {
-        x: number;
-        y: number;
-    };
-    bottomRight: {
-        x: number;
-        y: number;
-    };
-};
+import { BoxConstraints } from '../../utils';
+import type { AlignmentGeometry, BoxDecoration, Clip, EdgeInsets, Matrix4Interface } from '../../utils';
 export interface ContainerProps {
     /** Child content to render inside the container */
     children?: ReactNode;
     /** Align the child within the container */
     alignment?: AlignmentGeometry;
     /** Empty space to inscribe inside the decoration. The child, if any, is placed inside this padding */
-    padding?: string;
+    padding?: EdgeInsets | string;
     /** The color to paint behind the child */
     color?: string;
     /** The decoration to paint behind the child */
-    decoration?: Decoration;
+    decoration?: BoxDecoration;
     /** The decoration to paint in front of the child */
-    foregroundDecoration?: Decoration;
+    foregroundDecoration?: BoxDecoration;
     /** Fixed width of the container */
     width?: number | string;
     /** Fixed height of the container */
@@ -86,9 +21,9 @@ export interface ContainerProps {
     /** Additional constraints to apply to the child */
     constraints?: BoxConstraints;
     /** Empty space to surround the decoration and child */
-    margin?: string;
+    margin?: EdgeInsets | string;
     /** The transformation matrix to apply before painting the container */
-    transform?: Matrix4;
+    transform?: Matrix4Interface;
     /** The alignment of the origin, relative to the size of the container, if transform is specified */
     transformAlignment?: AlignmentGeometry;
     /** The clip behavior when Container.decoration is not null */
@@ -139,9 +74,17 @@ export interface ContainerProps {
  *   <div>Content goes here</div>
  * </Container>
  *
- * // With transform and constraints
+ * // With gradient and transform
  * <Container
  *   constraints={{ minHeight: 200, maxWidth: 400 }}
+ *   decoration={{
+ *     gradient: new LinearGradient({
+ *       begin: Alignment.topCenter,
+ *       end: Alignment.bottomCenter,
+ *       colors: ['rgba(0,0,0,0.2)', 'transparent'],
+ *       stops: [0.0, 0.1],
+ *     })
+ *   }}
  *   transform={{ rotateZ: 0.1, scaleX: 1.1 }}
  *   transformAlignment={Alignment.center}
  *   clipBehavior="antiAlias"
@@ -150,11 +93,13 @@ export interface ContainerProps {
  * </Container>
  * ```
  *
- * EdgeInsets methods:
+ * Utility class methods:
  * - EdgeInsets.all(16) - uniform spacing on all sides
  * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
  * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
  * - EdgeInsets.zero() - no spacing
+ * - Alignment.center, Alignment.topLeft, etc. - predefined alignments
+ * - LinearGradient, RadialGradient, SweepGradient - gradient classes
  */
 declare function Container(props: ContainerProps): import("react/jsx-runtime").JSX.Element;
 export default Container;

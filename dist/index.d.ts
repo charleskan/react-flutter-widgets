@@ -1,26 +1,132 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React$1, { ReactNode, CSSProperties, Key } from 'react';
+import React$1, { CSSProperties, ReactNode, Key } from 'react';
 
 interface AlignmentGeometry {
     x: number;
     y: number;
 }
+
+declare class EdgeInsets$3 {
+    readonly top: number;
+    readonly right: number;
+    readonly bottom: number;
+    readonly left: number;
+    constructor(top: number, right: number, bottom: number, left: number);
+    /**
+     * Creates EdgeInsets with the same value for all sides
+     */
+    static all(value: number): EdgeInsets$3;
+    /**
+     * Creates EdgeInsets with symmetric horizontal and vertical values
+     */
+    static symmetric(options: {
+        horizontal?: number;
+        vertical?: number;
+    }): EdgeInsets$3;
+    /**
+     * Creates EdgeInsets with individual side values
+     */
+    static only(options: {
+        top?: number;
+        right?: number;
+        bottom?: number;
+        left?: number;
+    }): EdgeInsets$3;
+    /**
+     * Creates EdgeInsets with zero values for all sides
+     */
+    static zero(): EdgeInsets$3;
+    /**
+     * Creates EdgeInsets from TRBL (top, right, bottom, left) values
+     */
+    static fromTRBL(top: number, right: number, bottom: number, left: number): EdgeInsets$3;
+    /**
+     * Converts EdgeInsets to CSS padding string
+     */
+    toPadding(): string;
+    /**
+     * Converts EdgeInsets to CSS margin string
+     */
+    toMargin(): string;
+    /**
+     * Converts EdgeInsets to CSS object for padding
+     */
+    toPaddingObject(): {
+        paddingTop: string;
+        paddingRight: string;
+        paddingBottom: string;
+        paddingLeft: string;
+    };
+    /**
+     * Converts EdgeInsets to CSS object for margin
+     */
+    toMarginObject(): {
+        marginTop: string;
+        marginRight: string;
+        marginBottom: string;
+        marginLeft: string;
+    };
+    /**
+     * Returns a new EdgeInsets with added values
+     */
+    add(other: EdgeInsets$3): EdgeInsets$3;
+    /**
+     * Returns a new EdgeInsets with subtracted values
+     */
+    subtract(other: EdgeInsets$3): EdgeInsets$3;
+    /**
+     * Returns true if all sides are equal to zero
+     */
+    get isZero(): boolean;
+    /**
+     * Returns true if all sides are equal
+     */
+    get isUniform(): boolean;
+    /**
+     * Creates a copy of this EdgeInsets with optional modifications
+     */
+    copyWith(options: {
+        top?: number;
+        right?: number;
+        bottom?: number;
+        left?: number;
+    }): EdgeInsets$3;
+    toString(): string;
+    equals(other: EdgeInsets$3): boolean;
+}
+
 interface BoxConstraints$1 {
     minWidth?: number;
     maxWidth?: number;
     minHeight?: number;
     maxHeight?: number;
 }
-interface Decoration {
-    color?: string;
-    borderRadius?: number | string;
-    borderWidth?: number;
-    borderColor?: string;
-    borderStyle?: 'solid' | 'dashed' | 'dotted';
-    boxShadow?: string;
-    gradient?: string;
+declare namespace BoxConstraints$1 {
+    /**
+     * Converts BoxConstraints to CSS properties
+     */
+    function toCSS(constraints?: BoxConstraints$1): CSSProperties;
+    /**
+     * Creates BoxConstraints that expand to fill available space
+     */
+    function expand(width?: number, height?: number): BoxConstraints$1;
+    /**
+     * Creates BoxConstraints with tight dimensions
+     */
+    function tight(width: number, height: number): BoxConstraints$1;
+    /**
+     * Creates BoxConstraints with tight width
+     */
+    function tightFor(options: {
+        width?: number;
+        height?: number;
+    }): BoxConstraints$1;
+    /**
+     * Creates BoxConstraints with loose constraints
+     */
+    function loose(maxWidth?: number, maxHeight?: number): BoxConstraints$1;
 }
-type Clip = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
+
 interface Matrix4$1 {
     rotateX?: number;
     rotateY?: number;
@@ -30,19 +136,67 @@ interface Matrix4$1 {
     translateX?: number;
     translateY?: number;
 }
+declare namespace Matrix4$1 {
+    /**
+     * Creates an identity matrix (no transformation)
+     */
+    function identity(): Matrix4$1;
+    /**
+     * Creates a translation matrix
+     */
+    function translationValues(x: number, y: number, _z?: number): Matrix4$1;
+    /**
+     * Creates a rotation matrix around Z axis
+     */
+    function rotationZ(radians: number): Matrix4$1;
+    /**
+     * Creates a scale matrix
+     */
+    function diagonal3Values(x: number, y: number, _z?: number): Matrix4$1;
+    /**
+     * Creates a skew matrix (approximated using scale and rotation)
+     */
+    function skew(alpha: number, _beta: number): Matrix4$1;
+    /**
+     * Converts Matrix4 to CSS transform and transform-origin properties
+     */
+    function toCSS(transform?: Matrix4$1, transformAlignment?: AlignmentGeometry): CSSProperties;
+}
+
+declare abstract class Gradient {
+    colors: string[];
+    stops?: number[];
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+    });
+    abstract toCSS(): string;
+}
+
+type Clip = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
+interface BoxDecoration {
+    color?: string;
+    borderRadius?: number | string;
+    borderWidth?: number;
+    borderColor?: string;
+    borderStyle?: 'solid' | 'dashed' | 'dotted';
+    boxShadow?: string;
+    gradient?: Gradient;
+}
+
 interface ContainerProps {
     /** Child content to render inside the container */
     children?: ReactNode;
     /** Align the child within the container */
     alignment?: AlignmentGeometry;
     /** Empty space to inscribe inside the decoration. The child, if any, is placed inside this padding */
-    padding?: string;
+    padding?: EdgeInsets$3 | string;
     /** The color to paint behind the child */
     color?: string;
     /** The decoration to paint behind the child */
-    decoration?: Decoration;
+    decoration?: BoxDecoration;
     /** The decoration to paint in front of the child */
-    foregroundDecoration?: Decoration;
+    foregroundDecoration?: BoxDecoration;
     /** Fixed width of the container */
     width?: number | string;
     /** Fixed height of the container */
@@ -50,7 +204,7 @@ interface ContainerProps {
     /** Additional constraints to apply to the child */
     constraints?: BoxConstraints$1;
     /** Empty space to surround the decoration and child */
-    margin?: string;
+    margin?: EdgeInsets$3 | string;
     /** The transformation matrix to apply before painting the container */
     transform?: Matrix4$1;
     /** The alignment of the origin, relative to the size of the container, if transform is specified */
@@ -103,9 +257,17 @@ interface ContainerProps {
  *   <div>Content goes here</div>
  * </Container>
  *
- * // With transform and constraints
+ * // With gradient and transform
  * <Container
  *   constraints={{ minHeight: 200, maxWidth: 400 }}
+ *   decoration={{
+ *     gradient: new LinearGradient({
+ *       begin: Alignment.topCenter,
+ *       end: Alignment.bottomCenter,
+ *       colors: ['rgba(0,0,0,0.2)', 'transparent'],
+ *       stops: [0.0, 0.1],
+ *     })
+ *   }}
  *   transform={{ rotateZ: 0.1, scaleX: 1.1 }}
  *   transformAlignment={Alignment.center}
  *   clipBehavior="antiAlias"
@@ -114,11 +276,13 @@ interface ContainerProps {
  * </Container>
  * ```
  *
- * EdgeInsets methods:
+ * Utility class methods:
  * - EdgeInsets.all(16) - uniform spacing on all sides
  * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
  * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
  * - EdgeInsets.zero() - no spacing
+ * - Alignment.center, Alignment.topLeft, etc. - predefined alignments
+ * - LinearGradient, RadialGradient, SweepGradient - gradient classes
  */
 declare function Container(props: ContainerProps): react_jsx_runtime.JSX.Element;
 
@@ -810,7 +974,7 @@ interface GestureDetectorProps {
     panSlop?: number;
     longPressMoveTolerance?: number;
 }
-declare function GestureDetector({ children, className, style, behavior, excludeFromSemantics, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay, doubleTapDelay, tapSlop, panSlop, longPressMoveTolerance }: GestureDetectorProps): react_jsx_runtime.JSX.Element;
+declare function GestureDetector({ children, className, style, behavior, excludeFromSemantics, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay, doubleTapDelay, tapSlop, panSlop, longPressMoveTolerance, }: GestureDetectorProps): react_jsx_runtime.JSX.Element;
 
 interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {
     /** Duration of the animation in milliseconds */

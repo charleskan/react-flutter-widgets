@@ -28,3 +28,23 @@ export {
   TextDirection,
   TextBaseline,
 } from '../../types/Text'
+
+// Export Flutter-style utilities
+export {
+  Alignment,
+  EdgeInsets,
+  BoxConstraints,
+  Matrix4,
+  Decoration,
+  LinearGradient,
+  RadialGradient,
+  SweepGradient,
+} from '../../utils'
+
+export type {
+  AlignmentGeometry,
+  BoxDecoration,
+  Clip,
+  Matrix4Interface,
+  GradientStop,
+} from '../../utils'

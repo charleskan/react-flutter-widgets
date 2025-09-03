@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ContainerProps } from '../layout/Container'
+import { EdgeInsets } from '../../utils'
 
 export interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {
   /** Duration of the animation in milliseconds */
@@ -114,20 +115,32 @@ function AnimatedContainer(props: AnimatedContainerProps) {
     return value
   }
 
-  // Padding is now directly provided as EdgeInsets result
+  // Helper function to normalize EdgeInsets or string values
+  const normalizeEdgeInsets = (value: EdgeInsets | string | undefined): string => {
+    if (value === undefined) return '0'
+    if (typeof value === 'string') return value
+    return value.toPadding()
+  }
+
+  // Calculate effective padding and margin
   const calculateEffectivePadding = (): string => {
-    return padding || '0'
+    return normalizeEdgeInsets(padding)
+  }
+
+  const calculateEffectiveMargin = (): string => {
+    return normalizeEdgeInsets(margin)
   }
 
   // Calculate animated styles based on current props
   const calculateTargetStyles = (): AnimatedStyles => {
     const effectivePadding = calculateEffectivePadding()
+    const effectiveMargin = calculateEffectiveMargin()
 
     return {
       width: normalizeValue(width),
       height: normalizeValue(height),
       padding: effectivePadding,
-      margin: normalizeValue(margin),
+      margin: effectiveMargin,
       backgroundColor: backgroundColor || 'transparent',
       borderRadius: normalizeValue(borderRadius),
       borderWidth: borderWidth || 0,

@@ -1,5 +1,5 @@
-import type React from "react";
-import { type ReactNode } from "react";
+import type React from 'react';
+import { type ReactNode } from 'react';
 /**
  * Flutter-style GestureDetector for the web (React + PointerEvents)
  * - Approximates Flutter's GestureDetector semantics for websites.
@@ -99,5 +99,5 @@ export interface GestureDetectorProps {
     panSlop?: number;
     longPressMoveTolerance?: number;
 }
-export default function GestureDetector({ children, className, style, behavior, excludeFromSemantics, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay, doubleTapDelay, tapSlop, panSlop, longPressMoveTolerance }: GestureDetectorProps): import("react/jsx-runtime").JSX.Element;
+export default function GestureDetector({ children, className, style, behavior, excludeFromSemantics, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay, doubleTapDelay, tapSlop, panSlop, longPressMoveTolerance, }: GestureDetectorProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=GestureDetector.d.ts.map

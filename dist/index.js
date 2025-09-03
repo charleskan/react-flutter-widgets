@@ -571,102 +571,267 @@ var Flex$1;
     Flex.getMainAxisSizeClass = getMainAxisSizeClass;
 })(Flex$1 || (Flex$1 = {}));
 
-function alignmentToTailwind(alignment) {
-    if (!alignment)
-        return [];
-    const classes = ['flex'];
-    // Justify content (x-axis)
-    if (alignment.x === -1)
-        classes.push('justify-start');
-    else if (alignment.x === 0)
-        classes.push('justify-center');
-    else if (alignment.x === 1)
-        classes.push('justify-end');
-    // Align items (y-axis)
-    if (alignment.y === -1)
-        classes.push('items-start');
-    else if (alignment.y === 0)
-        classes.push('items-center');
-    else if (alignment.y === 1)
-        classes.push('items-end');
-    return classes;
+class Alignment {
+    /**
+     * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
+     */
+    static toCSS(alignment) {
+        const x = (((alignment.x + 1) / 2) * 100).toFixed(1);
+        const y = (((alignment.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    /**
+     * Converts alignment to CSS justify-content and align-items classes for flexbox
+     */
+    static toFlexClasses(alignment) {
+        const classes = ['flex'];
+        // Justify content (x-axis)
+        if (alignment.x === -1)
+            classes.push('justify-start');
+        else if (alignment.x === 0)
+            classes.push('justify-center');
+        else if (alignment.x === 1)
+            classes.push('justify-end');
+        // Align items (y-axis)
+        if (alignment.y === -1)
+            classes.push('items-start');
+        else if (alignment.y === 0)
+            classes.push('items-center');
+        else if (alignment.y === 1)
+            classes.push('items-end');
+        return classes;
+    }
+    /**
+     * Converts alignment to CSS transform-origin property
+     */
+    static toTransformOrigin(alignment) {
+        const originX = alignment.x === -1 ? 'left' : alignment.x === 0 ? 'center' : 'right';
+        const originY = alignment.y === -1 ? 'top' : alignment.y === 0 ? 'center' : 'bottom';
+        return `${originX} ${originY}`;
+    }
 }
-function clipBehaviorToTailwind(clipBehavior) {
-    if (!clipBehavior || clipBehavior === 'none')
-        return [];
-    switch (clipBehavior) {
-        case 'hardEdge':
-            return ['overflow-hidden'];
-        case 'antiAlias':
-            return ['overflow-hidden', 'rounded-inherit'];
-        case 'antiAliasWithSaveLayer':
-            return ['overflow-hidden', 'rounded-inherit', 'isolate'];
-        default:
+Alignment.topLeft = { x: -1, y: -1 };
+Alignment.topCenter = { x: 0, y: -1 };
+Alignment.topRight = { x: 1, y: -1 };
+Alignment.centerLeft = { x: -1, y: 0 };
+Alignment.center = { x: 0, y: 0 };
+Alignment.centerRight = { x: 1, y: 0 };
+Alignment.bottomLeft = { x: -1, y: 1 };
+Alignment.bottomCenter = { x: 0, y: 1 };
+Alignment.bottomRight = { x: 1, y: 1 };
+
+var BoxConstraints;
+(function (BoxConstraints) {
+    /**
+     * Converts BoxConstraints to CSS properties
+     */
+    function toCSS(constraints) {
+        if (!constraints)
+            return {};
+        const styles = {};
+        if (constraints.minWidth !== undefined)
+            styles.minWidth = constraints.minWidth;
+        if (constraints.maxWidth !== undefined)
+            styles.maxWidth = constraints.maxWidth;
+        if (constraints.minHeight !== undefined)
+            styles.minHeight = constraints.minHeight;
+        if (constraints.maxHeight !== undefined)
+            styles.maxHeight = constraints.maxHeight;
+        return styles;
+    }
+    BoxConstraints.toCSS = toCSS;
+    /**
+     * Creates BoxConstraints that expand to fill available space
+     */
+    function expand(width, height) {
+        return {
+            minWidth: width,
+            maxWidth: width,
+            minHeight: height,
+            maxHeight: height,
+        };
+    }
+    BoxConstraints.expand = expand;
+    /**
+     * Creates BoxConstraints with tight dimensions
+     */
+    function tight(width, height) {
+        return {
+            minWidth: width,
+            maxWidth: width,
+            minHeight: height,
+            maxHeight: height,
+        };
+    }
+    BoxConstraints.tight = tight;
+    /**
+     * Creates BoxConstraints with tight width
+     */
+    function tightFor(options) {
+        return {
+            minWidth: options.width,
+            maxWidth: options.width,
+            minHeight: options.height,
+            maxHeight: options.height,
+        };
+    }
+    BoxConstraints.tightFor = tightFor;
+    /**
+     * Creates BoxConstraints with loose constraints
+     */
+    function loose(maxWidth, maxHeight) {
+        return {
+            minWidth: 0,
+            maxWidth: maxWidth,
+            minHeight: 0,
+            maxHeight: maxHeight,
+        };
+    }
+    BoxConstraints.loose = loose;
+})(BoxConstraints || (BoxConstraints = {}));
+
+var Matrix4$1;
+(function (Matrix4) {
+    /**
+     * Creates an identity matrix (no transformation)
+     */
+    function identity() {
+        return {};
+    }
+    Matrix4.identity = identity;
+    /**
+     * Creates a translation matrix
+     */
+    function translationValues(x, y, _z) {
+        return {
+            translateX: x,
+            translateY: y,
+        };
+    }
+    Matrix4.translationValues = translationValues;
+    /**
+     * Creates a rotation matrix around Z axis
+     */
+    function rotationZ(radians) {
+        return {
+            rotateZ: radians,
+        };
+    }
+    Matrix4.rotationZ = rotationZ;
+    /**
+     * Creates a scale matrix
+     */
+    function diagonal3Values(x, y, _z) {
+        return {
+            scaleX: x,
+            scaleY: y,
+        };
+    }
+    Matrix4.diagonal3Values = diagonal3Values;
+    /**
+     * Creates a skew matrix (approximated using scale and rotation)
+     */
+    function skew(alpha, _beta) {
+        // Note: This is a simplified implementation
+        // Full skew transformation would require more complex CSS
+        return {
+            rotateZ: alpha * 0.1, // Approximate skew with rotation
+        };
+    }
+    Matrix4.skew = skew;
+    /**
+     * Converts Matrix4 to CSS transform and transform-origin properties
+     */
+    function toCSS(transform, transformAlignment) {
+        if (!transform)
+            return {};
+        const transforms = [];
+        if (transform.translateX !== undefined)
+            transforms.push(`translateX(${transform.translateX}px)`);
+        if (transform.translateY !== undefined)
+            transforms.push(`translateY(${transform.translateY}px)`);
+        if (transform.scaleX !== undefined)
+            transforms.push(`scaleX(${transform.scaleX})`);
+        if (transform.scaleY !== undefined)
+            transforms.push(`scaleY(${transform.scaleY})`);
+        if (transform.rotateX !== undefined)
+            transforms.push(`rotateX(${transform.rotateX}rad)`);
+        if (transform.rotateY !== undefined)
+            transforms.push(`rotateY(${transform.rotateY}rad)`);
+        if (transform.rotateZ !== undefined)
+            transforms.push(`rotateZ(${transform.rotateZ}rad)`);
+        const styles = {};
+        if (transforms.length > 0) {
+            styles.transform = transforms.join(' ');
+        }
+        if (transformAlignment) {
+            styles.transformOrigin = Alignment.toTransformOrigin(transformAlignment);
+        }
+        return styles;
+    }
+    Matrix4.toCSS = toCSS;
+})(Matrix4$1 || (Matrix4$1 = {}));
+
+var Decoration;
+(function (Decoration) {
+    /**
+     * Converts BoxDecoration to CSS properties
+     */
+    function toCSS(decoration) {
+        if (!decoration)
+            return {};
+        const styles = {};
+        if (decoration.color)
+            styles.backgroundColor = decoration.color;
+        if (decoration.borderRadius) {
+            styles.borderRadius =
+                typeof decoration.borderRadius === 'number'
+                    ? `${decoration.borderRadius}px`
+                    : decoration.borderRadius;
+        }
+        if (decoration.borderWidth && decoration.borderWidth > 0) {
+            styles.borderWidth = `${decoration.borderWidth}px`;
+            styles.borderColor = decoration.borderColor;
+            styles.borderStyle = decoration.borderStyle || 'solid';
+        }
+        if (decoration.boxShadow)
+            styles.boxShadow = decoration.boxShadow;
+        if (decoration.gradient) {
+            styles.background = decoration.gradient.toCSS();
+            // If both color and gradient are specified, gradient takes precedence
+            if (decoration.color) {
+                styles.backgroundColor = 'transparent';
+            }
+        }
+        return styles;
+    }
+    Decoration.toCSS = toCSS;
+    /**
+     * Converts Clip behavior to CSS classes
+     */
+    function clipToClasses(clipBehavior) {
+        if (!clipBehavior || clipBehavior === 'none')
             return [];
+        switch (clipBehavior) {
+            case 'hardEdge':
+                return ['overflow-hidden'];
+            case 'antiAlias':
+                return ['overflow-hidden', 'rounded-inherit'];
+            case 'antiAliasWithSaveLayer':
+                return ['overflow-hidden', 'rounded-inherit', 'isolate'];
+            default:
+                return [];
+        }
     }
-}
-function constraintsToCSS(constraints) {
-    if (!constraints)
-        return {};
-    const styles = {};
-    if (constraints.minWidth !== undefined)
-        styles.minWidth = constraints.minWidth;
-    if (constraints.maxWidth !== undefined)
-        styles.maxWidth = constraints.maxWidth;
-    if (constraints.minHeight !== undefined)
-        styles.minHeight = constraints.minHeight;
-    if (constraints.maxHeight !== undefined)
-        styles.maxHeight = constraints.maxHeight;
-    return styles;
-}
-function transformToCSS(transform, transformAlignment) {
-    if (!transform)
-        return {};
-    const transforms = [];
-    if (transform.translateX !== undefined)
-        transforms.push(`translateX(${transform.translateX}px)`);
-    if (transform.translateY !== undefined)
-        transforms.push(`translateY(${transform.translateY}px)`);
-    if (transform.scaleX !== undefined)
-        transforms.push(`scaleX(${transform.scaleX})`);
-    if (transform.scaleY !== undefined)
-        transforms.push(`scaleY(${transform.scaleY})`);
-    if (transform.rotateX !== undefined)
-        transforms.push(`rotateX(${transform.rotateX}rad)`);
-    if (transform.rotateY !== undefined)
-        transforms.push(`rotateY(${transform.rotateY}rad)`);
-    if (transform.rotateZ !== undefined)
-        transforms.push(`rotateZ(${transform.rotateZ}rad)`);
-    const styles = {};
-    if (transforms.length > 0) {
-        styles.transform = transforms.join(' ');
-    }
-    if (transformAlignment) {
-        const originX = transformAlignment.x === -1 ? 'left' : transformAlignment.x === 0 ? 'center' : 'right';
-        const originY = transformAlignment.y === -1 ? 'top' : transformAlignment.y === 0 ? 'center' : 'bottom';
-        styles.transformOrigin = `${originX} ${originY}`;
-    }
-    return styles;
-}
-function decorationToCSS(decoration) {
-    if (!decoration)
-        return {};
-    const styles = {};
-    if (decoration.color)
-        styles.backgroundColor = decoration.color;
-    if (decoration.borderRadius) {
-        styles.borderRadius = typeof decoration.borderRadius === 'number' ? `${decoration.borderRadius}px` : decoration.borderRadius;
-    }
-    if (decoration.borderWidth && decoration.borderWidth > 0) {
-        styles.borderWidth = `${decoration.borderWidth}px`;
-        styles.borderColor = decoration.borderColor;
-        styles.borderStyle = decoration.borderStyle || 'solid';
-    }
-    if (decoration.boxShadow)
-        styles.boxShadow = decoration.boxShadow;
-    if (decoration.gradient)
-        styles.background = decoration.gradient;
-    return styles;
+    Decoration.clipToClasses = clipToClasses;
+})(Decoration || (Decoration = {}));
+
+function resolvePaddingMargin(value) {
+    if (!value)
+        return undefined;
+    if (typeof value === 'string')
+        return value;
+    return value.toPadding();
 }
 /**
  * Container component equivalent to Flutter's Container widget.
@@ -689,9 +854,17 @@ function decorationToCSS(decoration) {
  *   <div>Content goes here</div>
  * </Container>
  *
- * // With transform and constraints
+ * // With gradient and transform
  * <Container
  *   constraints={{ minHeight: 200, maxWidth: 400 }}
+ *   decoration={{
+ *     gradient: new LinearGradient({
+ *       begin: Alignment.topCenter,
+ *       end: Alignment.bottomCenter,
+ *       colors: ['rgba(0,0,0,0.2)', 'transparent'],
+ *       stops: [0.0, 0.1],
+ *     })
+ *   }}
  *   transform={{ rotateZ: 0.1, scaleX: 1.1 }}
  *   transformAlignment={Alignment.center}
  *   clipBehavior="antiAlias"
@@ -700,11 +873,13 @@ function decorationToCSS(decoration) {
  * </Container>
  * ```
  *
- * EdgeInsets methods:
+ * Utility class methods:
  * - EdgeInsets.all(16) - uniform spacing on all sides
  * - EdgeInsets.symmetric({ horizontal: 8, vertical: 16 }) - symmetric spacing
  * - EdgeInsets.only({ left: 8, top: 16 }) - individual side control
  * - EdgeInsets.zero() - no spacing
+ * - Alignment.center, Alignment.topLeft, etc. - predefined alignments
+ * - LinearGradient, RadialGradient, SweepGradient - gradient classes
  */
 function Container(props) {
     const { children, alignment, padding, color, decoration, foregroundDecoration, width, height, constraints, margin, transform, transformAlignment, clipBehavior, 
@@ -735,27 +910,32 @@ function Container(props) {
         borderStyle: decoration?.borderStyle || borderStyle,
     };
     // Build Tailwind classes
-    const alignmentClasses = alignmentToTailwind(alignment);
-    const clipClasses = clipBehaviorToTailwind(clipBehavior);
+    const alignmentClasses = alignment ? Alignment.toFlexClasses(alignment) : [];
+    const clipClasses = Decoration.clipToClasses(clipBehavior);
     // Build CSS styles for properties that don't have good Tailwind equivalents
-    const constraintStyles = constraintsToCSS(constraints);
-    const transformStyles = transformToCSS(transform, transformAlignment);
-    const decorationStyles = decorationToCSS(effectiveDecoration);
+    const constraintStyles = BoxConstraints.toCSS(constraints);
+    const transformStyles = Matrix4$1.toCSS(transform, transformAlignment);
+    const decorationStyles = Decoration.toCSS(effectiveDecoration);
+    // Resolve padding and margin
+    const resolvedPadding = resolvePaddingMargin(padding);
+    const resolvedMargin = resolvePaddingMargin(margin);
     // Combine all CSS classes
     const allClasses = [
         ...alignmentClasses,
         ...clipClasses,
         foregroundDecoration ? 'relative' : '', // Required for foregroundDecoration positioning
         className,
-    ].filter(Boolean).join(' ');
+    ]
+        .filter(Boolean)
+        .join(' ');
     // Container styles combining all properties
     const containerStyle = {
         ...flexStyles,
         ...constraintStyles,
         ...decorationStyles,
         ...transformStyles,
-        padding,
-        margin,
+        padding: resolvedPadding,
+        margin: resolvedMargin,
         alignSelf,
         ...style,
     };
@@ -767,9 +947,8 @@ function Container(props) {
             right: 0,
             bottom: 0,
             pointerEvents: 'none',
-            ...decorationToCSS(foregroundDecoration),
+            ...Decoration.toCSS(foregroundDecoration),
             backgroundColor: 'transparent', // Don't paint background for foreground
-            background: foregroundDecoration.gradient, // But allow gradient
         } })) : null;
     return (jsxRuntimeExports.jsxs("div", { className: allClasses, style: containerStyle, children: [children, foregroundElement] }));
 }
@@ -1575,7 +1754,7 @@ function distance(a, b) {
     return Math.hypot(dx, dy);
 }
 // ===== Component =====
-function GestureDetector({ children, className, style, behavior = exports.HitTestBehavior.deferToChild, excludeFromSemantics = false, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay = 500, doubleTapDelay = 300, tapSlop = 10, panSlop = 10, longPressMoveTolerance = 6 }) {
+function GestureDetector({ children, className, style, behavior = exports.HitTestBehavior.deferToChild, excludeFromSemantics = false, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay = 500, doubleTapDelay = 300, tapSlop = 10, panSlop = 10, longPressMoveTolerance = 6, }) {
     const ref = require$$0.useRef(null);
     const pressedRef = require$$0.useRef(false);
     const startGlobal = require$$0.useRef(null);
@@ -1650,7 +1829,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
     }, [onTapCancel]);
     // === Pointer Handlers ===
     const onPointerDown = require$$0.useCallback((e) => {
-        if (e.pointerType === "mouse" && e.button !== 0)
+        if (e.pointerType === 'mouse' && e.button !== 0)
             return; // primary only
         // Respect deferToChild: only handle if a child is hit, not the container itself
         if (behavior === exports.HitTestBehavior.deferToChild && e.target === ref.current) {
@@ -1681,14 +1860,35 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         }
         onTapDown?.({ globalPosition: global, localPosition: local });
         // Scale start if two pointers
-        if (!scaleActiveRef.current && pointerCount() === 2 && (onScaleStart || onScaleUpdate || onScaleEnd)) {
+        if (!scaleActiveRef.current &&
+            pointerCount() === 2 &&
+            (onScaleStart || onScaleUpdate || onScaleEnd)) {
             scaleActiveRef.current = true;
             const focal = getFocal();
             if (ref.current) {
-                onScaleStart?.({ focalPoint: { dx: focal.dx + ref.current.getBoundingClientRect().left, dy: focal.dy + ref.current.getBoundingClientRect().top }, localFocalPoint: focal, pointers: 2 });
+                onScaleStart?.({
+                    focalPoint: {
+                        dx: focal.dx + ref.current.getBoundingClientRect().left,
+                        dy: focal.dy + ref.current.getBoundingClientRect().top,
+                    },
+                    localFocalPoint: focal,
+                    pointers: 2,
+                });
             }
         }
-    }, [behavior, clearTimers, getFocal, longPressDelay, onLongPress, onLongPressStart, onTapDown, onScaleStart, onScaleUpdate, onScaleEnd, pointerCount]);
+    }, [
+        behavior,
+        clearTimers,
+        getFocal,
+        longPressDelay,
+        onLongPress,
+        onLongPressStart,
+        onTapDown,
+        onScaleStart,
+        onScaleUpdate,
+        onScaleEnd,
+        pointerCount,
+    ]);
     const onPointerMove = require$$0.useCallback((e) => {
         if (!pressedRef.current)
             return;
@@ -1714,7 +1914,12 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
             const focal = getFocal();
             const { scale, rotation, hScale, vScale } = getScaleRotate(prev, curr);
             onScaleUpdate({
-                focalPoint: ref.current ? { dx: focal.dx + ref.current.getBoundingClientRect().left, dy: focal.dy + ref.current.getBoundingClientRect().top } : focal,
+                focalPoint: ref.current
+                    ? {
+                        dx: focal.dx + ref.current.getBoundingClientRect().left,
+                        dy: focal.dy + ref.current.getBoundingClientRect().top,
+                    }
+                    : focal,
                 localFocalPoint: focal,
                 scale,
                 rotation,
@@ -1725,7 +1930,9 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         }
         const movedFromStart = distance(start, global);
         // Cancel long press if exceeded tolerance
-        if (!isPanningRef.current && movedFromStart > longPressMoveTolerance && longPressTimerRef.current) {
+        if (!isPanningRef.current &&
+            movedFromStart > longPressMoveTolerance &&
+            longPressTimerRef.current) {
             clearTimeout(longPressTimerRef.current);
             longPressTimerRef.current = null;
         }
@@ -1737,7 +1944,10 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
                 clearTimeout(longPressTimerRef.current);
                 longPressTimerRef.current = null;
             }
-            onPanStart?.({ globalPosition: start, localPosition: getLocal(ref.current, start.dx, start.dy) });
+            onPanStart?.({
+                globalPosition: start,
+                localPosition: getLocal(ref.current, start.dx, start.dy),
+            });
         }
         if (isPanningRef.current && onPanUpdate) {
             const delta = { dx: global.dx - last.dx, dy: global.dy - last.dy };
@@ -1747,7 +1957,17 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
             const offsetFromOrigin = { dx: global.dx - start.dx, dy: global.dy - start.dy };
             onLongPressMoveUpdate({ globalPosition: global, localPosition: local, offsetFromOrigin });
         }
-    }, [getFocal, getScaleRotate, longPressMoveTolerance, onLongPressMoveUpdate, onPanStart, onPanUpdate, onScaleUpdate, panSlop, pointerCount]);
+    }, [
+        getFocal,
+        getScaleRotate,
+        longPressMoveTolerance,
+        onLongPressMoveUpdate,
+        onPanStart,
+        onPanUpdate,
+        onScaleUpdate,
+        panSlop,
+        pointerCount,
+    ]);
     const onPointerUp = require$$0.useCallback((e) => {
         if (!pressedRef.current)
             return;
@@ -1818,7 +2038,18 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         pressedRef.current = false;
         startGlobal.current = null;
         lastGlobal.current = null;
-    }, [doubleTapDelay, fireTapCancel, onDoubleTap, onPanEnd, onScaleEnd, onTap, onTapUp, onLongPressEnd, tapSlop, pointerCount]);
+    }, [
+        doubleTapDelay,
+        fireTapCancel,
+        onDoubleTap,
+        onPanEnd,
+        onScaleEnd,
+        onTap,
+        onTapUp,
+        onLongPressEnd,
+        tapSlop,
+        pointerCount,
+    ]);
     const onPointerCancel = require$$0.useCallback(() => {
         if (!pressedRef.current)
             return;
@@ -1839,7 +2070,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
     const onKeyDown = require$$0.useCallback((e) => {
         if (excludeFromSemantics)
             return;
-        if (e.key === "Enter" || e.key === " ") {
+        if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             onTap?.();
         }
@@ -1847,23 +2078,28 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
     // Cancel on window blur / visibility change (closer to Flutter's cancel conditions)
     require$$0.useEffect(() => {
         const cancel = () => onPointerCancel();
-        window.addEventListener("blur", cancel);
-        document.addEventListener("visibilitychange", () => {
+        window.addEventListener('blur', cancel);
+        document.addEventListener('visibilitychange', () => {
             if (document.hidden)
                 cancel();
         });
         return () => {
-            window.removeEventListener("blur", cancel);
-            document.removeEventListener("visibilitychange", () => { });
+            window.removeEventListener('blur', cancel);
+            document.removeEventListener('visibilitychange', () => { });
         };
     }, [onPointerCancel]);
     // Styles approximating HitTestBehavior semantics without breaking layout
     const containerStyle = require$$0.useMemo(() => {
-        const base = { ...style, touchAction: "none" };
+        const base = { ...style, touchAction: 'none' };
         switch (behavior) {
             case exports.HitTestBehavior.opaque:
                 // ensure there is a hit area w/o visual change
-                return { ...base, position: base.position || "relative", minWidth: base.minWidth || 1, minHeight: base.minHeight || 1 };
+                return {
+                    ...base,
+                    position: base.position || 'relative',
+                    minWidth: base.minWidth || 1,
+                    minHeight: base.minHeight || 1,
+                };
             case exports.HitTestBehavior.translucent:
                 // do not set pointer-events:none; we still want the container to receive events while letting children work
                 return base;
@@ -1875,9 +2111,9 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         ref,
         className,
         style: containerStyle,
-        role: excludeFromSemantics ? undefined : "button",
+        role: excludeFromSemantics ? undefined : 'button',
         tabIndex: excludeFromSemantics ? undefined : 0,
-        "aria-label": excludeFromSemantics ? undefined : ariaLabel,
+        'aria-label': excludeFromSemantics ? undefined : ariaLabel,
         onKeyDown,
         // Pointer events
         onPointerDown,
@@ -1944,18 +2180,30 @@ function AnimatedContainer(props) {
             return `${value}px`;
         return value;
     };
-    // Padding is now directly provided as EdgeInsets result
+    // Helper function to normalize EdgeInsets or string values
+    const normalizeEdgeInsets = (value) => {
+        if (value === undefined)
+            return '0';
+        if (typeof value === 'string')
+            return value;
+        return value.toPadding();
+    };
+    // Calculate effective padding and margin
     const calculateEffectivePadding = () => {
-        return padding || '0';
+        return normalizeEdgeInsets(padding);
+    };
+    const calculateEffectiveMargin = () => {
+        return normalizeEdgeInsets(margin);
     };
     // Calculate animated styles based on current props
     const calculateTargetStyles = () => {
         const effectivePadding = calculateEffectivePadding();
+        const effectiveMargin = calculateEffectiveMargin();
         return {
             width: normalizeValue(width),
             height: normalizeValue(height),
             padding: effectivePadding,
-            margin: normalizeValue(margin),
+            margin: effectiveMargin,
             backgroundColor: backgroundColor || 'transparent',
             borderRadius: normalizeValue(borderRadius),
             borderWidth: borderWidth || 0,
