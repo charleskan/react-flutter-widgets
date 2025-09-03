@@ -242,7 +242,7 @@ declare abstract class Gradient {
     abstract toCSS(): string;
 }
 
-type Clip = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
+type Clip$1 = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
 interface BoxDecoration {
     color?: string;
     borderRadius?: number | string;
@@ -279,7 +279,7 @@ interface ContainerProps {
     /** The alignment of the origin, relative to the size of the container, if transform is specified */
     transformAlignment?: AlignmentGeometry;
     /** The clip behavior when Container.decoration is not null */
-    clipBehavior?: Clip;
+    clipBehavior?: Clip$1;
     /** @deprecated Use decoration.color instead */
     backgroundColor?: string;
     /** @deprecated Use decoration.borderRadius instead */
@@ -434,8 +434,8 @@ declare enum CrossAxisAlignment {
  * Main axis size controls how much space the flex container should occupy
  */
 declare enum MainAxisSize {
-    MIN = "min-content",
-    MAX = "max-content"
+    MIN = "min",
+    MAX = "max"
 }
 /**
  * Vertical direction for column layout
@@ -443,6 +443,15 @@ declare enum MainAxisSize {
 declare enum VerticalDirection {
     UP = "column-reverse",
     DOWN = "column"
+}
+/**
+ * Clip behavior for overflow handling
+ */
+declare enum Clip {
+    NONE = "visible",
+    HARD_EDGE = "hidden",
+    ANTI_ALIAS = "hidden",
+    ANTI_ALIAS_WITH_SAVE_LAYER = "hidden"
 }
 
 /**
@@ -480,20 +489,12 @@ interface FlexProps {
     textDirection?: TextDirection;
     /** Text baseline for cross-axis alignment */
     textBaseline?: TextBaseline;
-    /** Flex factor for this widget (equivalent to CSS flex-grow) */
-    flex?: number;
-    /** Whether this widget should expand to fill available space */
-    expanded?: boolean;
-    /** Whether this widget should be flexible in the flex layout */
-    flexible?: boolean;
-    /** Fixed width of the container */
-    width?: number | string;
-    /** Fixed height of the container */
-    height?: number | string;
-    /** Padding inside the container - must use EdgeInsets methods */
-    padding?: string;
-    /** Margin outside the container - must use EdgeInsets methods */
-    margin?: string;
+    /** Vertical direction for layout */
+    verticalDirection?: VerticalDirection;
+    /** Space between children in the main axis */
+    spacing?: number;
+    /** Clip behavior for content overflow */
+    clipBehavior?: Clip;
 }
 /**
  * Column component props extending FlexProps with column-specific options
@@ -506,8 +507,6 @@ interface ColumnProps extends FlexProps {
  * Row component props extending FlexProps with row-specific options
  */
 interface RowProps extends FlexProps {
-    /** Text direction affects the horizontal direction in a row */
-    textDirection?: TextDirection;
 }
 
 /**

@@ -26,8 +26,8 @@ export declare enum CrossAxisAlignment {
  * Main axis size controls how much space the flex container should occupy
  */
 export declare enum MainAxisSize {
-    MIN = "min-content",
-    MAX = "max-content"
+    MIN = "min",
+    MAX = "max"
 }
 /**
  * Vertical direction for column layout
@@ -35,5 +35,14 @@ export declare enum MainAxisSize {
 export declare enum VerticalDirection {
     UP = "column-reverse",
     DOWN = "column"
+}
+/**
+ * Clip behavior for overflow handling
+ */
+export declare enum Clip {
+    NONE = "visible",
+    HARD_EDGE = "hidden",
+    ANTI_ALIAS = "hidden",
+    ANTI_ALIAS_WITH_SAVE_LAYER = "hidden"
 }
 //# sourceMappingURL=Layout.d.ts.map

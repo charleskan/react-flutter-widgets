@@ -157,8 +157,8 @@ function Container(props: ContainerProps) {
     style = {},
   } = props
 
-  // Build flex styles
-  const flexStyles = Flex.buildFlexStyles({
+  // Build flex styles for Container (includes flex child properties)
+  const flexStyles = Flex.buildContainerFlexStyles({
     flex,
     expanded,
     flexible,

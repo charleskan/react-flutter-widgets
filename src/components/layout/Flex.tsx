@@ -1,6 +1,6 @@
 import type { FlexProps } from '../../types/Flex.type'
 import { Flex as FlexUtils } from '../../types/Flex.type'
-import { CrossAxisAlignment, MainAxisAlignment } from '../../types/Layout'
+import { CrossAxisAlignment, MainAxisAlignment, MainAxisSize, Clip } from '../../types/Layout'
 import { TextDirection } from '../../types/Text'
 
 interface FlexComponentProps extends FlexProps {
@@ -31,32 +31,25 @@ function Flex(props: FlexComponentProps) {
     direction,
     mainAxisAlignment = MainAxisAlignment.START,
     crossAxisAlignment = CrossAxisAlignment.CENTER,
-    mainAxisSize,
+    mainAxisSize = MainAxisSize.MAX,
     textDirection,
     textBaseline,
-    padding,
-    margin,
-    flex,
-    expanded,
-    flexible,
-    width,
-    height,
+    spacing = 0,
+    clipBehavior = Clip.NONE,
   } = props
 
   const flexStyles = FlexUtils.buildFlexStyles({
-    flex,
-    expanded,
-    flexible,
-    width,
-    height,
+    spacing,
+    clipBehavior,
   })
+
+  const mainAxisSizeStyles = FlexUtils.getMainAxisSizeStyles(mainAxisSize, direction)
 
   const mainAxisClass = FlexUtils.getMainAxisAlignmentClass(mainAxisAlignment)
   const crossAxisClass = FlexUtils.getCrossAxisAlignmentClass(crossAxisAlignment)
-  const sizeClass = mainAxisSize ? FlexUtils.getMainAxisSizeClass(mainAxisSize) : ''
   const directionClass = direction === 'column' ? 'flex-col' : 'flex-row'
 
-  const containerClasses = ['flex', directionClass, mainAxisClass, crossAxisClass, sizeClass]
+  const containerClasses = ['flex', directionClass, mainAxisClass, crossAxisClass]
     .filter(Boolean)
     .join(' ')
 
@@ -68,8 +61,7 @@ function Flex(props: FlexComponentProps) {
 
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
-    padding,
-    margin,
+    ...mainAxisSizeStyles,
     direction: cssDirection,
     alignItems:
       textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,

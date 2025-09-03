@@ -1,6 +1,6 @@
 import type { ColumnProps } from '../../types/Flex.type'
 import { Flex } from '../../types/Flex.type'
-import { CrossAxisAlignment, MainAxisAlignment, VerticalDirection } from '../../types/Layout'
+import { CrossAxisAlignment, MainAxisAlignment, MainAxisSize, Clip, VerticalDirection } from '../../types/Layout'
 
 /**
  * Column component that arranges children vertically, equivalent to Flutter's Column widget.
@@ -23,38 +23,30 @@ function Column(props: ColumnProps) {
     children,
     mainAxisAlignment = MainAxisAlignment.START,
     crossAxisAlignment = CrossAxisAlignment.CENTER,
-    mainAxisSize,
-    verticalDirection = VerticalDirection.DOWN,
+    mainAxisSize = MainAxisSize.MAX,
     textBaseline,
-    padding,
-    margin,
-    flex,
-    expanded,
-    flexible,
-    width,
-    height,
+    verticalDirection = VerticalDirection.DOWN,
+    spacing = 0,
+    clipBehavior = Clip.NONE,
   } = props
 
   const flexStyles = Flex.buildFlexStyles({
-    flex,
-    expanded,
-    flexible,
-    width,
-    height,
+    spacing,
+    clipBehavior,
   })
+
+  const mainAxisSizeStyles = Flex.getMainAxisSizeStyles(mainAxisSize, 'column')
 
   const mainAxisClass = Flex.getMainAxisAlignmentClass(mainAxisAlignment)
   const crossAxisClass = Flex.getCrossAxisAlignmentClass(crossAxisAlignment)
-  const sizeClass = mainAxisSize ? Flex.getMainAxisSizeClass(mainAxisSize) : ''
 
-  const containerClasses = ['flex', 'flex-col', mainAxisClass, crossAxisClass, sizeClass]
+  const containerClasses = ['flex', 'flex-col', mainAxisClass, crossAxisClass]
     .filter(Boolean)
     .join(' ')
 
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
-    padding,
-    margin,
+    ...mainAxisSizeStyles,
     flexDirection: verticalDirection,
     alignItems:
       textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,

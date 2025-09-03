@@ -29,8 +29,8 @@ export enum CrossAxisAlignment {
  * Main axis size controls how much space the flex container should occupy
  */
 export enum MainAxisSize {
-  MIN = 'min-content',
-  MAX = 'max-content',
+  MIN = 'min',
+  MAX = 'max',
 }
 
 /**
@@ -39,4 +39,14 @@ export enum MainAxisSize {
 export enum VerticalDirection {
   UP = 'column-reverse',
   DOWN = 'column',
+}
+
+/**
+ * Clip behavior for overflow handling
+ */
+export enum Clip {
+  NONE = 'visible',
+  HARD_EDGE = 'hidden',
+  ANTI_ALIAS = 'hidden',
+  ANTI_ALIAS_WITH_SAVE_LAYER = 'hidden',
 }

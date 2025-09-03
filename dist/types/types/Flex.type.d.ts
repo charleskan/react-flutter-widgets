@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from './Layout';
+import { type Clip, CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from './Layout';
 import type { VerticalDirection } from './Layout';
 import type { TextBaseline, TextDirection } from './Text';
 /**
@@ -18,20 +18,12 @@ export interface FlexProps {
     textDirection?: TextDirection;
     /** Text baseline for cross-axis alignment */
     textBaseline?: TextBaseline;
-    /** Flex factor for this widget (equivalent to CSS flex-grow) */
-    flex?: number;
-    /** Whether this widget should expand to fill available space */
-    expanded?: boolean;
-    /** Whether this widget should be flexible in the flex layout */
-    flexible?: boolean;
-    /** Fixed width of the container */
-    width?: number | string;
-    /** Fixed height of the container */
-    height?: number | string;
-    /** Padding inside the container - must use EdgeInsets methods */
-    padding?: string;
-    /** Margin outside the container - must use EdgeInsets methods */
-    margin?: string;
+    /** Vertical direction for layout */
+    verticalDirection?: VerticalDirection;
+    /** Space between children in the main axis */
+    spacing?: number;
+    /** Clip behavior for content overflow */
+    clipBehavior?: Clip;
 }
 /**
  * Column component props extending FlexProps with column-specific options
@@ -44,16 +36,23 @@ export interface ColumnProps extends FlexProps {
  * Row component props extending FlexProps with row-specific options
  */
 export interface RowProps extends FlexProps {
-    /** Text direction affects the horizontal direction in a row */
-    textDirection?: TextDirection;
 }
 export declare namespace Flex {
     /**
-     * Builds flex-related CSS styles based on Flutter flex properties
+     * Builds flex container CSS styles based on Flutter flex properties
      * @param options - Flutter flex configuration
      * @returns CSS style object
      */
     function buildFlexStyles(options: {
+        spacing?: number;
+        clipBehavior?: Clip;
+    }): CSSProperties;
+    /**
+     * Builds flex child CSS styles for Container (includes flex/expanded/flexible)
+     * @param options - Container flex configuration
+     * @returns CSS style object
+     */
+    function buildContainerFlexStyles(options: {
         flex?: number;
         expanded?: boolean;
         flexible?: boolean;
@@ -73,10 +72,11 @@ export declare namespace Flex {
      */
     function getCrossAxisAlignmentClass(alignment: CrossAxisAlignment): string;
     /**
-     * Gets CSS classes for main axis size
+     * Gets CSS styles for main axis size behavior
      * @param size - Main axis size value
-     * @returns CSS class string
+     * @param direction - Flex direction ('row' or 'column')
+     * @returns CSS style object
      */
-    function getMainAxisSizeClass(size: MainAxisSize): string;
+    function getMainAxisSizeStyles(size: MainAxisSize, direction: 'row' | 'column'): CSSProperties;
 }
 //# sourceMappingURL=Flex.type.d.ts.map

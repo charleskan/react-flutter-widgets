@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from './Layout'
+import { type Clip, CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from './Layout'
 import type { VerticalDirection } from './Layout'
 import type { TextBaseline, TextDirection } from './Text'
 
@@ -21,26 +21,12 @@ export interface FlexProps {
   textDirection?: TextDirection
   /** Text baseline for cross-axis alignment */
   textBaseline?: TextBaseline
-
-  // Flutter flex properties
-  /** Flex factor for this widget (equivalent to CSS flex-grow) */
-  flex?: number
-  /** Whether this widget should expand to fill available space */
-  expanded?: boolean
-  /** Whether this widget should be flexible in the flex layout */
-  flexible?: boolean
-
-  // Flutter sizing
-  /** Fixed width of the container */
-  width?: number | string
-  /** Fixed height of the container */
-  height?: number | string
-
-  // Flutter spacing (using EdgeInsets)
-  /** Padding inside the container - must use EdgeInsets methods */
-  padding?: string
-  /** Margin outside the container - must use EdgeInsets methods */
-  margin?: string
+  /** Vertical direction for layout */
+  verticalDirection?: VerticalDirection
+  /** Space between children in the main axis */
+  spacing?: number
+  /** Clip behavior for content overflow */
+  clipBehavior?: Clip
 }
 
 /**
@@ -55,17 +41,40 @@ export interface ColumnProps extends FlexProps {
  * Row component props extending FlexProps with row-specific options
  */
 export interface RowProps extends FlexProps {
-  /** Text direction affects the horizontal direction in a row */
-  textDirection?: TextDirection
+  // Row inherits all props from FlexProps
+  // No additional row-specific props needed
 }
 
 export namespace Flex {
   /**
-   * Builds flex-related CSS styles based on Flutter flex properties
+   * Builds flex container CSS styles based on Flutter flex properties
    * @param options - Flutter flex configuration
    * @returns CSS style object
    */
   export function buildFlexStyles(options: {
+    spacing?: number
+    clipBehavior?: Clip
+  }): CSSProperties {
+    const { spacing, clipBehavior } = options
+    const styles: CSSProperties = {}
+
+    if (spacing !== undefined && spacing > 0) {
+      styles.gap = `${spacing}px`
+    }
+
+    if (clipBehavior !== undefined) {
+      styles.overflow = clipBehavior
+    }
+
+    return styles
+  }
+
+  /**
+   * Builds flex child CSS styles for Container (includes flex/expanded/flexible)
+   * @param options - Container flex configuration
+   * @returns CSS style object
+   */
+  export function buildContainerFlexStyles(options: {
     flex?: number
     expanded?: boolean
     flexible?: boolean
@@ -147,18 +156,34 @@ export namespace Flex {
   }
 
   /**
-   * Gets CSS classes for main axis size
+   * Gets CSS styles for main axis size behavior
    * @param size - Main axis size value
-   * @returns CSS class string
+   * @param direction - Flex direction ('row' or 'column')
+   * @returns CSS style object
    */
-  export function getMainAxisSizeClass(size: MainAxisSize): string {
+  export function getMainAxisSizeStyles(
+    size: MainAxisSize,
+    direction: 'row' | 'column',
+  ): CSSProperties {
+    const styles: CSSProperties = {}
+
     switch (size) {
       case MainAxisSize.MIN:
-        return 'w-min h-min'
+        if (direction === 'row') {
+          styles.width = 'fit-content'
+        } else {
+          styles.height = 'fit-content'
+        }
+        break
       case MainAxisSize.MAX:
-        return 'w-max h-max'
-      default:
-        return ''
+        if (direction === 'row') {
+          styles.width = '100%'
+        } else {
+          styles.height = '100%'
+        }
+        break
     }
+
+    return styles
   }
 }

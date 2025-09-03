@@ -1,6 +1,6 @@
 import type { RowProps } from '../../types/Flex.type'
 import { Flex } from '../../types/Flex.type'
-import { CrossAxisAlignment, MainAxisAlignment } from '../../types/Layout'
+import { Clip, CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from '../../types/Layout'
 import { TextDirection } from '../../types/Text'
 
 /**
@@ -24,31 +24,24 @@ function Row(props: RowProps) {
     children,
     mainAxisAlignment = MainAxisAlignment.START,
     crossAxisAlignment = CrossAxisAlignment.CENTER,
-    mainAxisSize,
+    mainAxisSize = MainAxisSize.MAX,
     textDirection = TextDirection.LTR,
     textBaseline,
-    padding,
-    margin,
-    flex,
-    expanded,
-    flexible,
-    width,
-    height,
+    spacing = 0,
+    clipBehavior = Clip.NONE,
   } = props
 
   const flexStyles = Flex.buildFlexStyles({
-    flex,
-    expanded,
-    flexible,
-    width,
-    height,
+    spacing,
+    clipBehavior,
   })
+
+  const mainAxisSizeStyles = Flex.getMainAxisSizeStyles(mainAxisSize, 'row')
 
   const mainAxisClass = Flex.getMainAxisAlignmentClass(mainAxisAlignment)
   const crossAxisClass = Flex.getCrossAxisAlignmentClass(crossAxisAlignment)
-  const sizeClass = mainAxisSize ? Flex.getMainAxisSizeClass(mainAxisSize) : ''
 
-  const containerClasses = ['flex', 'flex-row', mainAxisClass, crossAxisClass, sizeClass]
+  const containerClasses = ['flex', 'flex-row', mainAxisClass, crossAxisClass]
     .filter(Boolean)
     .join(' ')
 
@@ -60,8 +53,7 @@ function Row(props: RowProps) {
 
   const containerStyle: React.CSSProperties = {
     ...flexStyles,
-    padding,
-    margin,
+    ...mainAxisSizeStyles,
     direction: cssDirection,
     flexDirection: textDirection === TextDirection.RTL ? 'row-reverse' : 'row',
     alignItems:

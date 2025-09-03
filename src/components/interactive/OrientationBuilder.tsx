@@ -211,14 +211,14 @@ export const OrientationUtils = {
    */
   isMobileDevice(): boolean {
     if (typeof window === 'undefined') return false
-    
+
     const windowWithOrientation = window as Window & { orientation?: number }
     if ('orientation' in windowWithOrientation) return true
-    
+
     if ('screen' in window && window.screen && 'orientation' in window.screen) {
       return true
     }
-    
+
     return false
   },
 }

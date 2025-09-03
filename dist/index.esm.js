@@ -458,8 +458,8 @@ var CrossAxisAlignment;
  */
 var MainAxisSize;
 (function (MainAxisSize) {
-    MainAxisSize["MIN"] = "min-content";
-    MainAxisSize["MAX"] = "max-content";
+    MainAxisSize["MIN"] = "min";
+    MainAxisSize["MAX"] = "max";
 })(MainAxisSize || (MainAxisSize = {}));
 /**
  * Vertical direction for column layout
@@ -469,15 +469,42 @@ var VerticalDirection;
     VerticalDirection["UP"] = "column-reverse";
     VerticalDirection["DOWN"] = "column";
 })(VerticalDirection || (VerticalDirection = {}));
+/**
+ * Clip behavior for overflow handling
+ */
+var Clip;
+(function (Clip) {
+    Clip["NONE"] = "visible";
+    Clip["HARD_EDGE"] = "hidden";
+    Clip["ANTI_ALIAS"] = "hidden";
+    Clip["ANTI_ALIAS_WITH_SAVE_LAYER"] = "hidden";
+})(Clip || (Clip = {}));
 
 var Flex$1;
 (function (Flex) {
     /**
-     * Builds flex-related CSS styles based on Flutter flex properties
+     * Builds flex container CSS styles based on Flutter flex properties
      * @param options - Flutter flex configuration
      * @returns CSS style object
      */
     function buildFlexStyles(options) {
+        const { spacing, clipBehavior } = options;
+        const styles = {};
+        if (spacing !== undefined && spacing > 0) {
+            styles.gap = `${spacing}px`;
+        }
+        if (clipBehavior !== undefined) {
+            styles.overflow = clipBehavior;
+        }
+        return styles;
+    }
+    Flex.buildFlexStyles = buildFlexStyles;
+    /**
+     * Builds flex child CSS styles for Container (includes flex/expanded/flexible)
+     * @param options - Container flex configuration
+     * @returns CSS style object
+     */
+    function buildContainerFlexStyles(options) {
         const { flex, expanded, flexible, width, height } = options;
         const styles = {};
         if (width !== undefined) {
@@ -504,7 +531,7 @@ var Flex$1;
         }
         return styles;
     }
-    Flex.buildFlexStyles = buildFlexStyles;
+    Flex.buildContainerFlexStyles = buildContainerFlexStyles;
     /**
      * Gets CSS classes for main axis alignment
      * @param alignment - Main axis alignment value
@@ -552,21 +579,34 @@ var Flex$1;
     }
     Flex.getCrossAxisAlignmentClass = getCrossAxisAlignmentClass;
     /**
-     * Gets CSS classes for main axis size
+     * Gets CSS styles for main axis size behavior
      * @param size - Main axis size value
-     * @returns CSS class string
+     * @param direction - Flex direction ('row' or 'column')
+     * @returns CSS style object
      */
-    function getMainAxisSizeClass(size) {
+    function getMainAxisSizeStyles(size, direction) {
+        const styles = {};
         switch (size) {
             case MainAxisSize.MIN:
-                return 'w-min h-min';
+                if (direction === 'row') {
+                    styles.width = 'fit-content';
+                }
+                else {
+                    styles.height = 'fit-content';
+                }
+                break;
             case MainAxisSize.MAX:
-                return 'w-max h-max';
-            default:
-                return '';
+                if (direction === 'row') {
+                    styles.width = '100%';
+                }
+                else {
+                    styles.height = '100%';
+                }
+                break;
         }
+        return styles;
     }
-    Flex.getMainAxisSizeClass = getMainAxisSizeClass;
+    Flex.getMainAxisSizeStyles = getMainAxisSizeStyles;
 })(Flex$1 || (Flex$1 = {}));
 
 /**
@@ -1053,8 +1093,8 @@ function Container(props) {
     backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', 
     // Flex properties
     flex, expanded, flexible, flexShrink, alignSelf, className = '', style = {}, } = props;
-    // Build flex styles
-    const flexStyles = Flex$1.buildFlexStyles({
+    // Build flex styles for Container (includes flex child properties)
+    const flexStyles = Flex$1.buildContainerFlexStyles({
         flex,
         expanded,
         flexible,
@@ -1213,18 +1253,15 @@ var TextBaseline;
  * ```
  */
 function Row(props) {
-    const { children, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize, textDirection = TextDirection.LTR, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
+    const { children, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize = MainAxisSize.MAX, textDirection = TextDirection.LTR, textBaseline, spacing = 0, clipBehavior = Clip.NONE, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
-        flex,
-        expanded,
-        flexible,
-        width,
-        height,
+        spacing,
+        clipBehavior,
     });
+    const mainAxisSizeStyles = Flex$1.getMainAxisSizeStyles(mainAxisSize, 'row');
     const mainAxisClass = Flex$1.getMainAxisAlignmentClass(mainAxisAlignment);
     const crossAxisClass = Flex$1.getCrossAxisAlignmentClass(crossAxisAlignment);
-    const sizeClass = mainAxisSize ? Flex$1.getMainAxisSizeClass(mainAxisSize) : '';
-    const containerClasses = ['flex', 'flex-row', mainAxisClass, crossAxisClass, sizeClass]
+    const containerClasses = ['flex', 'flex-row', mainAxisClass, crossAxisClass]
         .filter(Boolean)
         .join(' ');
     // Convert TextDirection enum to CSS direction value
@@ -1233,8 +1270,7 @@ function Row(props) {
         : textDirection?.toLowerCase();
     const containerStyle = {
         ...flexStyles,
-        padding,
-        margin,
+        ...mainAxisSizeStyles,
         direction: cssDirection,
         flexDirection: textDirection === TextDirection.RTL ? 'row-reverse' : 'row',
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
@@ -1259,24 +1295,20 @@ function Row(props) {
  * ```
  */
 function Column(props) {
-    const { children, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize, verticalDirection = VerticalDirection.DOWN, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
+    const { children, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize = MainAxisSize.MAX, textBaseline, verticalDirection = VerticalDirection.DOWN, spacing = 0, clipBehavior = Clip.NONE, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
-        flex,
-        expanded,
-        flexible,
-        width,
-        height,
+        spacing,
+        clipBehavior,
     });
+    const mainAxisSizeStyles = Flex$1.getMainAxisSizeStyles(mainAxisSize, 'column');
     const mainAxisClass = Flex$1.getMainAxisAlignmentClass(mainAxisAlignment);
     const crossAxisClass = Flex$1.getCrossAxisAlignmentClass(crossAxisAlignment);
-    const sizeClass = mainAxisSize ? Flex$1.getMainAxisSizeClass(mainAxisSize) : '';
-    const containerClasses = ['flex', 'flex-col', mainAxisClass, crossAxisClass, sizeClass]
+    const containerClasses = ['flex', 'flex-col', mainAxisClass, crossAxisClass]
         .filter(Boolean)
         .join(' ');
     const containerStyle = {
         ...flexStyles,
-        padding,
-        margin,
+        ...mainAxisSizeStyles,
         flexDirection: verticalDirection,
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
@@ -1301,19 +1333,16 @@ function Column(props) {
  * ```
  */
 function Flex(props) {
-    const { children, direction, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize, textDirection, textBaseline, padding, margin, flex, expanded, flexible, width, height, } = props;
+    const { children, direction, mainAxisAlignment = MainAxisAlignment.START, crossAxisAlignment = CrossAxisAlignment.CENTER, mainAxisSize = MainAxisSize.MAX, textDirection, textBaseline, spacing = 0, clipBehavior = Clip.NONE, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
-        flex,
-        expanded,
-        flexible,
-        width,
-        height,
+        spacing,
+        clipBehavior,
     });
+    const mainAxisSizeStyles = Flex$1.getMainAxisSizeStyles(mainAxisSize, direction);
     const mainAxisClass = Flex$1.getMainAxisAlignmentClass(mainAxisAlignment);
     const crossAxisClass = Flex$1.getCrossAxisAlignmentClass(crossAxisAlignment);
-    const sizeClass = mainAxisSize ? Flex$1.getMainAxisSizeClass(mainAxisSize) : '';
     const directionClass = direction === 'column' ? 'flex-col' : 'flex-row';
-    const containerClasses = ['flex', directionClass, mainAxisClass, crossAxisClass, sizeClass]
+    const containerClasses = ['flex', directionClass, mainAxisClass, crossAxisClass]
         .filter(Boolean)
         .join(' ');
     // Convert TextDirection enum to CSS direction value
@@ -1322,8 +1351,7 @@ function Flex(props) {
         : textDirection?.toLowerCase();
     const containerStyle = {
         ...flexStyles,
-        padding,
-        margin,
+        ...mainAxisSizeStyles,
         direction: cssDirection,
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
