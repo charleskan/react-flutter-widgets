@@ -60,3 +60,7 @@ package-lock.json
 # Temporary folders
 tmp/
 temp/
+
+# Agents
+.claude/
+CLAUDE.md
