@@ -102,7 +102,6 @@ function mapKeyboard(type?: TextInputType): {
       return { htmlType: 'url', inputMode: 'url' }
     case 'password':
       return { htmlType: 'password' }
-    case 'text':
     default:
       return { htmlType: 'text' }
   }
@@ -205,7 +204,7 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
     const controlled = value !== undefined
     const currentValue = controlled ? (value as string) : inner
 
-    const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
+    const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null)
 
     // expose imperative API
     useImperativeHandle(
@@ -237,21 +236,26 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
 
     // compute props
     const dir = textDirection
-    const ta =
-      textAlign === 'start' ? undefined : textAlign === 'end' ? undefined : (textAlign as any)
+    const ta: React.CSSProperties['textAlign'] =
+      textAlign === 'start'
+        ? undefined
+        : textAlign === 'end'
+          ? undefined
+          : (textAlign as React.CSSProperties['textAlign'])
     // enterKeyHint mapping removed as it's not used in the implementation
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         let text = e.target.value
         if (textCapitalization && textCapitalization !== 'none') {
-          const cursor = (e.target as any).selectionStart as number | null
+          const target = e.target as HTMLInputElement | HTMLTextAreaElement
+          const cursor = target.selectionStart
           text = applyCapitalization(text, textCapitalization)
           // try to restore caret if capitalization changed length (best-effort)
           if (cursor != null) {
             requestAnimationFrame(() => {
               try {
-                ;(e.target as any).setSelectionRange(cursor, cursor)
+                target.setSelectionRange(cursor, cursor)
               } catch {}
             })
           }
@@ -312,7 +316,7 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
 
     const baseField = showTextarea ? (
       <textarea
-        ref={inputRef as any}
+        ref={inputRef}
         id={id}
         name={name}
         value={currentValue}
@@ -325,6 +329,7 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
         maxLength={maxLength}
         readOnly={readOnly}
         disabled={disabled}
+        // biome-ignore lint/a11y/noAutofocus: autoFocus is needed for Flutter compatibility
         autoFocus={autoFocus}
         dir={dir}
         rows={minLines ?? 1}
@@ -333,14 +338,14 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
           resize: expands ? 'none' : 'vertical',
           flex: expands ? 1 : undefined,
           minHeight: expands ? 0 : undefined,
-          textAlign: ta as any,
+          textAlign: ta,
           ...style,
         }}
         className="rtf-input"
       />
     ) : (
       <input
-        ref={inputRef as any}
+        ref={inputRef}
         id={id}
         name={name}
         type={obscureText ? 'password' : htmlType}
@@ -355,11 +360,12 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
         maxLength={maxLength}
         readOnly={readOnly}
         disabled={disabled}
+        // biome-ignore lint/a11y/noAutofocus: autoFocus is needed for Flutter compatibility
         autoFocus={autoFocus}
         dir={dir}
         style={{
           width: '100%',
-          textAlign: ta as any,
+          textAlign: ta,
           ...style,
         }}
         className="rtf-input"
@@ -372,17 +378,13 @@ export const TextField = forwardRef<TextFieldHandle, TextFieldProps>(
 
     return (
       <label
-        className={'rtf-container ' + (className ?? '')}
+        className={`rtf-container ${className ?? ''}`}
         style={{ display: 'block', ...containerStyle }}
+        htmlFor={id}
       >
         {labelText && <span className="rtf-label">{labelText}</span>}
         <div
-          className={
-            'rtf-wrapper ' +
-            (errorText ? 'rtf-error ' : '') +
-            (filled ? 'rtf-filled ' : '') +
-            (border ? `rtf-border-${border} ` : 'rtf-border-outline ')
-          }
+          className={`rtf-wrapper ${errorText ? 'rtf-error ' : ''}${filled ? 'rtf-filled ' : ''}${border ? `rtf-border-${border} ` : 'rtf-border-outline '}`}
           style={{ background: filled ? (fillColor ?? '#f6f6f6') : undefined }}
         >
           {prefixIcon && <span className="rtf-prefix">{prefixIcon}</span>}

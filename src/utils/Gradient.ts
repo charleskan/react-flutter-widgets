@@ -64,10 +64,10 @@ export class LinearGradient extends Gradient {
 
 export class RadialGradient extends Gradient {
   center: AlignmentGeometry
-  radius?: number
+  radius: number
   focal?: AlignmentGeometry
-  focalRadius?: number
-  tileMode?: 'clamp' | 'repeat' | 'mirror'
+  focalRadius: number
+  tileMode: 'clamp' | 'repeat' | 'mirror'
 
   constructor(options: {
     colors: string[]
@@ -109,7 +109,7 @@ export class RadialGradient extends Gradient {
       })
     }
 
-    const radiusValue = `${this.radius! * 100}%`
+    const radiusValue = `${this.radius * 100}%`
 
     return `radial-gradient(circle ${radiusValue} at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`
   }
@@ -117,9 +117,9 @@ export class RadialGradient extends Gradient {
 
 export class SweepGradient extends Gradient {
   center: AlignmentGeometry
-  startAngle?: number
-  endAngle?: number
-  tileMode?: 'clamp' | 'repeat' | 'mirror'
+  startAngle: number
+  endAngle: number
+  tileMode: 'clamp' | 'repeat' | 'mirror'
 
   constructor(options: {
     colors: string[]
@@ -144,22 +144,20 @@ export class SweepGradient extends Gradient {
 
   toCSS(): string {
     const centerPos = this.alignmentToPercentage(this.center)
-    const startAngleDeg = this.startAngle! * (180 / Math.PI)
+    const startAngleDeg = this.startAngle * (180 / Math.PI)
 
     let colorStops: string[]
     if (this.stops && this.stops.length === this.colors.length) {
       const stops = this.stops // TypeScript narrowing
       colorStops = this.colors.map((color, index) => {
         const stop = stops[index] ?? 0
-        const angle =
-          startAngleDeg + stop * (this.endAngle! - this.startAngle!) * (180 / Math.PI)
+        const angle = startAngleDeg + stop * (this.endAngle - this.startAngle) * (180 / Math.PI)
         return `${color} ${angle}deg`
       })
     } else {
       colorStops = this.colors.map((color, index) => {
         const progress = this.colors.length === 1 ? 0 : index / (this.colors.length - 1)
-        const angle =
-          startAngleDeg + progress * (this.endAngle! - this.startAngle!) * (180 / Math.PI)
+        const angle = startAngleDeg + progress * (this.endAngle - this.startAngle) * (180 / Math.PI)
         return `${color} ${angle}deg`
       })
     }

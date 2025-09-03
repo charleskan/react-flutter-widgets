@@ -146,7 +146,10 @@ function getCurrentOrientation(): Orientation {
     window.screen &&
     'orientation' in window.screen
   ) {
-    const screenOrientation = (window.screen as any).orientation
+    const screenWithOrientation = window.screen as Screen & {
+      orientation?: { angle?: number; type?: string }
+    }
+    const screenOrientation = screenWithOrientation.orientation
     if (screenOrientation && typeof screenOrientation.angle === 'number') {
       // The Screen Orientation API provides more detailed orientation info
       return screenOrientation.angle === 0 || screenOrientation.angle === 180
@@ -189,7 +192,8 @@ export const OrientationUtils = {
 
     // Fallback to deprecated window.orientation
     if ('orientation' in window) {
-      return (window as any).orientation || 0
+      const windowWithOrientation = window as Window & { orientation?: number }
+      return windowWithOrientation.orientation || 0
     }
 
     return 0
@@ -206,11 +210,16 @@ export const OrientationUtils = {
    * Check if the device is likely a mobile device based on orientation capabilities
    */
   isMobileDevice(): boolean {
-    return (
-      typeof window !== 'undefined' &&
-      ('orientation' in window ||
-        ('screen' in window && (window as any).screen && 'orientation' in (window as any).screen))
-    )
+    if (typeof window === 'undefined') return false
+    
+    const windowWithOrientation = window as Window & { orientation?: number }
+    if ('orientation' in windowWithOrientation) return true
+    
+    if ('screen' in window && window.screen && 'orientation' in window.screen) {
+      return true
+    }
+    
+    return false
   },
 }
 

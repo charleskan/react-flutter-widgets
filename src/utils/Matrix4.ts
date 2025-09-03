@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { Alignment, type AlignmentGeometry } from './Alignment'
+import { type AlignmentGeometry, alignmentToTransformOrigin } from './Alignment'
 
 export interface Matrix4 {
   rotateX?: number
@@ -84,7 +84,7 @@ export namespace Matrix4 {
     }
 
     if (transformAlignment) {
-      styles.transformOrigin = Alignment.toTransformOrigin(transformAlignment)
+      styles.transformOrigin = alignmentToTransformOrigin(transformAlignment)
     }
 
     return styles

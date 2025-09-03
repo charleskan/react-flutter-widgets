@@ -201,14 +201,26 @@ export namespace ListView {
 
     // Priority: convenience props > padding
     if (paddingAll !== undefined) {
-      return EdgeInsets.all(paddingAll)
+      return EdgeInsets.all(
+        typeof paddingAll === 'number' ? paddingAll : Number.parseFloat(paddingAll),
+      ).toPadding()
     }
 
     if (paddingHorizontal !== undefined || paddingVertical !== undefined) {
       return EdgeInsets.symmetric({
-        horizontal: paddingHorizontal,
-        vertical: paddingVertical,
-      })
+        horizontal:
+          typeof paddingHorizontal === 'number'
+            ? paddingHorizontal
+            : paddingHorizontal
+              ? Number.parseFloat(paddingHorizontal)
+              : undefined,
+        vertical:
+          typeof paddingVertical === 'number'
+            ? paddingVertical
+            : paddingVertical
+              ? Number.parseFloat(paddingVertical)
+              : undefined,
+      }).toPadding()
     }
 
     return padding

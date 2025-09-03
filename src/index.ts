@@ -99,7 +99,7 @@ export {
   type MediaQueryData,
   type MediaQueryBreakpoints,
   type Size,
-  type EdgeInsets as MediaQueryEdgeInsets,
+  type MediaQueryEdgeInsets,
   type LayoutBuilderProps,
   type BoxConstraints,
   type LayoutWidgetBuilder,

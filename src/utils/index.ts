@@ -1,5 +1,11 @@
 // Flutter-style utilities for React components
-export { Alignment, type AlignmentGeometry } from './Alignment'
+export {
+  Alignment,
+  alignmentToFlexClasses,
+  alignmentToCSS,
+  alignmentToTransformOrigin,
+  type AlignmentGeometry,
+} from './Alignment'
 export { EdgeInsets } from './EdgeInsets'
 export { BoxConstraints } from './BoxConstraints'
 export { Matrix4, type Matrix4 as Matrix4Interface } from './Matrix4'

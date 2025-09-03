@@ -6,7 +6,13 @@
       "Bash(git add .)",
       "Bash(npm run type-check)",
       "Bash(npx tsc --noEmit test-unified-enum.tsx --jsx react-jsx --esModuleInterop)",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "WebFetch(domain:api.flutter.dev)",
+      "Bash(npx tsc --noEmit src/test-linear-gradient.tsx --jsx react-jsx --esModuleInterop)",
+      "Bash(npx tsc --noEmit src/components/layout/Container.tsx --jsx react-jsx --esModuleInterop)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint -- --fix --unsafe)",
+      "Bash(npm run lint -- --fix)"
     ],
     "deny": [],
     "ask": []

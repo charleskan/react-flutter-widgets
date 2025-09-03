@@ -2,30 +2,57 @@ export interface AlignmentGeometry {
     x: number;
     y: number;
 }
-export declare class Alignment {
-    static readonly topLeft: AlignmentGeometry;
-    static readonly topCenter: AlignmentGeometry;
-    static readonly topRight: AlignmentGeometry;
-    static readonly centerLeft: AlignmentGeometry;
-    static readonly center: AlignmentGeometry;
-    static readonly centerRight: AlignmentGeometry;
-    static readonly bottomLeft: AlignmentGeometry;
-    static readonly bottomCenter: AlignmentGeometry;
-    static readonly bottomRight: AlignmentGeometry;
-    /**
-     * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
-     */
-    static toCSS(alignment: AlignmentGeometry): {
-        x: string;
-        y: string;
+export declare const Alignment: {
+    readonly topLeft: {
+        readonly x: -1;
+        readonly y: -1;
     };
-    /**
-     * Converts alignment to CSS justify-content and align-items classes for flexbox
-     */
-    static toFlexClasses(alignment: AlignmentGeometry): string[];
-    /**
-     * Converts alignment to CSS transform-origin property
-     */
-    static toTransformOrigin(alignment: AlignmentGeometry): string;
-}
+    readonly topCenter: {
+        readonly x: 0;
+        readonly y: -1;
+    };
+    readonly topRight: {
+        readonly x: 1;
+        readonly y: -1;
+    };
+    readonly centerLeft: {
+        readonly x: -1;
+        readonly y: 0;
+    };
+    readonly center: {
+        readonly x: 0;
+        readonly y: 0;
+    };
+    readonly centerRight: {
+        readonly x: 1;
+        readonly y: 0;
+    };
+    readonly bottomLeft: {
+        readonly x: -1;
+        readonly y: 1;
+    };
+    readonly bottomCenter: {
+        readonly x: 0;
+        readonly y: 1;
+    };
+    readonly bottomRight: {
+        readonly x: 1;
+        readonly y: 1;
+    };
+};
+/**
+ * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
+ */
+export declare function alignmentToCSS(alignment: AlignmentGeometry): {
+    x: string;
+    y: string;
+};
+/**
+ * Converts alignment to CSS justify-content and align-items classes for flexbox
+ */
+export declare function alignmentToFlexClasses(alignment: AlignmentGeometry): string[];
+/**
+ * Converts alignment to CSS transform-origin property
+ */
+export declare function alignmentToTransformOrigin(alignment: AlignmentGeometry): string;
 //# sourceMappingURL=Alignment.d.ts.map

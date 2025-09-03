@@ -3,7 +3,7 @@ export interface Size {
     width: number;
     height: number;
 }
-export interface EdgeInsets {
+export interface MediaQueryEdgeInsets {
     top: number;
     right: number;
     bottom: number;
@@ -21,8 +21,8 @@ export interface MediaQueryData {
     size: Size;
     devicePixelRatio: number;
     orientation: Orientation;
-    padding: EdgeInsets;
-    viewInsets: EdgeInsets;
+    padding: MediaQueryEdgeInsets;
+    viewInsets: MediaQueryEdgeInsets;
     textScaleFactor: number;
     platformBrightness: Brightness;
     disableAnimations: boolean;

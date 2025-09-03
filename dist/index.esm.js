@@ -569,54 +569,155 @@ var Flex$1;
     Flex.getMainAxisSizeClass = getMainAxisSizeClass;
 })(Flex$1 || (Flex$1 = {}));
 
-let Alignment$1 = class Alignment {
-    /**
-     * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
-     */
-    static toCSS(alignment) {
-        const x = (((alignment.x + 1) / 2) * 100).toFixed(1);
-        const y = (((alignment.y + 1) / 2) * 100).toFixed(1);
-        return { x: `${x}%`, y: `${y}%` };
+/**
+ * Converts alignment to CSS justify-content and align-items classes for flexbox
+ */
+function alignmentToFlexClasses(alignment) {
+    const classes = ['flex'];
+    // Justify content (x-axis)
+    if (alignment.x === -1)
+        classes.push('justify-start');
+    else if (alignment.x === 0)
+        classes.push('justify-center');
+    else if (alignment.x === 1)
+        classes.push('justify-end');
+    // Align items (y-axis)
+    if (alignment.y === -1)
+        classes.push('items-start');
+    else if (alignment.y === 0)
+        classes.push('items-center');
+    else if (alignment.y === 1)
+        classes.push('items-end');
+    return classes;
+}
+/**
+ * Converts alignment to CSS transform-origin property
+ */
+function alignmentToTransformOrigin(alignment) {
+    const originX = alignment.x === -1 ? 'left' : alignment.x === 0 ? 'center' : 'right';
+    const originY = alignment.y === -1 ? 'top' : alignment.y === 0 ? 'center' : 'bottom';
+    return `${originX} ${originY}`;
+}
+
+class EdgeInsets {
+    constructor(top, right, bottom, left) {
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+        this.left = left;
     }
     /**
-     * Converts alignment to CSS justify-content and align-items classes for flexbox
+     * Creates EdgeInsets with the same value for all sides
      */
-    static toFlexClasses(alignment) {
-        const classes = ['flex'];
-        // Justify content (x-axis)
-        if (alignment.x === -1)
-            classes.push('justify-start');
-        else if (alignment.x === 0)
-            classes.push('justify-center');
-        else if (alignment.x === 1)
-            classes.push('justify-end');
-        // Align items (y-axis)
-        if (alignment.y === -1)
-            classes.push('items-start');
-        else if (alignment.y === 0)
-            classes.push('items-center');
-        else if (alignment.y === 1)
-            classes.push('items-end');
-        return classes;
+    static all(value) {
+        return new EdgeInsets(value, value, value, value);
     }
     /**
-     * Converts alignment to CSS transform-origin property
+     * Creates EdgeInsets with symmetric horizontal and vertical values
      */
-    static toTransformOrigin(alignment) {
-        const originX = alignment.x === -1 ? 'left' : alignment.x === 0 ? 'center' : 'right';
-        const originY = alignment.y === -1 ? 'top' : alignment.y === 0 ? 'center' : 'bottom';
-        return `${originX} ${originY}`;
+    static symmetric(options) {
+        const horizontal = options.horizontal || 0;
+        const vertical = options.vertical || 0;
+        return new EdgeInsets(vertical, horizontal, vertical, horizontal);
     }
-};
-Alignment$1.topLeft = { x: -1, y: -1 };
-Alignment$1.topCenter = { x: 0, y: -1 };
-Alignment$1.topRight = { x: 1, y: -1 };
-Alignment$1.centerLeft = { x: -1, y: 0 };
-Alignment$1.center = { x: 0, y: 0 };
-Alignment$1.centerRight = { x: 1, y: 0 };
-Alignment$1.bottomLeft = { x: -1, y: 1 };
-Alignment$1.bottomCenter = { x: 0, y: 1 };
-Alignment$1.bottomRight = { x: 1, y: 1 };
+    /**
+     * Creates EdgeInsets with individual side values
+     */
+    static only(options) {
+        return new EdgeInsets(options.top || 0, options.right || 0, options.bottom || 0, options.left || 0);
+    }
+    /**
+     * Creates EdgeInsets with zero values for all sides
+     */
+    static zero() {
+        return new EdgeInsets(0, 0, 0, 0);
+    }
+    /**
+     * Creates EdgeInsets from TRBL (top, right, bottom, left) values
+     */
+    static fromTRBL(top, right, bottom, left) {
+        return new EdgeInsets(top, right, bottom, left);
+    }
+    /**
+     * Converts EdgeInsets to CSS padding string
+     */
+    toPadding() {
+        if (this.top === this.right && this.right === this.bottom && this.bottom === this.left) {
+            return `${this.top}px`;
+        }
+        if (this.top === this.bottom && this.left === this.right) {
+            return `${this.top}px ${this.right}px`;
+        }
+        return `${this.top}px ${this.right}px ${this.bottom}px ${this.left}px`;
+    }
+    /**
+     * Converts EdgeInsets to CSS margin string
+     */
+    toMargin() {
+        return this.toPadding();
+    }
+    /**
+     * Converts EdgeInsets to CSS object for padding
+     */
+    toPaddingObject() {
+        return {
+            paddingTop: `${this.top}px`,
+            paddingRight: `${this.right}px`,
+            paddingBottom: `${this.bottom}px`,
+            paddingLeft: `${this.left}px`,
+        };
+    }
+    /**
+     * Converts EdgeInsets to CSS object for margin
+     */
+    toMarginObject() {
+        return {
+            marginTop: `${this.top}px`,
+            marginRight: `${this.right}px`,
+            marginBottom: `${this.bottom}px`,
+            marginLeft: `${this.left}px`,
+        };
+    }
+    /**
+     * Returns a new EdgeInsets with added values
+     */
+    add(other) {
+        return new EdgeInsets(this.top + other.top, this.right + other.right, this.bottom + other.bottom, this.left + other.left);
+    }
+    /**
+     * Returns a new EdgeInsets with subtracted values
+     */
+    subtract(other) {
+        return new EdgeInsets(this.top - other.top, this.right - other.right, this.bottom - other.bottom, this.left - other.left);
+    }
+    /**
+     * Returns true if all sides are equal to zero
+     */
+    get isZero() {
+        return this.top === 0 && this.right === 0 && this.bottom === 0 && this.left === 0;
+    }
+    /**
+     * Returns true if all sides are equal
+     */
+    get isUniform() {
+        return this.top === this.right && this.right === this.bottom && this.bottom === this.left;
+    }
+    /**
+     * Creates a copy of this EdgeInsets with optional modifications
+     */
+    copyWith(options) {
+        return new EdgeInsets(options.top !== undefined ? options.top : this.top, options.right !== undefined ? options.right : this.right, options.bottom !== undefined ? options.bottom : this.bottom, options.left !== undefined ? options.left : this.left);
+    }
+    toString() {
+        return `EdgeInsets(${this.top}, ${this.right}, ${this.bottom}, ${this.left})`;
+    }
+    equals(other) {
+        return (this.top === other.top &&
+            this.right === other.right &&
+            this.bottom === other.bottom &&
+            this.left === other.left);
+    }
+}
 
 var BoxConstraints;
 (function (BoxConstraints) {
@@ -763,7 +864,7 @@ var Matrix4$1;
             styles.transform = transforms.join(' ');
         }
         if (transformAlignment) {
-            styles.transformOrigin = Alignment$1.toTransformOrigin(transformAlignment);
+            styles.transformOrigin = alignmentToTransformOrigin(transformAlignment);
         }
         return styles;
     }
@@ -908,7 +1009,7 @@ function Container(props) {
         borderStyle: decoration?.borderStyle || borderStyle,
     };
     // Build Tailwind classes
-    const alignmentClasses = alignment ? Alignment$1.toFlexClasses(alignment) : [];
+    const alignmentClasses = alignment ? alignmentToFlexClasses(alignment) : [];
     const clipClasses = Decoration.clipToClasses(clipBehavior);
     // Build CSS styles for properties that don't have good Tailwind equivalents
     const constraintStyles = BoxConstraints.toCSS(constraints);
@@ -1346,85 +1447,6 @@ const ListView$1 = Object.assign(ListViewBase, {
 });
 
 /**
- * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
- * Following Flutter's EdgeInsets class API for consistent spacing management
- */
-const EdgeInsets = {
-    /**
-     * Creates uniform spacing for all sides
-     * @param value - The spacing value (number will be converted to px)
-     */
-    all(value) {
-        const spacingValue = typeof value === 'number' ? `${value}px` : value;
-        return spacingValue;
-    },
-    /**
-     * Creates symmetric spacing for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical spacing values
-     */
-    symmetric(options) {
-        const horizontal = options.horizontal
-            ? typeof options.horizontal === 'number'
-                ? `${options.horizontal}px`
-                : options.horizontal
-            : '0';
-        const vertical = options.vertical
-            ? typeof options.vertical === 'number'
-                ? `${options.vertical}px`
-                : options.vertical
-            : '0';
-        return `${vertical} ${horizontal}`;
-    },
-    /**
-     * Creates spacing with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom spacing values
-     */
-    only(options) {
-        const top = options.top
-            ? typeof options.top === 'number'
-                ? `${options.top}px`
-                : options.top
-            : '0';
-        const right = options.right
-            ? typeof options.right === 'number'
-                ? `${options.right}px`
-                : options.right
-            : '0';
-        const bottom = options.bottom
-            ? typeof options.bottom === 'number'
-                ? `${options.bottom}px`
-                : options.bottom
-            : '0';
-        const left = options.left
-            ? typeof options.left === 'number'
-                ? `${options.left}px`
-                : options.left
-            : '0';
-        return `${top} ${right} ${bottom} ${left}`;
-    },
-    /**
-     * Creates spacing by specifying all four sides explicitly (Left, Top, Right, Bottom)
-     * @param left - Left spacing value
-     * @param top - Top spacing value
-     * @param right - Right spacing value
-     * @param bottom - Bottom spacing value
-     */
-    fromLTRB(left, top, right, bottom) {
-        const topValue = typeof top === 'number' ? `${top}px` : top;
-        const rightValue = typeof right === 'number' ? `${right}px` : right;
-        const bottomValue = typeof bottom === 'number' ? `${bottom}px` : bottom;
-        const leftValue = typeof left === 'number' ? `${left}px` : left;
-        return `${topValue} ${rightValue} ${bottomValue} ${leftValue}`;
-    },
-    /**
-     * Creates zero spacing for all sides
-     */
-    zero() {
-        return '0';
-    },
-};
-
-/**
  * Scroll direction for ListView
  */
 var ScrollDirection;
@@ -1506,13 +1528,21 @@ var ListView;
         const { paddingAll, paddingHorizontal, paddingVertical, padding } = options;
         // Priority: convenience props > padding
         if (paddingAll !== undefined) {
-            return EdgeInsets.all(paddingAll);
+            return EdgeInsets.all(typeof paddingAll === 'number' ? paddingAll : Number.parseFloat(paddingAll)).toPadding();
         }
         if (paddingHorizontal !== undefined || paddingVertical !== undefined) {
             return EdgeInsets.symmetric({
-                horizontal: paddingHorizontal,
-                vertical: paddingVertical,
-            });
+                horizontal: typeof paddingHorizontal === 'number'
+                    ? paddingHorizontal
+                    : paddingHorizontal
+                        ? Number.parseFloat(paddingHorizontal)
+                        : undefined,
+                vertical: typeof paddingVertical === 'number'
+                    ? paddingVertical
+                    : paddingVertical
+                        ? Number.parseFloat(paddingVertical)
+                        : undefined,
+            }).toPadding();
         }
         return padding;
     }
@@ -2171,30 +2201,30 @@ function AnimatedContainer(props) {
     const containerRef = useRef(null);
     const animationTimeoutRef = useRef();
     // Helper function to normalize values for comparison and animation
-    const normalizeValue = (value) => {
+    const normalizeValue = useCallback((value) => {
         if (value === undefined)
             return '';
         if (typeof value === 'number')
             return `${value}px`;
         return value;
-    };
+    }, []);
     // Helper function to normalize EdgeInsets or string values
-    const normalizeEdgeInsets = (value) => {
+    const normalizeEdgeInsets = useCallback((value) => {
         if (value === undefined)
             return '0';
         if (typeof value === 'string')
             return value;
         return value.toPadding();
-    };
+    }, []);
     // Calculate effective padding and margin
-    const calculateEffectivePadding = () => {
+    const calculateEffectivePadding = useCallback(() => {
         return normalizeEdgeInsets(padding);
-    };
-    const calculateEffectiveMargin = () => {
+    }, [padding, normalizeEdgeInsets]);
+    const calculateEffectiveMargin = useCallback(() => {
         return normalizeEdgeInsets(margin);
-    };
+    }, [margin, normalizeEdgeInsets]);
     // Calculate animated styles based on current props
-    const calculateTargetStyles = () => {
+    const calculateTargetStyles = useCallback(() => {
         const effectivePadding = calculateEffectivePadding();
         const effectiveMargin = calculateEffectiveMargin();
         return {
@@ -2208,9 +2238,20 @@ function AnimatedContainer(props) {
             borderColor: borderColor || 'transparent',
             borderStyle: borderStyle || 'solid',
         };
-    };
+    }, [
+        width,
+        height,
+        backgroundColor,
+        borderRadius,
+        borderWidth,
+        borderColor,
+        borderStyle,
+        calculateEffectivePadding,
+        calculateEffectiveMargin,
+        normalizeValue,
+    ]);
     // Check if props have changed and need animation
-    const hasStyleChanged = () => {
+    const hasStyleChanged = useCallback(() => {
         const prev = previousPropsRef.current;
         return (width !== prev.width ||
             height !== prev.height ||
@@ -2221,7 +2262,17 @@ function AnimatedContainer(props) {
             borderWidth !== prev.borderWidth ||
             borderColor !== prev.borderColor ||
             borderStyle !== prev.borderStyle);
-    };
+    }, [
+        width,
+        height,
+        padding,
+        margin,
+        backgroundColor,
+        borderRadius,
+        borderWidth,
+        borderColor,
+        borderStyle,
+    ]);
     // Apply animation
     useEffect(() => {
         if (!hasStyleChanged())
@@ -2255,25 +2306,11 @@ function AnimatedContainer(props) {
                 clearTimeout(animationTimeoutRef.current);
             }
         };
-    }, [
-        width,
-        height,
-        padding,
-        margin,
-        backgroundColor,
-        borderRadius,
-        borderWidth,
-        borderColor,
-        borderStyle,
-        duration,
-        delay,
-        onStart,
-        onEnd,
-    ]);
+    }, [duration, delay, onStart, onEnd, calculateTargetStyles, hasStyleChanged, props]);
     // Initialize styles on mount
     useEffect(() => {
         setCurrentStyles(calculateTargetStyles());
-    }, []);
+    }, [calculateTargetStyles]);
     // Build flex styles (same logic as Container)
     const buildFlexStyles = () => {
         const flexStyles = {};
@@ -2346,9 +2383,9 @@ function AnimatedOpacity(props) {
     // Clamp opacity value between 0 and 1
     const clampedOpacity = Math.max(0, Math.min(1, opacity));
     // Check if opacity has changed
-    const hasOpacityChanged = () => {
+    const hasOpacityChanged = useCallback(() => {
         return Math.abs(clampedOpacity - previousOpacityRef.current) > 0.001;
-    };
+    }, [clampedOpacity]);
     // Apply opacity animation
     useEffect(() => {
         if (!hasOpacityChanged())
@@ -2387,12 +2424,12 @@ function AnimatedOpacity(props) {
                 clearTimeout(startTimeoutRef.current);
             }
         };
-    }, [clampedOpacity, duration, delay, onStart, onEnd]);
+    }, [clampedOpacity, duration, delay, onStart, onEnd, hasOpacityChanged]);
     // Initialize opacity on mount
     useEffect(() => {
         setCurrentOpacity(clampedOpacity);
         previousOpacityRef.current = clampedOpacity;
-    }, []);
+    }, [clampedOpacity]);
     // Determine if content should be visible to screen readers
     const shouldIncludeSemantics = alwaysIncludeSemantics || currentOpacity > 0;
     // Container styles
@@ -2604,7 +2641,7 @@ function LayoutBuilder({ builder, className = '', style = {} }) {
     const containerRef = useRef(null);
     const resizeObserverRef = useRef();
     // Calculate constraints from element
-    const calculateConstraints = (element) => {
+    const calculateConstraints = useCallback((element) => {
         const computedStyle = getComputedStyle(element);
         // Get the parent's constraints or use viewport
         const parentElement = element.parentElement;
@@ -2630,7 +2667,7 @@ function LayoutBuilder({ builder, className = '', style = {} }) {
             minHeight: minHeightPx,
             maxHeight: maxHeightPx,
         });
-    };
+    }, []);
     // Set up resize observer
     useEffect(() => {
         if (!containerRef.current)
@@ -2663,7 +2700,7 @@ function LayoutBuilder({ builder, className = '', style = {} }) {
                 resizeObserverRef.current.disconnect();
             }
         };
-    }, []);
+    }, [calculateConstraints]);
     // Memoize the built content
     const content = useMemo(() => {
         return builder(constraints);
@@ -2894,7 +2931,8 @@ function getCurrentOrientation() {
         'screen' in window &&
         window.screen &&
         'orientation' in window.screen) {
-        const screenOrientation = window.screen.orientation;
+        const screenWithOrientation = window.screen;
+        const screenOrientation = screenWithOrientation.orientation;
         if (screenOrientation && typeof screenOrientation.angle === 'number') {
             // The Screen Orientation API provides more detailed orientation info
             return screenOrientation.angle === 0 || screenOrientation.angle === 180
@@ -2932,7 +2970,8 @@ const OrientationUtils = {
         }
         // Fallback to deprecated window.orientation
         if ('orientation' in window) {
-            return window.orientation || 0;
+            const windowWithOrientation = window;
+            return windowWithOrientation.orientation || 0;
         }
         return 0;
     },
@@ -2946,9 +2985,15 @@ const OrientationUtils = {
      * Check if the device is likely a mobile device based on orientation capabilities
      */
     isMobileDevice() {
-        return (typeof window !== 'undefined' &&
-            ('orientation' in window ||
-                ('screen' in window && window.screen && 'orientation' in window.screen)));
+        if (typeof window === 'undefined')
+            return false;
+        const windowWithOrientation = window;
+        if ('orientation' in windowWithOrientation)
+            return true;
+        if ('screen' in window && window.screen && 'orientation' in window.screen) {
+            return true;
+        }
+        return false;
     },
 };
 
@@ -3213,7 +3258,6 @@ function mapKeyboard(type) {
             return { htmlType: 'url', inputMode: 'url' };
         case 'password':
             return { htmlType: 'password' };
-        case 'text':
         default:
             return { htmlType: 'text' };
     }
@@ -3303,19 +3347,23 @@ const TextField = forwardRef(function TextField(props, ref) {
     const { htmlType, inputMode: autoInputMode } = useMemo(() => mapKeyboard(obscureText ? 'password' : keyboardType), [keyboardType, obscureText]);
     // compute props
     const dir = textDirection;
-    const ta = textAlign === 'start' ? undefined : textAlign === 'end' ? undefined : textAlign;
+    const ta = textAlign === 'start'
+        ? undefined
+        : textAlign === 'end'
+            ? undefined
+            : textAlign;
     // enterKeyHint mapping removed as it's not used in the implementation
     const handleChange = useCallback((e) => {
         let text = e.target.value;
         if (textCapitalization && textCapitalization !== 'none') {
-            const cursor = e.target.selectionStart;
+            const target = e.target;
+            const cursor = target.selectionStart;
             text = applyCapitalization(text, textCapitalization);
             // try to restore caret if capitalization changed length (best-effort)
             if (cursor != null) {
                 requestAnimationFrame(() => {
                     try {
-                        ;
-                        e.target.setSelectionRange(cursor, cursor);
+                        target.setSelectionRange(cursor, cursor);
                     }
                     catch { }
                 });
@@ -3352,24 +3400,25 @@ const TextField = forwardRef(function TextField(props, ref) {
     const disabled = !enabled;
     const showTextarea = expands || maxLines == null || maxLines > 1 || (minLines != null && minLines > 1);
     const { labelText, hintText, helperText, errorText, prefixIcon, suffixIcon, counterText, filled, fillColor, border, } = decoration;
-    const baseField = showTextarea ? (jsxRuntimeExports.jsx("textarea", { ref: inputRef, id: id, name: name, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, rows: minLines ?? 1, style: {
+    const baseField = showTextarea ? (jsxRuntimeExports.jsx("textarea", { ref: inputRef, id: id, name: name, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, 
+        // biome-ignore lint/a11y/noAutofocus: autoFocus is needed for Flutter compatibility
+        autoFocus: autoFocus, dir: dir, rows: minLines ?? 1, style: {
             width: '100%',
             resize: expands ? 'none' : 'vertical',
             flex: expands ? 1 : undefined,
             minHeight: expands ? 0 : undefined,
             textAlign: ta,
             ...style,
-        }, className: "rtf-input" })) : (jsxRuntimeExports.jsx("input", { ref: inputRef, id: id, name: name, type: obscureText ? 'password' : htmlType, inputMode: inputMode ?? autoInputMode, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, autoFocus: autoFocus, dir: dir, style: {
+        }, className: "rtf-input" })) : (jsxRuntimeExports.jsx("input", { ref: inputRef, id: id, name: name, type: obscureText ? 'password' : htmlType, inputMode: inputMode ?? autoInputMode, value: currentValue, onChange: handleChange, onKeyDown: handleKeyDown, onFocus: onFocus, onBlur: handleBlur, onClick: onTap, placeholder: placeholder ?? hintText, maxLength: maxLength, readOnly: readOnly, disabled: disabled, 
+        // biome-ignore lint/a11y/noAutofocus: autoFocus is needed for Flutter compatibility
+        autoFocus: autoFocus, dir: dir, style: {
             width: '100%',
             textAlign: ta,
             ...style,
         }, className: "rtf-input" }));
     const showCounter = maxLength != null || counterText;
     const computedCounterText = counterText ?? (maxLength != null ? `${currentValue.length} / ${maxLength}` : undefined);
-    return (jsxRuntimeExports.jsxs("label", { className: 'rtf-container ' + (className ?? ''), style: { display: 'block', ...containerStyle }, children: [labelText && jsxRuntimeExports.jsx("span", { className: "rtf-label", children: labelText }), jsxRuntimeExports.jsxs("div", { className: 'rtf-wrapper ' +
-                    (errorText ? 'rtf-error ' : '') +
-                    (filled ? 'rtf-filled ' : '') +
-                    (border ? `rtf-border-${border} ` : 'rtf-border-outline '), style: { background: filled ? (fillColor ?? '#f6f6f6') : undefined }, children: [prefixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-prefix", children: prefixIcon }), baseField, suffixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-suffix", children: suffixIcon })] }), helperText && !errorText && jsxRuntimeExports.jsx("div", { className: "rtf-helper", children: helperText }), errorText && jsxRuntimeExports.jsx("div", { className: "rtf-error-text", children: errorText }), showCounter && jsxRuntimeExports.jsx("div", { className: "rtf-counter", children: computedCounterText }), jsxRuntimeExports.jsx("style", { children: `
+    return (jsxRuntimeExports.jsxs("label", { className: `rtf-container ${className ?? ''}`, style: { display: 'block', ...containerStyle }, htmlFor: id, children: [labelText && jsxRuntimeExports.jsx("span", { className: "rtf-label", children: labelText }), jsxRuntimeExports.jsxs("div", { className: `rtf-wrapper ${errorText ? 'rtf-error ' : ''}${filled ? 'rtf-filled ' : ''}${border ? `rtf-border-${border} ` : 'rtf-border-outline '}`, style: { background: filled ? (fillColor ?? '#f6f6f6') : undefined }, children: [prefixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-prefix", children: prefixIcon }), baseField, suffixIcon && jsxRuntimeExports.jsx("span", { className: "rtf-suffix", children: suffixIcon })] }), helperText && !errorText && jsxRuntimeExports.jsx("div", { className: "rtf-helper", children: helperText }), errorText && jsxRuntimeExports.jsx("div", { className: "rtf-error-text", children: errorText }), showCounter && jsxRuntimeExports.jsx("div", { className: "rtf-counter", children: computedCounterText }), jsxRuntimeExports.jsx("style", { children: `
         .rtf-container { font: inherit; color: inherit; }
         .rtf-label { display:block; margin-bottom: 4px; font-size: 0.875rem; color: #555; }
         .rtf-wrapper { display:flex; align-items:center; gap:8px; padding: 10px 12px; border-radius: 8px; }

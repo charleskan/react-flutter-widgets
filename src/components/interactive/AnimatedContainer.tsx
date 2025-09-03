@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { EdgeInsets as EdgeInsetsType } from '../../utils'
 import type { ContainerProps } from '../layout/Container'
-import { EdgeInsets } from '../../utils'
 
 export interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {
   /** Duration of the animation in milliseconds */
@@ -109,30 +109,30 @@ function AnimatedContainer(props: AnimatedContainerProps) {
   const animationTimeoutRef = useRef<NodeJS.Timeout>()
 
   // Helper function to normalize values for comparison and animation
-  const normalizeValue = (value: string | number | undefined): string => {
+  const normalizeValue = useCallback((value: string | number | undefined): string => {
     if (value === undefined) return ''
     if (typeof value === 'number') return `${value}px`
     return value
-  }
+  }, [])
 
   // Helper function to normalize EdgeInsets or string values
-  const normalizeEdgeInsets = (value: EdgeInsets | string | undefined): string => {
+  const normalizeEdgeInsets = useCallback((value: EdgeInsetsType | string | undefined): string => {
     if (value === undefined) return '0'
     if (typeof value === 'string') return value
     return value.toPadding()
-  }
+  }, [])
 
   // Calculate effective padding and margin
-  const calculateEffectivePadding = (): string => {
+  const calculateEffectivePadding = useCallback((): string => {
     return normalizeEdgeInsets(padding)
-  }
+  }, [padding, normalizeEdgeInsets])
 
-  const calculateEffectiveMargin = (): string => {
+  const calculateEffectiveMargin = useCallback((): string => {
     return normalizeEdgeInsets(margin)
-  }
+  }, [margin, normalizeEdgeInsets])
 
   // Calculate animated styles based on current props
-  const calculateTargetStyles = (): AnimatedStyles => {
+  const calculateTargetStyles = useCallback((): AnimatedStyles => {
     const effectivePadding = calculateEffectivePadding()
     const effectiveMargin = calculateEffectiveMargin()
 
@@ -147,10 +147,21 @@ function AnimatedContainer(props: AnimatedContainerProps) {
       borderColor: borderColor || 'transparent',
       borderStyle: borderStyle || 'solid',
     }
-  }
+  }, [
+    width,
+    height,
+    backgroundColor,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    borderStyle,
+    calculateEffectivePadding,
+    calculateEffectiveMargin,
+    normalizeValue,
+  ])
 
   // Check if props have changed and need animation
-  const hasStyleChanged = (): boolean => {
+  const hasStyleChanged = useCallback((): boolean => {
     const prev = previousPropsRef.current
 
     return (
@@ -164,7 +175,17 @@ function AnimatedContainer(props: AnimatedContainerProps) {
       borderColor !== prev.borderColor ||
       borderStyle !== prev.borderStyle
     )
-  }
+  }, [
+    width,
+    height,
+    padding,
+    margin,
+    backgroundColor,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    borderStyle,
+  ])
 
   // Apply animation
   useEffect(() => {
@@ -204,26 +225,12 @@ function AnimatedContainer(props: AnimatedContainerProps) {
         clearTimeout(animationTimeoutRef.current)
       }
     }
-  }, [
-    width,
-    height,
-    padding,
-    margin,
-    backgroundColor,
-    borderRadius,
-    borderWidth,
-    borderColor,
-    borderStyle,
-    duration,
-    delay,
-    onStart,
-    onEnd,
-  ])
+  }, [duration, delay, onStart, onEnd, calculateTargetStyles, hasStyleChanged, props])
 
   // Initialize styles on mount
   useEffect(() => {
     setCurrentStyles(calculateTargetStyles())
-  }, [])
+  }, [calculateTargetStyles])
 
   // Build flex styles (same logic as Container)
   const buildFlexStyles = (): React.CSSProperties => {

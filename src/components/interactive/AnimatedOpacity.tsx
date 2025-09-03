@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimationCurve } from './AnimatedContainer'
 
 export interface AnimatedOpacityProps {
@@ -74,9 +74,9 @@ function AnimatedOpacity(props: AnimatedOpacityProps) {
   const clampedOpacity = Math.max(0, Math.min(1, opacity))
 
   // Check if opacity has changed
-  const hasOpacityChanged = (): boolean => {
+  const hasOpacityChanged = useCallback((): boolean => {
     return Math.abs(clampedOpacity - previousOpacityRef.current) > 0.001
-  }
+  }, [clampedOpacity])
 
   // Apply opacity animation
   useEffect(() => {
@@ -120,13 +120,13 @@ function AnimatedOpacity(props: AnimatedOpacityProps) {
         clearTimeout(startTimeoutRef.current)
       }
     }
-  }, [clampedOpacity, duration, delay, onStart, onEnd])
+  }, [clampedOpacity, duration, delay, onStart, onEnd, hasOpacityChanged])
 
   // Initialize opacity on mount
   useEffect(() => {
     setCurrentOpacity(clampedOpacity)
     previousOpacityRef.current = clampedOpacity
-  }, [])
+  }, [clampedOpacity])
 
   // Determine if content should be visible to screen readers
   const shouldIncludeSemantics = alwaysIncludeSemantics || currentOpacity > 0

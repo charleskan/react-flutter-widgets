@@ -1,5 +1,3 @@
-'use client'
-
 import type { ReactNode } from 'react'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
@@ -7,7 +5,7 @@ export interface Size {
   width: number
   height: number
 }
-export interface EdgeInsets {
+export interface MediaQueryEdgeInsets {
   top: number
   right: number
   bottom: number
@@ -27,8 +25,8 @@ export interface MediaQueryData {
   size: Size
   devicePixelRatio: number
   orientation: Orientation
-  padding: EdgeInsets
-  viewInsets: EdgeInsets
+  padding: MediaQueryEdgeInsets
+  viewInsets: MediaQueryEdgeInsets
   textScaleFactor: number
   platformBrightness: Brightness
   disableAnimations: boolean
@@ -245,7 +243,7 @@ function readCurrent(): MediaQueryData {
   }
 }
 
-function readSafeArea(): EdgeInsets {
+function readSafeArea(): MediaQueryEdgeInsets {
   const cs = getComputedStyle(document.documentElement)
   const toNum = (v: string) => Number.parseFloat(v || '0') || 0
   const top = toNum(cs.getPropertyValue('--safe-area-inset-top'))
@@ -255,7 +253,7 @@ function readSafeArea(): EdgeInsets {
   return { top, right, bottom, left }
 }
 
-function readViewInsets(): EdgeInsets {
+function readViewInsets(): MediaQueryEdgeInsets {
   const vv = window.visualViewport
   if (!vv) return { top: 0, right: 0, bottom: 0, left: 0 }
   const bottom = Math.max(0, window.innerHeight - vv.height)

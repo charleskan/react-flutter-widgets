@@ -42,7 +42,7 @@ export {
   type MediaQueryData,
   type MediaQueryBreakpoints,
   type Size,
-  type EdgeInsets,
+  type MediaQueryEdgeInsets,
 } from './MediaQuery'
 
 export {

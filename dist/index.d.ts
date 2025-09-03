@@ -6,7 +6,7 @@ interface AlignmentGeometry {
     y: number;
 }
 
-declare class EdgeInsets$3 {
+declare class EdgeInsets$1 {
     readonly top: number;
     readonly right: number;
     readonly bottom: number;
@@ -15,14 +15,14 @@ declare class EdgeInsets$3 {
     /**
      * Creates EdgeInsets with the same value for all sides
      */
-    static all(value: number): EdgeInsets$3;
+    static all(value: number): EdgeInsets$1;
     /**
      * Creates EdgeInsets with symmetric horizontal and vertical values
      */
     static symmetric(options: {
         horizontal?: number;
         vertical?: number;
-    }): EdgeInsets$3;
+    }): EdgeInsets$1;
     /**
      * Creates EdgeInsets with individual side values
      */
@@ -31,15 +31,15 @@ declare class EdgeInsets$3 {
         right?: number;
         bottom?: number;
         left?: number;
-    }): EdgeInsets$3;
+    }): EdgeInsets$1;
     /**
      * Creates EdgeInsets with zero values for all sides
      */
-    static zero(): EdgeInsets$3;
+    static zero(): EdgeInsets$1;
     /**
      * Creates EdgeInsets from TRBL (top, right, bottom, left) values
      */
-    static fromTRBL(top: number, right: number, bottom: number, left: number): EdgeInsets$3;
+    static fromTRBL(top: number, right: number, bottom: number, left: number): EdgeInsets$1;
     /**
      * Converts EdgeInsets to CSS padding string
      */
@@ -69,11 +69,11 @@ declare class EdgeInsets$3 {
     /**
      * Returns a new EdgeInsets with added values
      */
-    add(other: EdgeInsets$3): EdgeInsets$3;
+    add(other: EdgeInsets$1): EdgeInsets$1;
     /**
      * Returns a new EdgeInsets with subtracted values
      */
-    subtract(other: EdgeInsets$3): EdgeInsets$3;
+    subtract(other: EdgeInsets$1): EdgeInsets$1;
     /**
      * Returns true if all sides are equal to zero
      */
@@ -90,9 +90,9 @@ declare class EdgeInsets$3 {
         right?: number;
         bottom?: number;
         left?: number;
-    }): EdgeInsets$3;
+    }): EdgeInsets$1;
     toString(): string;
-    equals(other: EdgeInsets$3): boolean;
+    equals(other: EdgeInsets$1): boolean;
 }
 
 interface BoxConstraints$1 {
@@ -190,7 +190,7 @@ interface ContainerProps {
     /** Align the child within the container */
     alignment?: AlignmentGeometry;
     /** Empty space to inscribe inside the decoration. The child, if any, is placed inside this padding */
-    padding?: EdgeInsets$3 | string;
+    padding?: EdgeInsets$1 | string;
     /** The color to paint behind the child */
     color?: string;
     /** The decoration to paint behind the child */
@@ -204,7 +204,7 @@ interface ContainerProps {
     /** Additional constraints to apply to the child */
     constraints?: BoxConstraints$1;
     /** Empty space to surround the decoration and child */
-    margin?: EdgeInsets$3 | string;
+    margin?: EdgeInsets$1 | string;
     /** The transformation matrix to apply before painting the container */
     transform?: Matrix4$1;
     /** The alignment of the origin, relative to the size of the container, if transform is specified */
@@ -596,7 +596,7 @@ declare enum ScrollPhysics {
  * padding={{ top: 8, bottom: 8, left: 16, right: 16 }}
  * ```
  */
-type EdgeInsets$2 = number | {
+type EdgeInsets = number | {
     top?: number;
     right?: number;
     bottom?: number;
@@ -618,7 +618,7 @@ interface BaseProps {
     /** Scrolling physics behavior (set to NEVER to disable scrolling) */
     physics?: ScrollPhysics;
     /** Internal padding (supports number or individual sides) */
-    padding?: EdgeInsets$2;
+    padding?: EdgeInsets;
     /** Fixed height/width for child items (corresponds to itemExtent) */
     itemExtent?: number;
     /** Template item to derive itemExtent from (measures first item only) */
@@ -700,48 +700,6 @@ interface ListViewHandle {
 declare const ListView: React$1.ForwardRefExoticComponent<ListViewProps$1 & React$1.RefAttributes<ListViewHandle>> & {
     builder: React$1.ForwardRefExoticComponent<BuilderProps<unknown> & React$1.RefAttributes<ListViewHandle>>;
     separated: React$1.ForwardRefExoticComponent<SeparatedProps<unknown> & React$1.RefAttributes<ListViewHandle>>;
-};
-
-/**
- * EdgeInsets provides methods for creating spacing values (padding/margin) in different configurations
- * Following Flutter's EdgeInsets class API for consistent spacing management
- */
-declare const EdgeInsets$1: {
-    /**
-     * Creates uniform spacing for all sides
-     * @param value - The spacing value (number will be converted to px)
-     */
-    readonly all: (value: number | string) => string;
-    /**
-     * Creates symmetric spacing for horizontal and/or vertical sides
-     * @param options - Object containing horizontal and/or vertical spacing values
-     */
-    readonly symmetric: (options: {
-        horizontal?: number | string;
-        vertical?: number | string;
-    }) => string;
-    /**
-     * Creates spacing with individual control for each side
-     * @param options - Object containing left, top, right, and/or bottom spacing values
-     */
-    readonly only: (options: {
-        left?: number | string;
-        top?: number | string;
-        right?: number | string;
-        bottom?: number | string;
-    }) => string;
-    /**
-     * Creates spacing by specifying all four sides explicitly (Left, Top, Right, Bottom)
-     * @param left - Left spacing value
-     * @param top - Top spacing value
-     * @param right - Right spacing value
-     * @param bottom - Bottom spacing value
-     */
-    readonly fromLTRB: (left: number | string, top: number | string, right: number | string, bottom: number | string) => string;
-    /**
-     * Creates zero spacing for all sides
-     */
-    readonly zero: () => string;
 };
 
 /**
@@ -1074,7 +1032,7 @@ interface Size {
     width: number;
     height: number;
 }
-interface EdgeInsets {
+interface MediaQueryEdgeInsets {
     top: number;
     right: number;
     bottom: number;
@@ -1092,8 +1050,8 @@ interface MediaQueryData {
     size: Size;
     devicePixelRatio: number;
     orientation: Orientation;
-    padding: EdgeInsets;
-    viewInsets: EdgeInsets;
+    padding: MediaQueryEdgeInsets;
+    viewInsets: MediaQueryEdgeInsets;
     textScaleFactor: number;
     platformBrightness: Brightness;
     disableAnimations: boolean;
@@ -1745,4 +1703,4 @@ interface TextProps {
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
 export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, EdgeInsets as MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };

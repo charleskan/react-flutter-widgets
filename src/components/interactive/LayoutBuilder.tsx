@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 /**
  * BoxConstraints interface equivalent to Flutter's BoxConstraints
@@ -65,7 +65,7 @@ function LayoutBuilder({ builder, className = '', style = {} }: LayoutBuilderPro
   const resizeObserverRef = useRef<ResizeObserver>()
 
   // Calculate constraints from element
-  const calculateConstraints = (element: HTMLElement): BoxConstraints => {
+  const calculateConstraints = useCallback((element: HTMLElement): BoxConstraints => {
     const computedStyle = getComputedStyle(element)
 
     // Get the parent's constraints or use viewport
@@ -97,7 +97,7 @@ function LayoutBuilder({ builder, className = '', style = {} }: LayoutBuilderPro
       minHeight: minHeightPx,
       maxHeight: maxHeightPx,
     })
-  }
+  }, [])
 
   // Set up resize observer
   useEffect(() => {
@@ -135,7 +135,7 @@ function LayoutBuilder({ builder, className = '', style = {} }: LayoutBuilderPro
         resizeObserverRef.current.disconnect()
       }
     }
-  }, [])
+  }, [calculateConstraints])
 
   // Memoize the built content
   const content = useMemo(() => {

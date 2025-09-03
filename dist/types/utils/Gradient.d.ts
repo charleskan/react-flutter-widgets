@@ -28,10 +28,10 @@ export declare class LinearGradient extends Gradient {
 }
 export declare class RadialGradient extends Gradient {
     center: AlignmentGeometry;
-    radius?: number;
+    radius: number;
     focal?: AlignmentGeometry;
-    focalRadius?: number;
-    tileMode?: 'clamp' | 'repeat' | 'mirror';
+    focalRadius: number;
+    tileMode: 'clamp' | 'repeat' | 'mirror';
     constructor(options: {
         colors: string[];
         stops?: number[];
@@ -46,9 +46,9 @@ export declare class RadialGradient extends Gradient {
 }
 export declare class SweepGradient extends Gradient {
     center: AlignmentGeometry;
-    startAngle?: number;
-    endAngle?: number;
-    tileMode?: 'clamp' | 'repeat' | 'mirror';
+    startAngle: number;
+    endAngle: number;
+    tileMode: 'clamp' | 'repeat' | 'mirror';
     constructor(options: {
         colors: string[];
         stops?: number[];

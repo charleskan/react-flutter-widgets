@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Flex } from '../../types/Flex.type'
-import { Alignment, BoxConstraints, Decoration, Matrix4 } from '../../utils'
+import { BoxConstraints, Decoration, Matrix4, alignmentToFlexClasses } from '../../utils'
 import type {
   AlignmentGeometry,
   BoxDecoration,
@@ -183,7 +183,7 @@ function Container(props: ContainerProps) {
   }
 
   // Build Tailwind classes
-  const alignmentClasses = alignment ? Alignment.toFlexClasses(alignment) : []
+  const alignmentClasses = alignment ? alignmentToFlexClasses(alignment) : []
   const clipClasses = Decoration.clipToClasses(clipBehavior)
 
   // Build CSS styles for properties that don't have good Tailwind equivalents
