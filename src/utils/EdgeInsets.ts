@@ -45,16 +45,15 @@ export class EdgeInsets {
   }
 
   /**
-   * Creates EdgeInsets with zero values for all sides
+   * An EdgeInsets with zero offsets in each direction
    */
-  static zero(): EdgeInsets {
-    return new EdgeInsets(0, 0, 0, 0)
-  }
+  static readonly zero = new EdgeInsets(0, 0, 0, 0)
 
   /**
-   * Creates EdgeInsets from TRBL (top, right, bottom, left) values
+   * Creates EdgeInsets from LTRB (left, top, right, bottom) values
+   * This matches Flutter's EdgeInsets.fromLTRB constructor
    */
-  static fromTRBL(top: number, right: number, bottom: number, left: number): EdgeInsets {
+  static fromLTRB(left: number, top: number, right: number, bottom: number): EdgeInsets {
     return new EdgeInsets(top, right, bottom, left)
   }
 
@@ -178,5 +177,91 @@ export class EdgeInsets {
       this.bottom === other.bottom &&
       this.left === other.left
     )
+  }
+
+  /**
+   * The total offset in the horizontal direction
+   */
+  get horizontal(): number {
+    return this.left + this.right
+  }
+
+  /**
+   * The total offset in the vertical direction
+   */
+  get vertical(): number {
+    return this.top + this.bottom
+  }
+
+  /**
+   * Returns a new rect that is smaller than the given rect in each direction
+   * by the amount of inset in each direction
+   */
+  deflateRect(rect: { x: number; y: number; width: number; height: number }): {
+    x: number
+    y: number
+    width: number
+    height: number
+  } {
+    return {
+      x: rect.x + this.left,
+      y: rect.y + this.top,
+      width: rect.width - this.horizontal,
+      height: rect.height - this.vertical,
+    }
+  }
+
+  /**
+   * Returns a new rect that is bigger than the given rect in each direction
+   * by the amount of inset in each direction
+   */
+  inflateRect(rect: { x: number; y: number; width: number; height: number }): {
+    x: number
+    y: number
+    width: number
+    height: number
+  } {
+    return {
+      x: rect.x - this.left,
+      y: rect.y - this.top,
+      width: rect.width + this.horizontal,
+      height: rect.height + this.vertical,
+    }
+  }
+
+  /**
+   * Returns a new size that is smaller than the given size by the amount
+   * of inset in the horizontal and vertical directions
+   */
+  deflateSize(size: { width: number; height: number }): { width: number; height: number } {
+    return {
+      width: size.width - this.horizontal,
+      height: size.height - this.vertical,
+    }
+  }
+
+  /**
+   * Returns a new size that is bigger than the given size by the amount
+   * of inset in the horizontal and vertical directions
+   */
+  inflateSize(size: { width: number; height: number }): { width: number; height: number } {
+    return {
+      width: size.width + this.horizontal,
+      height: size.height + this.vertical,
+    }
+  }
+
+  /**
+   * Whether every dimension is non-negative
+   */
+  get isNonNegative(): boolean {
+    return this.top >= 0 && this.right >= 0 && this.bottom >= 0 && this.left >= 0
+  }
+
+  /**
+   * Returns an EdgeInsets with top and bottom as well as left and right flipped
+   */
+  get flipped(): EdgeInsets {
+    return new EdgeInsets(this.bottom, this.left, this.top, this.right)
   }
 }

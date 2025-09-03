@@ -627,15 +627,10 @@ class EdgeInsets {
         return new EdgeInsets(options.top || 0, options.right || 0, options.bottom || 0, options.left || 0);
     }
     /**
-     * Creates EdgeInsets with zero values for all sides
+     * Creates EdgeInsets from LTRB (left, top, right, bottom) values
+     * This matches Flutter's EdgeInsets.fromLTRB constructor
      */
-    static zero() {
-        return new EdgeInsets(0, 0, 0, 0);
-    }
-    /**
-     * Creates EdgeInsets from TRBL (top, right, bottom, left) values
-     */
-    static fromTRBL(top, right, bottom, left) {
+    static fromLTRB(left, top, right, bottom) {
         return new EdgeInsets(top, right, bottom, left);
     }
     /**
@@ -717,7 +712,79 @@ class EdgeInsets {
             this.bottom === other.bottom &&
             this.left === other.left);
     }
+    /**
+     * The total offset in the horizontal direction
+     */
+    get horizontal() {
+        return this.left + this.right;
+    }
+    /**
+     * The total offset in the vertical direction
+     */
+    get vertical() {
+        return this.top + this.bottom;
+    }
+    /**
+     * Returns a new rect that is smaller than the given rect in each direction
+     * by the amount of inset in each direction
+     */
+    deflateRect(rect) {
+        return {
+            x: rect.x + this.left,
+            y: rect.y + this.top,
+            width: rect.width - this.horizontal,
+            height: rect.height - this.vertical,
+        };
+    }
+    /**
+     * Returns a new rect that is bigger than the given rect in each direction
+     * by the amount of inset in each direction
+     */
+    inflateRect(rect) {
+        return {
+            x: rect.x - this.left,
+            y: rect.y - this.top,
+            width: rect.width + this.horizontal,
+            height: rect.height + this.vertical,
+        };
+    }
+    /**
+     * Returns a new size that is smaller than the given size by the amount
+     * of inset in the horizontal and vertical directions
+     */
+    deflateSize(size) {
+        return {
+            width: size.width - this.horizontal,
+            height: size.height - this.vertical,
+        };
+    }
+    /**
+     * Returns a new size that is bigger than the given size by the amount
+     * of inset in the horizontal and vertical directions
+     */
+    inflateSize(size) {
+        return {
+            width: size.width + this.horizontal,
+            height: size.height + this.vertical,
+        };
+    }
+    /**
+     * Whether every dimension is non-negative
+     */
+    get isNonNegative() {
+        return this.top >= 0 && this.right >= 0 && this.bottom >= 0 && this.left >= 0;
+    }
+    /**
+     * Returns an EdgeInsets with top and bottom as well as left and right flipped
+     */
+    get flipped() {
+        return new EdgeInsets(this.bottom, this.left, this.top, this.right);
+    }
 }
+/**
+ * An EdgeInsets with zero offsets in each direction
+ */
+EdgeInsets.zero = new EdgeInsets(0, 0, 0, 0);
 
 var BoxConstraints;
 (function (BoxConstraints) {

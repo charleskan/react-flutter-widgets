@@ -33,13 +33,14 @@ declare class EdgeInsets$1 {
         left?: number;
     }): EdgeInsets$1;
     /**
-     * Creates EdgeInsets with zero values for all sides
+     * An EdgeInsets with zero offsets in each direction
      */
-    static zero(): EdgeInsets$1;
+    static readonly zero: EdgeInsets$1;
     /**
-     * Creates EdgeInsets from TRBL (top, right, bottom, left) values
+     * Creates EdgeInsets from LTRB (left, top, right, bottom) values
+     * This matches Flutter's EdgeInsets.fromLTRB constructor
      */
-    static fromTRBL(top: number, right: number, bottom: number, left: number): EdgeInsets$1;
+    static fromLTRB(left: number, top: number, right: number, bottom: number): EdgeInsets$1;
     /**
      * Converts EdgeInsets to CSS padding string
      */
@@ -93,6 +94,74 @@ declare class EdgeInsets$1 {
     }): EdgeInsets$1;
     toString(): string;
     equals(other: EdgeInsets$1): boolean;
+    /**
+     * The total offset in the horizontal direction
+     */
+    get horizontal(): number;
+    /**
+     * The total offset in the vertical direction
+     */
+    get vertical(): number;
+    /**
+     * Returns a new rect that is smaller than the given rect in each direction
+     * by the amount of inset in each direction
+     */
+    deflateRect(rect: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }): {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    /**
+     * Returns a new rect that is bigger than the given rect in each direction
+     * by the amount of inset in each direction
+     */
+    inflateRect(rect: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    }): {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    /**
+     * Returns a new size that is smaller than the given size by the amount
+     * of inset in the horizontal and vertical directions
+     */
+    deflateSize(size: {
+        width: number;
+        height: number;
+    }): {
+        width: number;
+        height: number;
+    };
+    /**
+     * Returns a new size that is bigger than the given size by the amount
+     * of inset in the horizontal and vertical directions
+     */
+    inflateSize(size: {
+        width: number;
+        height: number;
+    }): {
+        width: number;
+        height: number;
+    };
+    /**
+     * Whether every dimension is non-negative
+     */
+    get isNonNegative(): boolean;
+    /**
+     * Returns an EdgeInsets with top and bottom as well as left and right flipped
+     */
+    get flipped(): EdgeInsets$1;
 }
 
 interface BoxConstraints$1 {
