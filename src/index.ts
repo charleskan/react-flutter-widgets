@@ -168,6 +168,11 @@ export {
   type GradientStop,
 } from './utils/Gradient'
 export { BorderRadius, Radius } from './utils/BorderRadius'
+export {
+  PageScrollPhysics,
+  createPageScrollPhysics,
+  type ScrollPhysicsConfig,
+} from './utils/ScrollPhysics'
 
 // Layout System Types
 export {

@@ -35,6 +35,7 @@ export { Matrix4, type Matrix4 as Matrix4Interface } from './utils/Matrix4';
 export { Decoration, type BoxDecoration, type DecorationImage, type BoxFit, type ImageRepeat, type Clip, } from './utils/Decoration';
 export { Gradient, LinearGradient, RadialGradient, SweepGradient, type GradientStop, } from './utils/Gradient';
 export { BorderRadius, Radius } from './utils/BorderRadius';
+export { PageScrollPhysics, createPageScrollPhysics, type ScrollPhysicsConfig, } from './utils/ScrollPhysics';
 export { MainAxisAlignment, CrossAxisAlignment, MainAxisSize, VerticalDirection, } from './types/Layout';
 export { TextBaseline } from './types/Text';
 //# sourceMappingURL=index.d.ts.map

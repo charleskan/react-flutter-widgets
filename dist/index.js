@@ -1634,6 +1634,19 @@ const ListViewBase = require$$0.forwardRef(function ListView({ children = [], sc
     }), []);
     const paddingStyle = require$$0.useMemo(() => toPadding(padding), [padding]);
     const containerStyle = require$$0.useMemo(() => buildContainerStyle(scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent), [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent]);
+    // Apply PageScrollPhysics if provided
+    require$$0.useEffect(() => {
+        const element = elRef.current;
+        if (!element || !physics || typeof physics === 'string')
+            return;
+        // Check if physics is PageScrollPhysics instance
+        if ('applyTo' in physics && typeof physics.applyTo === 'function') {
+            const direction = scrollDirection === exports.Axis.HORIZONTAL ? 'horizontal' : 'vertical';
+            return physics.applyTo(element, direction, itemExtent);
+        }
+        // Return empty cleanup function for non-PageScrollPhysics cases
+        return () => { };
+    }, [physics, scrollDirection, itemExtent]);
     return (jsxRuntimeExports.jsx("ul", { ref: elRef, className: className, style: containerStyle, "aria-orientation": scrollDirection === exports.Axis.VERTICAL ? 'vertical' : 'horizontal', ...aria, "data-primary": primary ? 'true' : undefined, children: children?.map((child, i) => (jsxRuntimeExports.jsx(ItemWrap, { axis: scrollDirection, itemExtent: itemExtent, children: child }, child?.key ?? i))) }));
 });
 /**
@@ -4287,6 +4300,180 @@ class BorderRadius {
     }
 }
 
+/**
+ * Scroll physics utility classes for implementing various scrolling behaviors.
+ * Inspired by Flutter's ScrollPhysics API to provide consistent behavior across platforms.
+ */
+/**
+ * PageScrollPhysics implementation that provides page-like snapping behavior.
+ * Equivalent to Flutter's PageScrollPhysics class.
+ *
+ * This physics causes the scroll view to snap to item boundaries,
+ * making it ideal for implementing carousel-like behavior.
+ *
+ * @example
+ * ```tsx
+ * const physics = new PageScrollPhysics({
+ *   snapThreshold: 0.3,
+ *   snapDuration: 300
+ * })
+ *
+ * <ListView.builder
+ *   scrollDirection={Axis.HORIZONTAL}
+ *   physics={physics}
+ *   itemCount={items.length}
+ *   itemBuilder={(index) => <Card key={index} />}
+ * />
+ * ```
+ */
+class PageScrollPhysics {
+    constructor(config = {}) {
+        this.config = {
+            snapping: true,
+            snapThreshold: 0.5,
+            snapDuration: 300,
+            snapEasing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            itemSize: () => 0,
+            ...config,
+        };
+    }
+    /**
+     * Applies snapping behavior to a scroll element.
+     * This method sets up event listeners and handles the snapping logic.
+     *
+     * @param element - The scrollable element to apply physics to
+     * @param direction - Scroll direction ('horizontal' or 'vertical')
+     * @param itemSize - Size of each item in pixels
+     */
+    applyTo(element, direction = 'horizontal', itemSize) {
+        if (!this.config.snapping) {
+            return () => { }; // No-op cleanup function
+        }
+        const actualItemSize = itemSize ??
+            (typeof this.config.itemSize === 'function' ? this.config.itemSize() : this.config.itemSize);
+        if (actualItemSize <= 0) {
+            console.warn('PageScrollPhysics: itemSize must be greater than 0 for snapping to work');
+            return () => { };
+        }
+        let isScrolling = false;
+        let scrollTimeout = null;
+        const handleScroll = () => {
+            if (isScrolling)
+                return;
+            // Clear existing timeout
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+            // Set a timeout to detect when scrolling stops
+            scrollTimeout = setTimeout(() => {
+                this.snapToNearestItem(element, direction, actualItemSize);
+            }, 150); // Wait 150ms after scroll stops
+        };
+        const handleScrollStart = () => {
+            isScrolling = true;
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = null;
+            }
+        };
+        const handleScrollEnd = () => {
+            isScrolling = false;
+        };
+        // Add event listeners
+        element.addEventListener('scroll', handleScroll, { passive: true });
+        element.addEventListener('scrollstart', handleScrollStart, { passive: true });
+        element.addEventListener('scrollend', handleScrollEnd, { passive: true });
+        // For browsers that don't support scrollend, use touchend and mouseup
+        element.addEventListener('touchend', handleScrollEnd, { passive: true });
+        element.addEventListener('mouseup', handleScrollEnd, { passive: true });
+        // Cleanup function
+        return () => {
+            element.removeEventListener('scroll', handleScroll);
+            element.removeEventListener('scrollstart', handleScrollStart);
+            element.removeEventListener('scrollend', handleScrollEnd);
+            element.removeEventListener('touchend', handleScrollEnd);
+            element.removeEventListener('mouseup', handleScrollEnd);
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+        };
+    }
+    /**
+     * Snaps to the nearest item based on current scroll position
+     */
+    snapToNearestItem(element, direction, itemSize) {
+        const isHorizontal = direction === 'horizontal';
+        const currentScroll = isHorizontal ? element.scrollLeft : element.scrollTop;
+        // Calculate which item we're closest to
+        const currentIndex = currentScroll / itemSize;
+        const floorIndex = Math.floor(currentIndex);
+        const remainder = currentIndex - floorIndex;
+        // Determine target index based on threshold
+        let targetIndex;
+        if (remainder > this.config.snapThreshold) {
+            targetIndex = floorIndex + 1;
+        }
+        else {
+            targetIndex = floorIndex;
+        }
+        // Calculate target scroll position
+        const targetScroll = targetIndex * itemSize;
+        // Only snap if we're not already at the target
+        if (Math.abs(currentScroll - targetScroll) > 1) {
+            const scrollOptions = {
+                [isHorizontal ? 'left' : 'top']: targetScroll,
+                behavior: 'smooth',
+            };
+            element.scrollTo(scrollOptions);
+        }
+    }
+    /**
+     * Calculates the item size automatically based on the first child element
+     */
+    static calculateItemSize(element, direction = 'horizontal') {
+        const firstChild = element.firstElementChild;
+        if (!firstChild)
+            return 0;
+        const rect = firstChild.getBoundingClientRect();
+        return direction === 'horizontal' ? rect.width : rect.height;
+    }
+    /**
+     * Creates a PageScrollPhysics instance with default settings optimized for carousels
+     */
+    static carousel(config = {}) {
+        return new PageScrollPhysics({
+            snapThreshold: 0.3,
+            snapDuration: 250,
+            snapEasing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            ...config,
+        });
+    }
+    /**
+     * Creates a PageScrollPhysics instance with settings optimized for full-page scrolling
+     */
+    static page(config = {}) {
+        return new PageScrollPhysics({
+            snapThreshold: 0.5,
+            snapDuration: 400,
+            snapEasing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+            ...config,
+        });
+    }
+}
+/**
+ * Utility function to create PageScrollPhysics with common presets
+ */
+function createPageScrollPhysics(preset = 'carousel', config) {
+    switch (preset) {
+        case 'carousel':
+            return PageScrollPhysics.carousel(config);
+        case 'page':
+            return PageScrollPhysics.page(config);
+        default:
+            return new PageScrollPhysics(config);
+    }
+}
+
 exports.Alignment = Alignment$1;
 exports.AlignmentDirectional = AlignmentDirectional;
 exports.AnimatedContainer = AnimatedContainer;
@@ -4308,6 +4495,7 @@ exports.MediaQuery = MediaQuery;
 exports.Opacity = Opacity;
 exports.OrientationBuilder = OrientationBuilder;
 exports.OrientationUtils = OrientationUtils;
+exports.PageScrollPhysics = PageScrollPhysics;
 exports.RadialGradient = RadialGradient;
 exports.Radius = Radius;
 exports.Row = Row;
@@ -4324,6 +4512,7 @@ exports.alignmentToTransformOrigin = alignmentToTransformOrigin;
 exports.createBoxConstraints = createBoxConstraints;
 exports.createExpandedConstraints = createExpandedConstraints;
 exports.createLooseConstraints = createLooseConstraints;
+exports.createPageScrollPhysics = createPageScrollPhysics;
 exports.createTightConstraints = createTightConstraints;
 exports.defaultBreakpoints = defaultBreakpoints;
 exports.useBreakpoint = useBreakpoint;

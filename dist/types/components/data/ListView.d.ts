@@ -1,5 +1,6 @@
 import type React from 'react';
 import { type CSSProperties, type ReactNode } from 'react';
+import type { PageScrollPhysics } from '../../utils/ScrollPhysics';
 /**
  * Defines the scroll direction for ListView components.
  * @enum {string}
@@ -59,8 +60,8 @@ export interface BaseProps {
     shrinkWrap?: boolean;
     /** Mark this ListView as primary (semantic only on Web; doesn't affect behavior) */
     primary?: boolean;
-    /** Scrolling physics behavior (set to NEVER to disable scrolling) */
-    physics?: ScrollPhysics;
+    /** Scrolling physics behavior (set to NEVER to disable scrolling, or use PageScrollPhysics for snapping) */
+    physics?: ScrollPhysics | PageScrollPhysics;
     /** Internal padding (supports number or individual sides) */
     padding?: EdgeInsets;
     /** Fixed height/width for child items (corresponds to itemExtent) */

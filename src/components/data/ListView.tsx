@@ -4,10 +4,12 @@ import {
   type ForwardedRef,
   type ReactNode,
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
 } from 'react'
+import type { PageScrollPhysics } from '../../utils/ScrollPhysics'
 
 /**
  * Defines the scroll direction for ListView components.
@@ -64,8 +66,8 @@ export interface BaseProps {
   shrinkWrap?: boolean
   /** Mark this ListView as primary (semantic only on Web; doesn't affect behavior) */
   primary?: boolean
-  /** Scrolling physics behavior (set to NEVER to disable scrolling) */
-  physics?: ScrollPhysics
+  /** Scrolling physics behavior (set to NEVER to disable scrolling, or use PageScrollPhysics for snapping) */
+  physics?: ScrollPhysics | PageScrollPhysics
   /** Internal padding (supports number or individual sides) */
   padding?: EdgeInsets
   /** Fixed height/width for child items (corresponds to itemExtent) */
@@ -154,7 +156,7 @@ function buildContainerStyle(
   axis: Axis,
   reverse: boolean,
   shrinkWrap: boolean,
-  physics: ScrollPhysics,
+  physics: ScrollPhysics | PageScrollPhysics,
   clip: 'visible' | 'hidden',
   paddingStyle?: CSSProperties,
   userStyle?: CSSProperties,
@@ -275,6 +277,21 @@ const ListViewBase = forwardRef(function ListView(
       ),
     [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent],
   )
+
+  // Apply PageScrollPhysics if provided
+  useEffect(() => {
+    const element = elRef.current
+    if (!element || !physics || typeof physics === 'string') return
+
+    // Check if physics is PageScrollPhysics instance
+    if ('applyTo' in physics && typeof physics.applyTo === 'function') {
+      const direction = scrollDirection === Axis.HORIZONTAL ? 'horizontal' : 'vertical'
+      return physics.applyTo(element, direction, itemExtent)
+    }
+
+    // Return empty cleanup function for non-PageScrollPhysics cases
+    return () => {}
+  }, [physics, scrollDirection, itemExtent])
 
   return (
     <ul

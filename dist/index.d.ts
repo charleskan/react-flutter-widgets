@@ -854,6 +854,81 @@ interface SpacerProps {
 declare function Spacer({ flex }: SpacerProps): react_jsx_runtime.JSX.Element;
 
 /**
+ * Scroll physics utility classes for implementing various scrolling behaviors.
+ * Inspired by Flutter's ScrollPhysics API to provide consistent behavior across platforms.
+ */
+/**
+ * Base interface for scroll physics implementations
+ */
+interface ScrollPhysicsConfig {
+    /** Enable snapping behavior */
+    snapping?: boolean;
+    /** Snap threshold (0-1, where 0.5 means snap when scrolled more than half way) */
+    snapThreshold?: number;
+    /** Animation duration for snapping in milliseconds */
+    snapDuration?: number;
+    /** Animation easing function for snapping */
+    snapEasing?: string;
+    /** Item size for calculating snap positions */
+    itemSize?: number | (() => number);
+}
+/**
+ * PageScrollPhysics implementation that provides page-like snapping behavior.
+ * Equivalent to Flutter's PageScrollPhysics class.
+ *
+ * This physics causes the scroll view to snap to item boundaries,
+ * making it ideal for implementing carousel-like behavior.
+ *
+ * @example
+ * ```tsx
+ * const physics = new PageScrollPhysics({
+ *   snapThreshold: 0.3,
+ *   snapDuration: 300
+ * })
+ *
+ * <ListView.builder
+ *   scrollDirection={Axis.HORIZONTAL}
+ *   physics={physics}
+ *   itemCount={items.length}
+ *   itemBuilder={(index) => <Card key={index} />}
+ * />
+ * ```
+ */
+declare class PageScrollPhysics {
+    readonly config: Required<ScrollPhysicsConfig>;
+    constructor(config?: ScrollPhysicsConfig);
+    /**
+     * Applies snapping behavior to a scroll element.
+     * This method sets up event listeners and handles the snapping logic.
+     *
+     * @param element - The scrollable element to apply physics to
+     * @param direction - Scroll direction ('horizontal' or 'vertical')
+     * @param itemSize - Size of each item in pixels
+     */
+    applyTo(element: HTMLElement, direction?: 'horizontal' | 'vertical', itemSize?: number): () => void;
+    /**
+     * Snaps to the nearest item based on current scroll position
+     */
+    private snapToNearestItem;
+    /**
+     * Calculates the item size automatically based on the first child element
+     */
+    static calculateItemSize(element: HTMLElement, direction?: 'horizontal' | 'vertical'): number;
+    /**
+     * Creates a PageScrollPhysics instance with default settings optimized for carousels
+     */
+    static carousel(config?: Partial<ScrollPhysicsConfig>): PageScrollPhysics;
+    /**
+     * Creates a PageScrollPhysics instance with settings optimized for full-page scrolling
+     */
+    static page(config?: Partial<ScrollPhysicsConfig>): PageScrollPhysics;
+}
+/**
+ * Utility function to create PageScrollPhysics with common presets
+ */
+declare function createPageScrollPhysics(preset?: 'carousel' | 'page' | 'custom', config?: ScrollPhysicsConfig): PageScrollPhysics;
+
+/**
  * Defines the scroll direction for ListView components.
  * @enum {string}
  */
@@ -912,8 +987,8 @@ interface BaseProps {
     shrinkWrap?: boolean;
     /** Mark this ListView as primary (semantic only on Web; doesn't affect behavior) */
     primary?: boolean;
-    /** Scrolling physics behavior (set to NEVER to disable scrolling) */
-    physics?: ScrollPhysics;
+    /** Scrolling physics behavior (set to NEVER to disable scrolling, or use PageScrollPhysics for snapping) */
+    physics?: ScrollPhysics | PageScrollPhysics;
     /** Internal padding (supports number or individual sides) */
     padding?: EdgeInsets;
     /** Fixed height/width for child items (corresponds to itemExtent) */
@@ -1999,5 +2074,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BoxFit, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DecorationImage, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, ImageRepeat, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export { Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, PageScrollPhysics, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createPageScrollPhysics, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BoxFit, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DecorationImage, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, ImageRepeat, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, ScrollPhysicsConfig, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
