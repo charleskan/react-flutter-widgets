@@ -856,193 +856,6 @@ function alignmentToTransformOrigin(alignment) {
     bottomRight: Alignment$1.bottomRight,
 });
 
-class EdgeInsets {
-    constructor(top, right, bottom, left) {
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-        this.left = left;
-    }
-    /**
-     * Creates EdgeInsets with the same value for all sides
-     */
-    static all(value) {
-        return new EdgeInsets(value, value, value, value);
-    }
-    /**
-     * Creates EdgeInsets with symmetric horizontal and vertical values
-     */
-    static symmetric(options) {
-        const horizontal = options.horizontal || 0;
-        const vertical = options.vertical || 0;
-        return new EdgeInsets(vertical, horizontal, vertical, horizontal);
-    }
-    /**
-     * Creates EdgeInsets with individual side values
-     */
-    static only(options) {
-        return new EdgeInsets(options.top || 0, options.right || 0, options.bottom || 0, options.left || 0);
-    }
-    /**
-     * Creates EdgeInsets from LTRB (left, top, right, bottom) values
-     * This matches Flutter's EdgeInsets.fromLTRB constructor
-     */
-    static fromLTRB(left, top, right, bottom) {
-        return new EdgeInsets(top, right, bottom, left);
-    }
-    /**
-     * Converts EdgeInsets to CSS padding string
-     */
-    toPadding() {
-        if (this.top === this.right && this.right === this.bottom && this.bottom === this.left) {
-            return `${this.top}px`;
-        }
-        if (this.top === this.bottom && this.left === this.right) {
-            return `${this.top}px ${this.right}px`;
-        }
-        return `${this.top}px ${this.right}px ${this.bottom}px ${this.left}px`;
-    }
-    /**
-     * Converts EdgeInsets to CSS margin string
-     */
-    toMargin() {
-        return this.toPadding();
-    }
-    /**
-     * Converts EdgeInsets to CSS object for padding
-     */
-    toPaddingObject() {
-        return {
-            paddingTop: `${this.top}px`,
-            paddingRight: `${this.right}px`,
-            paddingBottom: `${this.bottom}px`,
-            paddingLeft: `${this.left}px`,
-        };
-    }
-    /**
-     * Converts EdgeInsets to CSS object for margin
-     */
-    toMarginObject() {
-        return {
-            marginTop: `${this.top}px`,
-            marginRight: `${this.right}px`,
-            marginBottom: `${this.bottom}px`,
-            marginLeft: `${this.left}px`,
-        };
-    }
-    /**
-     * Returns a new EdgeInsets with added values
-     */
-    add(other) {
-        return new EdgeInsets(this.top + other.top, this.right + other.right, this.bottom + other.bottom, this.left + other.left);
-    }
-    /**
-     * Returns a new EdgeInsets with subtracted values
-     */
-    subtract(other) {
-        return new EdgeInsets(this.top - other.top, this.right - other.right, this.bottom - other.bottom, this.left - other.left);
-    }
-    /**
-     * Returns true if all sides are equal to zero
-     */
-    get isZero() {
-        return this.top === 0 && this.right === 0 && this.bottom === 0 && this.left === 0;
-    }
-    /**
-     * Returns true if all sides are equal
-     */
-    get isUniform() {
-        return this.top === this.right && this.right === this.bottom && this.bottom === this.left;
-    }
-    /**
-     * Creates a copy of this EdgeInsets with optional modifications
-     */
-    copyWith(options) {
-        return new EdgeInsets(options.top !== undefined ? options.top : this.top, options.right !== undefined ? options.right : this.right, options.bottom !== undefined ? options.bottom : this.bottom, options.left !== undefined ? options.left : this.left);
-    }
-    toString() {
-        return `EdgeInsets(${this.top}, ${this.right}, ${this.bottom}, ${this.left})`;
-    }
-    equals(other) {
-        return (this.top === other.top &&
-            this.right === other.right &&
-            this.bottom === other.bottom &&
-            this.left === other.left);
-    }
-    /**
-     * The total offset in the horizontal direction
-     */
-    get horizontal() {
-        return this.left + this.right;
-    }
-    /**
-     * The total offset in the vertical direction
-     */
-    get vertical() {
-        return this.top + this.bottom;
-    }
-    /**
-     * Returns a new rect that is smaller than the given rect in each direction
-     * by the amount of inset in each direction
-     */
-    deflateRect(rect) {
-        return {
-            x: rect.x + this.left,
-            y: rect.y + this.top,
-            width: rect.width - this.horizontal,
-            height: rect.height - this.vertical,
-        };
-    }
-    /**
-     * Returns a new rect that is bigger than the given rect in each direction
-     * by the amount of inset in each direction
-     */
-    inflateRect(rect) {
-        return {
-            x: rect.x - this.left,
-            y: rect.y - this.top,
-            width: rect.width + this.horizontal,
-            height: rect.height + this.vertical,
-        };
-    }
-    /**
-     * Returns a new size that is smaller than the given size by the amount
-     * of inset in the horizontal and vertical directions
-     */
-    deflateSize(size) {
-        return {
-            width: size.width - this.horizontal,
-            height: size.height - this.vertical,
-        };
-    }
-    /**
-     * Returns a new size that is bigger than the given size by the amount
-     * of inset in the horizontal and vertical directions
-     */
-    inflateSize(size) {
-        return {
-            width: size.width + this.horizontal,
-            height: size.height + this.vertical,
-        };
-    }
-    /**
-     * Whether every dimension is non-negative
-     */
-    get isNonNegative() {
-        return this.top >= 0 && this.right >= 0 && this.bottom >= 0 && this.left >= 0;
-    }
-    /**
-     * Returns an EdgeInsets with top and bottom as well as left and right flipped
-     */
-    get flipped() {
-        return new EdgeInsets(this.bottom, this.left, this.top, this.right);
-    }
-}
-/**
- * An EdgeInsets with zero offsets in each direction
- */
-EdgeInsets.zero = new EdgeInsets(0, 0, 0, 0);
-
 var BoxConstraints;
 (function (BoxConstraints) {
     /**
@@ -1112,6 +925,65 @@ var BoxConstraints;
     }
     BoxConstraints.loose = loose;
 })(BoxConstraints || (BoxConstraints = {}));
+
+var Decoration;
+(function (Decoration) {
+    /**
+     * Converts BoxDecoration to CSS properties
+     */
+    function toCSS(decoration) {
+        if (!decoration)
+            return {};
+        const styles = {};
+        if (decoration.color)
+            styles.backgroundColor = decoration.color;
+        if (decoration.borderRadius) {
+            if (typeof decoration.borderRadius === 'object' && 'toCSS' in decoration.borderRadius) {
+                styles.borderRadius = decoration.borderRadius.toCSS();
+            }
+            else if (typeof decoration.borderRadius === 'number') {
+                styles.borderRadius = `${decoration.borderRadius}px`;
+            }
+            else {
+                styles.borderRadius = decoration.borderRadius;
+            }
+        }
+        if (decoration.borderWidth && decoration.borderWidth > 0) {
+            styles.borderWidth = `${decoration.borderWidth}px`;
+            styles.borderColor = decoration.borderColor;
+            styles.borderStyle = decoration.borderStyle || 'solid';
+        }
+        if (decoration.boxShadow)
+            styles.boxShadow = decoration.boxShadow;
+        if (decoration.gradient) {
+            styles.background = decoration.gradient.toCSS();
+            // If both color and gradient are specified, gradient takes precedence
+            if (decoration.color) {
+                styles.backgroundColor = 'transparent';
+            }
+        }
+        return styles;
+    }
+    Decoration.toCSS = toCSS;
+    /**
+     * Converts Clip behavior to CSS classes
+     */
+    function clipToClasses(clipBehavior) {
+        if (!clipBehavior || clipBehavior === 'none')
+            return [];
+        switch (clipBehavior) {
+            case 'hardEdge':
+                return ['overflow-hidden'];
+            case 'antiAlias':
+                return ['overflow-hidden', 'rounded-inherit'];
+            case 'antiAliasWithSaveLayer':
+                return ['overflow-hidden', 'rounded-inherit', 'isolate'];
+            default:
+                return [];
+        }
+    }
+    Decoration.clipToClasses = clipToClasses;
+})(Decoration || (Decoration = {}));
 
 var Matrix4$1;
 (function (Matrix4) {
@@ -1194,176 +1066,6 @@ var Matrix4$1;
     }
     Matrix4.toCSS = toCSS;
 })(Matrix4$1 || (Matrix4$1 = {}));
-
-var Decoration;
-(function (Decoration) {
-    /**
-     * Converts BoxDecoration to CSS properties
-     */
-    function toCSS(decoration) {
-        if (!decoration)
-            return {};
-        const styles = {};
-        if (decoration.color)
-            styles.backgroundColor = decoration.color;
-        if (decoration.borderRadius) {
-            if (typeof decoration.borderRadius === 'object' && 'toCSS' in decoration.borderRadius) {
-                styles.borderRadius = decoration.borderRadius.toCSS();
-            }
-            else if (typeof decoration.borderRadius === 'number') {
-                styles.borderRadius = `${decoration.borderRadius}px`;
-            }
-            else {
-                styles.borderRadius = decoration.borderRadius;
-            }
-        }
-        if (decoration.borderWidth && decoration.borderWidth > 0) {
-            styles.borderWidth = `${decoration.borderWidth}px`;
-            styles.borderColor = decoration.borderColor;
-            styles.borderStyle = decoration.borderStyle || 'solid';
-        }
-        if (decoration.boxShadow)
-            styles.boxShadow = decoration.boxShadow;
-        if (decoration.gradient) {
-            styles.background = decoration.gradient.toCSS();
-            // If both color and gradient are specified, gradient takes precedence
-            if (decoration.color) {
-                styles.backgroundColor = 'transparent';
-            }
-        }
-        return styles;
-    }
-    Decoration.toCSS = toCSS;
-    /**
-     * Converts Clip behavior to CSS classes
-     */
-    function clipToClasses(clipBehavior) {
-        if (!clipBehavior || clipBehavior === 'none')
-            return [];
-        switch (clipBehavior) {
-            case 'hardEdge':
-                return ['overflow-hidden'];
-            case 'antiAlias':
-                return ['overflow-hidden', 'rounded-inherit'];
-            case 'antiAliasWithSaveLayer':
-                return ['overflow-hidden', 'rounded-inherit', 'isolate'];
-            default:
-                return [];
-        }
-    }
-    Decoration.clipToClasses = clipToClasses;
-})(Decoration || (Decoration = {}));
-
-class Gradient {
-    constructor(options) {
-        this.colors = options.colors;
-        this.stops = options.stops;
-    }
-}
-class LinearGradient extends Gradient {
-    constructor(options) {
-        super({ colors: options.colors, stops: options.stops });
-        this.begin = options.begin || Alignment$1.centerLeft;
-        this.end = options.end || Alignment$1.centerRight;
-        this.tileMode = options.tileMode || 'clamp';
-    }
-    alignmentToAngle(begin, end) {
-        const resolvedBegin = begin.resolve(null);
-        const resolvedEnd = end.resolve(null);
-        const dx = resolvedEnd.x - resolvedBegin.x;
-        const dy = resolvedEnd.y - resolvedBegin.y;
-        return Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-    }
-    toCSS() {
-        const angle = this.alignmentToAngle(this.begin, this.end);
-        let colorStops;
-        if (this.stops && this.stops.length === this.colors.length) {
-            const stops = this.stops; // TypeScript narrowing
-            colorStops = this.colors.map((color, index) => {
-                const stop = stops[index] ?? 0;
-                return `${color} ${stop * 100}%`;
-            });
-        }
-        else {
-            colorStops = this.colors.map((color, index) => {
-                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
-                return `${color} ${percentage}%`;
-            });
-        }
-        return `linear-gradient(${angle}deg, ${colorStops.join(', ')})`;
-    }
-}
-class RadialGradient extends Gradient {
-    constructor(options) {
-        super({ colors: options.colors, stops: options.stops });
-        this.center = options.center || Alignment$1.center;
-        this.radius = options.radius || 0.5;
-        this.focal = options.focal;
-        this.focalRadius = options.focalRadius || 0;
-        this.tileMode = options.tileMode || 'clamp';
-    }
-    alignmentToPercentage(alignment) {
-        const resolved = alignment.resolve(null);
-        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
-        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
-        return { x: `${x}%`, y: `${y}%` };
-    }
-    toCSS() {
-        const centerPos = this.alignmentToPercentage(this.center);
-        let colorStops;
-        if (this.stops && this.stops.length === this.colors.length) {
-            const stops = this.stops; // TypeScript narrowing
-            colorStops = this.colors.map((color, index) => {
-                const stop = stops[index] ?? 0;
-                return `${color} ${stop * 100}%`;
-            });
-        }
-        else {
-            colorStops = this.colors.map((color, index) => {
-                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
-                return `${color} ${percentage}%`;
-            });
-        }
-        const radiusValue = `${this.radius * 100}%`;
-        return `radial-gradient(circle ${radiusValue} at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
-    }
-}
-class SweepGradient extends Gradient {
-    constructor(options) {
-        super({ colors: options.colors, stops: options.stops });
-        this.center = options.center || Alignment$1.center;
-        this.startAngle = options.startAngle || 0;
-        this.endAngle = options.endAngle || Math.PI * 2;
-        this.tileMode = options.tileMode || 'clamp';
-    }
-    alignmentToPercentage(alignment) {
-        const resolved = alignment.resolve(null);
-        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
-        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
-        return { x: `${x}%`, y: `${y}%` };
-    }
-    toCSS() {
-        const centerPos = this.alignmentToPercentage(this.center);
-        const startAngleDeg = this.startAngle * (180 / Math.PI);
-        let colorStops;
-        if (this.stops && this.stops.length === this.colors.length) {
-            const stops = this.stops; // TypeScript narrowing
-            colorStops = this.colors.map((color, index) => {
-                const stop = stops[index] ?? 0;
-                const angle = startAngleDeg + stop * (this.endAngle - this.startAngle) * (180 / Math.PI);
-                return `${color} ${angle}deg`;
-            });
-        }
-        else {
-            colorStops = this.colors.map((color, index) => {
-                const progress = this.colors.length === 1 ? 0 : index / (this.colors.length - 1);
-                const angle = startAngleDeg + progress * (this.endAngle - this.startAngle) * (180 / Math.PI);
-                return `${color} ${angle}deg`;
-            });
-        }
-        return `conic-gradient(from ${startAngleDeg}deg at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
-    }
-}
 
 function resolvePaddingMargin(value) {
     if (!value)
@@ -1873,6 +1575,193 @@ const ListView$1 = Object.assign(ListViewBase, {
     builder: forwardRef((p, ref) => Builder(p, ref)),
     separated: forwardRef((p, ref) => Builder(p, ref)),
 });
+
+class EdgeInsets {
+    constructor(top, right, bottom, left) {
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+        this.left = left;
+    }
+    /**
+     * Creates EdgeInsets with the same value for all sides
+     */
+    static all(value) {
+        return new EdgeInsets(value, value, value, value);
+    }
+    /**
+     * Creates EdgeInsets with symmetric horizontal and vertical values
+     */
+    static symmetric(options) {
+        const horizontal = options.horizontal || 0;
+        const vertical = options.vertical || 0;
+        return new EdgeInsets(vertical, horizontal, vertical, horizontal);
+    }
+    /**
+     * Creates EdgeInsets with individual side values
+     */
+    static only(options) {
+        return new EdgeInsets(options.top || 0, options.right || 0, options.bottom || 0, options.left || 0);
+    }
+    /**
+     * Creates EdgeInsets from LTRB (left, top, right, bottom) values
+     * This matches Flutter's EdgeInsets.fromLTRB constructor
+     */
+    static fromLTRB(left, top, right, bottom) {
+        return new EdgeInsets(top, right, bottom, left);
+    }
+    /**
+     * Converts EdgeInsets to CSS padding string
+     */
+    toPadding() {
+        if (this.top === this.right && this.right === this.bottom && this.bottom === this.left) {
+            return `${this.top}px`;
+        }
+        if (this.top === this.bottom && this.left === this.right) {
+            return `${this.top}px ${this.right}px`;
+        }
+        return `${this.top}px ${this.right}px ${this.bottom}px ${this.left}px`;
+    }
+    /**
+     * Converts EdgeInsets to CSS margin string
+     */
+    toMargin() {
+        return this.toPadding();
+    }
+    /**
+     * Converts EdgeInsets to CSS object for padding
+     */
+    toPaddingObject() {
+        return {
+            paddingTop: `${this.top}px`,
+            paddingRight: `${this.right}px`,
+            paddingBottom: `${this.bottom}px`,
+            paddingLeft: `${this.left}px`,
+        };
+    }
+    /**
+     * Converts EdgeInsets to CSS object for margin
+     */
+    toMarginObject() {
+        return {
+            marginTop: `${this.top}px`,
+            marginRight: `${this.right}px`,
+            marginBottom: `${this.bottom}px`,
+            marginLeft: `${this.left}px`,
+        };
+    }
+    /**
+     * Returns a new EdgeInsets with added values
+     */
+    add(other) {
+        return new EdgeInsets(this.top + other.top, this.right + other.right, this.bottom + other.bottom, this.left + other.left);
+    }
+    /**
+     * Returns a new EdgeInsets with subtracted values
+     */
+    subtract(other) {
+        return new EdgeInsets(this.top - other.top, this.right - other.right, this.bottom - other.bottom, this.left - other.left);
+    }
+    /**
+     * Returns true if all sides are equal to zero
+     */
+    get isZero() {
+        return this.top === 0 && this.right === 0 && this.bottom === 0 && this.left === 0;
+    }
+    /**
+     * Returns true if all sides are equal
+     */
+    get isUniform() {
+        return this.top === this.right && this.right === this.bottom && this.bottom === this.left;
+    }
+    /**
+     * Creates a copy of this EdgeInsets with optional modifications
+     */
+    copyWith(options) {
+        return new EdgeInsets(options.top !== undefined ? options.top : this.top, options.right !== undefined ? options.right : this.right, options.bottom !== undefined ? options.bottom : this.bottom, options.left !== undefined ? options.left : this.left);
+    }
+    toString() {
+        return `EdgeInsets(${this.top}, ${this.right}, ${this.bottom}, ${this.left})`;
+    }
+    equals(other) {
+        return (this.top === other.top &&
+            this.right === other.right &&
+            this.bottom === other.bottom &&
+            this.left === other.left);
+    }
+    /**
+     * The total offset in the horizontal direction
+     */
+    get horizontal() {
+        return this.left + this.right;
+    }
+    /**
+     * The total offset in the vertical direction
+     */
+    get vertical() {
+        return this.top + this.bottom;
+    }
+    /**
+     * Returns a new rect that is smaller than the given rect in each direction
+     * by the amount of inset in each direction
+     */
+    deflateRect(rect) {
+        return {
+            x: rect.x + this.left,
+            y: rect.y + this.top,
+            width: rect.width - this.horizontal,
+            height: rect.height - this.vertical,
+        };
+    }
+    /**
+     * Returns a new rect that is bigger than the given rect in each direction
+     * by the amount of inset in each direction
+     */
+    inflateRect(rect) {
+        return {
+            x: rect.x - this.left,
+            y: rect.y - this.top,
+            width: rect.width + this.horizontal,
+            height: rect.height + this.vertical,
+        };
+    }
+    /**
+     * Returns a new size that is smaller than the given size by the amount
+     * of inset in the horizontal and vertical directions
+     */
+    deflateSize(size) {
+        return {
+            width: size.width - this.horizontal,
+            height: size.height - this.vertical,
+        };
+    }
+    /**
+     * Returns a new size that is bigger than the given size by the amount
+     * of inset in the horizontal and vertical directions
+     */
+    inflateSize(size) {
+        return {
+            width: size.width + this.horizontal,
+            height: size.height + this.vertical,
+        };
+    }
+    /**
+     * Whether every dimension is non-negative
+     */
+    get isNonNegative() {
+        return this.top >= 0 && this.right >= 0 && this.bottom >= 0 && this.left >= 0;
+    }
+    /**
+     * Returns an EdgeInsets with top and bottom as well as left and right flipped
+     */
+    get flipped() {
+        return new EdgeInsets(this.bottom, this.left, this.top, this.right);
+    }
+}
+/**
+ * An EdgeInsets with zero offsets in each direction
+ */
+EdgeInsets.zero = new EdgeInsets(0, 0, 0, 0);
 
 /**
  * Scroll direction for ListView
@@ -4062,5 +3951,232 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
     return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("div", { id: elemId, className: combinedClassName, style: customStyle, lang: locale, dir: textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
 };
 
-export { Alignment$1 as Alignment, AlignmentDirectional, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+class Gradient {
+    constructor(options) {
+        this.colors = options.colors;
+        this.stops = options.stops;
+    }
+}
+class LinearGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.begin = options.begin || Alignment$1.centerLeft;
+        this.end = options.end || Alignment$1.centerRight;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToAngle(begin, end) {
+        const resolvedBegin = begin.resolve(null);
+        const resolvedEnd = end.resolve(null);
+        const dx = resolvedEnd.x - resolvedBegin.x;
+        const dy = resolvedEnd.y - resolvedBegin.y;
+        return Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    }
+    toCSS() {
+        const angle = this.alignmentToAngle(this.begin, this.end);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                return `${color} ${stop * 100}%`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
+                return `${color} ${percentage}%`;
+            });
+        }
+        return `linear-gradient(${angle}deg, ${colorStops.join(', ')})`;
+    }
+}
+class RadialGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.center = options.center || Alignment$1.center;
+        this.radius = options.radius || 0.5;
+        this.focal = options.focal;
+        this.focalRadius = options.focalRadius || 0;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToPercentage(alignment) {
+        const resolved = alignment.resolve(null);
+        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    toCSS() {
+        const centerPos = this.alignmentToPercentage(this.center);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                return `${color} ${stop * 100}%`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
+                return `${color} ${percentage}%`;
+            });
+        }
+        const radiusValue = `${this.radius * 100}%`;
+        return `radial-gradient(circle ${radiusValue} at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
+    }
+}
+class SweepGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.center = options.center || Alignment$1.center;
+        this.startAngle = options.startAngle || 0;
+        this.endAngle = options.endAngle || Math.PI * 2;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToPercentage(alignment) {
+        const resolved = alignment.resolve(null);
+        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    toCSS() {
+        const centerPos = this.alignmentToPercentage(this.center);
+        const startAngleDeg = this.startAngle * (180 / Math.PI);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                const angle = startAngleDeg + stop * (this.endAngle - this.startAngle) * (180 / Math.PI);
+                return `${color} ${angle}deg`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const progress = this.colors.length === 1 ? 0 : index / (this.colors.length - 1);
+                const angle = startAngleDeg + progress * (this.endAngle - this.startAngle) * (180 / Math.PI);
+                return `${color} ${angle}deg`;
+            });
+        }
+        return `conic-gradient(from ${startAngleDeg}deg at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
+    }
+}
+
+class Radius {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    static circular(radius) {
+        return new Radius(radius, radius);
+    }
+    static elliptical(x, y) {
+        return new Radius(x, y);
+    }
+    static get zero() {
+        return new Radius(0, 0);
+    }
+    toString() {
+        if (this.x === this.y) {
+            return `${this.x}px`;
+        }
+        return `${this.x}px ${this.y}px`;
+    }
+    equals(other) {
+        return this.x === other.x && this.y === other.y;
+    }
+}
+class BorderRadius {
+    constructor(topLeft = Radius.zero, topRight = Radius.zero, bottomLeft = Radius.zero, bottomRight = Radius.zero) {
+        this.topLeft = topLeft;
+        this.topRight = topRight;
+        this.bottomLeft = bottomLeft;
+        this.bottomRight = bottomRight;
+    }
+    static all(radius) {
+        return new BorderRadius(radius, radius, radius, radius);
+    }
+    static circular(radius) {
+        const r = Radius.circular(radius);
+        return BorderRadius.all(r);
+    }
+    static horizontal({ left = Radius.zero, right = Radius.zero, } = {}) {
+        return new BorderRadius(left, right, left, right);
+    }
+    static vertical({ top = Radius.zero, bottom = Radius.zero, } = {}) {
+        return new BorderRadius(top, top, bottom, bottom);
+    }
+    static only({ topLeft = Radius.zero, topRight = Radius.zero, bottomLeft = Radius.zero, bottomRight = Radius.zero, } = {}) {
+        return new BorderRadius(topLeft, topRight, bottomLeft, bottomRight);
+    }
+    static get zero() {
+        return new BorderRadius();
+    }
+    copyWith({ topLeft, topRight, bottomLeft, bottomRight, } = {}) {
+        return new BorderRadius(topLeft ?? this.topLeft, topRight ?? this.topRight, bottomLeft ?? this.bottomLeft, bottomRight ?? this.bottomRight);
+    }
+    add(other) {
+        return new BorderRadius(new Radius(this.topLeft.x + other.topLeft.x, this.topLeft.y + other.topLeft.y), new Radius(this.topRight.x + other.topRight.x, this.topRight.y + other.topRight.y), new Radius(this.bottomLeft.x + other.bottomLeft.x, this.bottomLeft.y + other.bottomLeft.y), new Radius(this.bottomRight.x + other.bottomRight.x, this.bottomRight.y + other.bottomRight.y));
+    }
+    subtract(other) {
+        return new BorderRadius(new Radius(this.topLeft.x - other.topLeft.x, this.topLeft.y - other.topLeft.y), new Radius(this.topRight.x - other.topRight.x, this.topRight.y - other.topRight.y), new Radius(this.bottomLeft.x - other.bottomLeft.x, this.bottomLeft.y - other.bottomLeft.y), new Radius(this.bottomRight.x - other.bottomRight.x, this.bottomRight.y - other.bottomRight.y));
+    }
+    multiply(factor) {
+        return new BorderRadius(new Radius(this.topLeft.x * factor, this.topLeft.y * factor), new Radius(this.topRight.x * factor, this.topRight.y * factor), new Radius(this.bottomLeft.x * factor, this.bottomLeft.y * factor), new Radius(this.bottomRight.x * factor, this.bottomRight.y * factor));
+    }
+    divide(divisor) {
+        return new BorderRadius(new Radius(this.topLeft.x / divisor, this.topLeft.y / divisor), new Radius(this.topRight.x / divisor, this.topRight.y / divisor), new Radius(this.bottomLeft.x / divisor, this.bottomLeft.y / divisor), new Radius(this.bottomRight.x / divisor, this.bottomRight.y / divisor));
+    }
+    remainder(divisor) {
+        return new BorderRadius(new Radius(this.topLeft.x % divisor, this.topLeft.y % divisor), new Radius(this.topRight.x % divisor, this.topRight.y % divisor), new Radius(this.bottomLeft.x % divisor, this.bottomLeft.y % divisor), new Radius(this.bottomRight.x % divisor, this.bottomRight.y % divisor));
+    }
+    integerDivide(divisor) {
+        return new BorderRadius(new Radius(Math.floor(this.topLeft.x / divisor), Math.floor(this.topLeft.y / divisor)), new Radius(Math.floor(this.topRight.x / divisor), Math.floor(this.topRight.y / divisor)), new Radius(Math.floor(this.bottomLeft.x / divisor), Math.floor(this.bottomLeft.y / divisor)), new Radius(Math.floor(this.bottomRight.x / divisor), Math.floor(this.bottomRight.y / divisor)));
+    }
+    negate() {
+        return new BorderRadius(new Radius(-this.topLeft.x, -this.topLeft.y), new Radius(-this.topRight.x, -this.topRight.y), new Radius(-this.bottomLeft.x, -this.bottomLeft.y), new Radius(-this.bottomRight.x, -this.bottomRight.y));
+    }
+    static lerp(a, b, t) {
+        if (a === null && b === null)
+            return null;
+        if (a === null)
+            return b?.multiply(t) ?? null;
+        if (b === null)
+            return a.multiply(1.0 - t);
+        return new BorderRadius(new Radius(a.topLeft.x + (b.topLeft.x - a.topLeft.x) * t, a.topLeft.y + (b.topLeft.y - a.topLeft.y) * t), new Radius(a.topRight.x + (b.topRight.x - a.topRight.x) * t, a.topRight.y + (b.topRight.y - a.topRight.y) * t), new Radius(a.bottomLeft.x + (b.bottomLeft.x - a.bottomLeft.x) * t, a.bottomLeft.y + (b.bottomLeft.y - a.bottomLeft.y) * t), new Radius(a.bottomRight.x + (b.bottomRight.x - a.bottomRight.x) * t, a.bottomRight.y + (b.bottomRight.y - a.bottomRight.y) * t));
+    }
+    resolve() {
+        return this;
+    }
+    toCSS() {
+        const tl = this.topLeft.toString();
+        const tr = this.topRight.toString();
+        const bl = this.bottomLeft.toString();
+        const br = this.bottomRight.toString();
+        if (tl === tr && tr === bl && bl === br) {
+            return tl;
+        }
+        if (tl === br && tr === bl) {
+            if (tl === tr) {
+                return tl;
+            }
+            return `${tl} ${tr}`;
+        }
+        if (tr === bl) {
+            return `${tl} ${tr} ${br}`;
+        }
+        return `${tl} ${tr} ${br} ${bl}`;
+    }
+    toString() {
+        return `BorderRadius(${this.topLeft.toString()}, ${this.topRight.toString()}, ${this.bottomLeft.toString()}, ${this.bottomRight.toString()})`;
+    }
+    equals(other) {
+        return (this.topLeft.equals(other.topLeft) &&
+            this.topRight.equals(other.topRight) &&
+            this.bottomLeft.equals(other.bottomLeft) &&
+            this.bottomRight.equals(other.bottomRight));
+    }
+}
+
+export { Alignment$1 as Alignment, AlignmentDirectional, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map

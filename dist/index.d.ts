@@ -96,6 +96,174 @@ declare function alignmentToFlexClasses(alignment: AlignmentGeometry): string[];
  */
 declare function alignmentToTransformOrigin(alignment: AlignmentGeometry): string;
 
+interface BoxConstraints$1 {
+    minWidth?: number;
+    maxWidth?: number;
+    minHeight?: number;
+    maxHeight?: number;
+}
+declare namespace BoxConstraints$1 {
+    /**
+     * Converts BoxConstraints to CSS properties
+     */
+    function toCSS(constraints?: BoxConstraints$1): CSSProperties;
+    /**
+     * Creates BoxConstraints that expand to fill available space
+     */
+    function expand(width?: number, height?: number): BoxConstraints$1;
+    /**
+     * Creates BoxConstraints with tight dimensions
+     */
+    function tight(width: number, height: number): BoxConstraints$1;
+    /**
+     * Creates BoxConstraints with tight width
+     */
+    function tightFor(options: {
+        width?: number;
+        height?: number;
+    }): BoxConstraints$1;
+    /**
+     * Creates BoxConstraints with loose constraints
+     */
+    function loose(maxWidth?: number, maxHeight?: number): BoxConstraints$1;
+}
+
+declare class Radius {
+    readonly x: number;
+    readonly y: number;
+    constructor(x: number, y: number);
+    static circular(radius: number): Radius;
+    static elliptical(x: number, y: number): Radius;
+    static get zero(): Radius;
+    toString(): string;
+    equals(other: Radius): boolean;
+}
+declare class BorderRadius {
+    readonly topLeft: Radius;
+    readonly topRight: Radius;
+    readonly bottomLeft: Radius;
+    readonly bottomRight: Radius;
+    constructor(topLeft?: Radius, topRight?: Radius, bottomLeft?: Radius, bottomRight?: Radius);
+    static all(radius: Radius): BorderRadius;
+    static circular(radius: number): BorderRadius;
+    static horizontal({ left, right, }?: {
+        left?: Radius;
+        right?: Radius;
+    }): BorderRadius;
+    static vertical({ top, bottom, }?: {
+        top?: Radius;
+        bottom?: Radius;
+    }): BorderRadius;
+    static only({ topLeft, topRight, bottomLeft, bottomRight, }?: {
+        topLeft?: Radius;
+        topRight?: Radius;
+        bottomLeft?: Radius;
+        bottomRight?: Radius;
+    }): BorderRadius;
+    static get zero(): BorderRadius;
+    copyWith({ topLeft, topRight, bottomLeft, bottomRight, }?: {
+        topLeft?: Radius;
+        topRight?: Radius;
+        bottomLeft?: Radius;
+        bottomRight?: Radius;
+    }): BorderRadius;
+    add(other: BorderRadius): BorderRadius;
+    subtract(other: BorderRadius): BorderRadius;
+    multiply(factor: number): BorderRadius;
+    divide(divisor: number): BorderRadius;
+    remainder(divisor: number): BorderRadius;
+    integerDivide(divisor: number): BorderRadius;
+    negate(): BorderRadius;
+    static lerp(a: BorderRadius | null, b: BorderRadius | null, t: number): BorderRadius | null;
+    resolve(): BorderRadius;
+    toCSS(): string;
+    toString(): string;
+    equals(other: BorderRadius): boolean;
+}
+
+interface GradientStop {
+    color: string;
+    stop?: number;
+}
+declare abstract class Gradient {
+    colors: string[];
+    stops?: number[];
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+    });
+    abstract toCSS(): string;
+}
+declare class LinearGradient extends Gradient {
+    begin: AlignmentGeometry;
+    end: AlignmentGeometry;
+    tileMode?: 'clamp' | 'repeat' | 'mirror';
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+        begin?: AlignmentGeometry;
+        end?: AlignmentGeometry;
+        tileMode?: 'clamp' | 'repeat' | 'mirror';
+    });
+    private alignmentToAngle;
+    toCSS(): string;
+}
+declare class RadialGradient extends Gradient {
+    center: AlignmentGeometry;
+    radius: number;
+    focal?: AlignmentGeometry;
+    focalRadius: number;
+    tileMode: 'clamp' | 'repeat' | 'mirror';
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+        center?: AlignmentGeometry;
+        radius?: number;
+        focal?: AlignmentGeometry;
+        focalRadius?: number;
+        tileMode?: 'clamp' | 'repeat' | 'mirror';
+    });
+    private alignmentToPercentage;
+    toCSS(): string;
+}
+declare class SweepGradient extends Gradient {
+    center: AlignmentGeometry;
+    startAngle: number;
+    endAngle: number;
+    tileMode: 'clamp' | 'repeat' | 'mirror';
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+        center?: AlignmentGeometry;
+        startAngle?: number;
+        endAngle?: number;
+        tileMode?: 'clamp' | 'repeat' | 'mirror';
+    });
+    private alignmentToPercentage;
+    toCSS(): string;
+}
+
+type Clip$1 = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
+interface BoxDecoration {
+    color?: string;
+    borderRadius?: BorderRadius | number | string;
+    borderWidth?: number;
+    borderColor?: string;
+    borderStyle?: 'solid' | 'dashed' | 'dotted';
+    boxShadow?: string;
+    gradient?: Gradient;
+}
+declare namespace Decoration {
+    /**
+     * Converts BoxDecoration to CSS properties
+     */
+    function toCSS(decoration?: BoxDecoration): CSSProperties;
+    /**
+     * Converts Clip behavior to CSS classes
+     */
+    function clipToClasses(clipBehavior?: Clip$1): string[];
+}
+
 declare class EdgeInsets$1 {
     readonly top: number;
     readonly right: number;
@@ -254,38 +422,6 @@ declare class EdgeInsets$1 {
     get flipped(): EdgeInsets$1;
 }
 
-interface BoxConstraints$1 {
-    minWidth?: number;
-    maxWidth?: number;
-    minHeight?: number;
-    maxHeight?: number;
-}
-declare namespace BoxConstraints$1 {
-    /**
-     * Converts BoxConstraints to CSS properties
-     */
-    function toCSS(constraints?: BoxConstraints$1): CSSProperties;
-    /**
-     * Creates BoxConstraints that expand to fill available space
-     */
-    function expand(width?: number, height?: number): BoxConstraints$1;
-    /**
-     * Creates BoxConstraints with tight dimensions
-     */
-    function tight(width: number, height: number): BoxConstraints$1;
-    /**
-     * Creates BoxConstraints with tight width
-     */
-    function tightFor(options: {
-        width?: number;
-        height?: number;
-    }): BoxConstraints$1;
-    /**
-     * Creates BoxConstraints with loose constraints
-     */
-    function loose(maxWidth?: number, maxHeight?: number): BoxConstraints$1;
-}
-
 interface Matrix4$1 {
     rotateX?: number;
     rotateY?: number;
@@ -320,142 +456,6 @@ declare namespace Matrix4$1 {
      * Converts Matrix4 to CSS transform and transform-origin properties
      */
     function toCSS(transform?: Matrix4$1, transformAlignment?: AlignmentGeometry): CSSProperties;
-}
-
-interface GradientStop {
-    color: string;
-    stop?: number;
-}
-declare abstract class Gradient {
-    colors: string[];
-    stops?: number[];
-    constructor(options: {
-        colors: string[];
-        stops?: number[];
-    });
-    abstract toCSS(): string;
-}
-declare class LinearGradient extends Gradient {
-    begin: AlignmentGeometry;
-    end: AlignmentGeometry;
-    tileMode?: 'clamp' | 'repeat' | 'mirror';
-    constructor(options: {
-        colors: string[];
-        stops?: number[];
-        begin?: AlignmentGeometry;
-        end?: AlignmentGeometry;
-        tileMode?: 'clamp' | 'repeat' | 'mirror';
-    });
-    private alignmentToAngle;
-    toCSS(): string;
-}
-declare class RadialGradient extends Gradient {
-    center: AlignmentGeometry;
-    radius: number;
-    focal?: AlignmentGeometry;
-    focalRadius: number;
-    tileMode: 'clamp' | 'repeat' | 'mirror';
-    constructor(options: {
-        colors: string[];
-        stops?: number[];
-        center?: AlignmentGeometry;
-        radius?: number;
-        focal?: AlignmentGeometry;
-        focalRadius?: number;
-        tileMode?: 'clamp' | 'repeat' | 'mirror';
-    });
-    private alignmentToPercentage;
-    toCSS(): string;
-}
-declare class SweepGradient extends Gradient {
-    center: AlignmentGeometry;
-    startAngle: number;
-    endAngle: number;
-    tileMode: 'clamp' | 'repeat' | 'mirror';
-    constructor(options: {
-        colors: string[];
-        stops?: number[];
-        center?: AlignmentGeometry;
-        startAngle?: number;
-        endAngle?: number;
-        tileMode?: 'clamp' | 'repeat' | 'mirror';
-    });
-    private alignmentToPercentage;
-    toCSS(): string;
-}
-
-declare class Radius {
-    readonly x: number;
-    readonly y: number;
-    constructor(x: number, y: number);
-    static circular(radius: number): Radius;
-    static elliptical(x: number, y: number): Radius;
-    static get zero(): Radius;
-    toString(): string;
-    equals(other: Radius): boolean;
-}
-declare class BorderRadius {
-    readonly topLeft: Radius;
-    readonly topRight: Radius;
-    readonly bottomLeft: Radius;
-    readonly bottomRight: Radius;
-    constructor(topLeft?: Radius, topRight?: Radius, bottomLeft?: Radius, bottomRight?: Radius);
-    static all(radius: Radius): BorderRadius;
-    static circular(radius: number): BorderRadius;
-    static horizontal({ left, right }?: {
-        left?: Radius;
-        right?: Radius;
-    }): BorderRadius;
-    static vertical({ top, bottom }?: {
-        top?: Radius;
-        bottom?: Radius;
-    }): BorderRadius;
-    static only({ topLeft, topRight, bottomLeft, bottomRight, }?: {
-        topLeft?: Radius;
-        topRight?: Radius;
-        bottomLeft?: Radius;
-        bottomRight?: Radius;
-    }): BorderRadius;
-    static get zero(): BorderRadius;
-    copyWith({ topLeft, topRight, bottomLeft, bottomRight, }?: {
-        topLeft?: Radius;
-        topRight?: Radius;
-        bottomLeft?: Radius;
-        bottomRight?: Radius;
-    }): BorderRadius;
-    add(other: BorderRadius): BorderRadius;
-    subtract(other: BorderRadius): BorderRadius;
-    multiply(factor: number): BorderRadius;
-    divide(divisor: number): BorderRadius;
-    remainder(divisor: number): BorderRadius;
-    integerDivide(divisor: number): BorderRadius;
-    negate(): BorderRadius;
-    static lerp(a: BorderRadius | null, b: BorderRadius | null, t: number): BorderRadius | null;
-    resolve(): BorderRadius;
-    toCSS(): string;
-    toString(): string;
-    equals(other: BorderRadius): boolean;
-}
-
-type Clip$1 = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
-interface BoxDecoration {
-    color?: string;
-    borderRadius?: BorderRadius | number | string;
-    borderWidth?: number;
-    borderColor?: string;
-    borderStyle?: 'solid' | 'dashed' | 'dotted';
-    boxShadow?: string;
-    gradient?: Gradient;
-}
-declare namespace Decoration {
-    /**
-     * Converts BoxDecoration to CSS properties
-     */
-    function toCSS(decoration?: BoxDecoration): CSSProperties;
-    /**
-     * Converts Clip behavior to CSS classes
-     */
-    function clipToClasses(clipBehavior?: Clip$1): string[];
 }
 
 interface ContainerProps {
@@ -1975,5 +1975,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };

@@ -5,26 +5,24 @@
 import './index.css'
 
 // Layout Components
-export {
-  Container,
-  Divider,
-  Row,
-  Column,
-  Flex,
-  type ContainerProps,
-  type DividerProps,
-  type RowProps,
-  type ColumnProps,
-  type FlexProps,
-} from './components/layout'
+export { default as Container } from './components/layout/Container'
+export type { ContainerProps } from './components/layout/Container'
+export { Divider } from './components/layout/Divider'
+export type { DividerProps } from './components/layout/Divider'
+export { default as Row } from './components/layout/Row'
+export { default as Column } from './components/layout/Column'
+export { default as Flex } from './components/layout/Flex'
+export type {
+  RowProps,
+  ColumnProps,
+  FlexProps,
+} from './types/Flex.type'
 
 // Spacing Components
-export {
-  SizedBox,
-  Spacer,
-  type SizedBoxProps,
-  type SpacerProps,
-} from './components/spacing'
+export { default as SizedBox } from './components/spacing/SizedBox'
+export { default as Spacer } from './components/spacing/Spacer'
+export type { SizedBoxProps } from './components/spacing/SizedBox'
+export type { SpacerProps } from './components/spacing/Spacer'
 
 // Data Display Components
 export {
@@ -36,7 +34,7 @@ export {
   type BuilderProps,
   type SeparatedProps,
   type ListViewHandle,
-} from './components/data'
+} from './components/data/ListView'
 
 // Legacy exports for backward compatibility
 export {
@@ -46,11 +44,10 @@ export {
 } from './types/ListView.type'
 
 // Interactive Components
+export { default as InkWell, type InkWellProps } from './components/interactive/InkWell'
 export {
-  InkWell,
-  GestureDetector,
+  default as GestureDetector,
   HitTestBehavior,
-  type InkWellProps,
   type GestureDetectorProps,
   type TapDownDetails,
   type TapUpDetails,
@@ -63,79 +60,80 @@ export {
   type ScaleStartDetails,
   type ScaleUpdateDetails,
   type ScaleEndDetails,
-} from './components/interactive'
+} from './components/interactive/GestureDetector'
 
 // Animation Components
 export {
-  AnimatedContainer,
-  AnimatedOpacity,
+  default as AnimatedContainer,
   AnimationCurve,
   type AnimatedContainerProps,
+} from './components/interactive/AnimatedContainer'
+export {
+  default as AnimatedOpacity,
   type AnimatedOpacityProps,
-} from './components/interactive'
+} from './components/interactive/AnimatedOpacity'
 
 // Responsive Layout Components
 export {
-  MediaQuery,
-  LayoutBuilder,
-  OrientationBuilder,
+  default as MediaQuery,
   Orientation,
   Brightness,
   useMediaQuery,
   useBreakpoint,
   useBreakpointMatch,
-  useOrientation,
-  useOrientationMatch,
-  useOrientationValue,
   defaultBreakpoints,
+  type MediaQueryProps,
+  type MediaQueryData,
+  type MediaQueryBreakpoints,
+  type MediaQueryEdgeInsets,
+} from './components/interactive/MediaQuery'
+
+export {
+  default as LayoutBuilder,
   createBoxConstraints,
   createTightConstraints,
   createLooseConstraints,
   createExpandedConstraints,
   BoxConstraintsUtils,
-  OrientationUtils,
-  type MediaQueryProps,
-  type MediaQueryData,
-  type MediaQueryBreakpoints,
-  type MediaQueryEdgeInsets,
   type LayoutBuilderProps,
   type LayoutWidgetBuilder,
+} from './components/interactive/LayoutBuilder'
+
+export {
+  default as OrientationBuilder,
+  useOrientation,
+  useOrientationMatch,
+  useOrientationValue,
+  OrientationUtils,
   type OrientationBuilderProps,
   type OrientationWidgetBuilder,
-} from './components/interactive'
+} from './components/interactive/OrientationBuilder'
 
 // Transform Components
 export {
-  Transform,
-  Opacity,
+  default as Transform,
   FilterQuality,
   TransformUtils,
   type TransformProps,
-  type OpacityProps,
-} from './components/interactive'
+} from './components/interactive/Transform'
+
+export { default as Opacity, type OpacityProps } from './components/interactive/Opacity'
 
 // Form Components
-export {
-  TextField,
-  type TextFieldProps,
-  type TextFieldHandle,
-  type InputDecoration,
-  type TextInputType,
-  type TextInputAction,
-  type TextCapitalization,
-} from './components/form'
+export { default as TextField } from './components/form/TextField'
+export type {
+  TextFieldProps,
+  TextFieldHandle,
+  InputDecoration,
+  TextInputType,
+  TextInputAction,
+} from './components/form/TextField'
+export type { TextCapitalization } from './types/Text.types'
 
 // Text Components
-export {
-  Text,
-  type TextProps,
-  type TextStyle,
-  type TextAlign,
-  type TextOverflow,
-} from './components/text'
-
-// Core Utilities and Types
-export { EdgeInsets } from './types/EdgeInsets'
+export { Text } from './components/text/Text'
+export type { TextProps, TextStyle } from './components/text/Text'
+export type { TextAlign, TextOverflow } from './types/Text.types'
 
 // All Flutter-style utilities
 export {
@@ -150,21 +148,19 @@ export {
   type Offset,
   type Rect,
   TextDirection,
-  // Box Constraints and Decoration
-  BoxConstraints,
-  Decoration,
-  type BoxDecoration,
-  type Clip,
-  // Matrix and Transforms
-  Matrix4,
-  type Matrix4Interface,
-  // Gradients
+} from './utils/Alignment'
+export { EdgeInsets } from './utils/EdgeInsets'
+export { BoxConstraints } from './utils/BoxConstraints'
+export { Matrix4, type Matrix4 as Matrix4Interface } from './utils/Matrix4'
+export { Decoration, type BoxDecoration, type Clip } from './utils/Decoration'
+export {
   Gradient,
   LinearGradient,
   RadialGradient,
   SweepGradient,
   type GradientStop,
-} from './utils'
+} from './utils/Gradient'
+export { BorderRadius, Radius } from './utils/BorderRadius'
 
 // Layout System Types
 export {
@@ -175,8 +171,6 @@ export {
 } from './types/Layout'
 
 // Text System Types
-export {
-  TextBaseline,
-} from './types/Text'
+export { TextBaseline } from './types/Text'
 
 // Note: Enums are already exported via the component exports above

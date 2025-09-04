@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
-import type { Gradient } from './Gradient'
 import type { BorderRadius } from './BorderRadius'
+import type { Gradient } from './Gradient'
 
 export type Clip = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer'
 

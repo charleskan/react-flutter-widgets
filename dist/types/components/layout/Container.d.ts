@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
-import { BoxConstraints } from '../../utils';
-import type { AlignmentGeometry, BoxDecoration, Clip, EdgeInsets, Matrix4Interface } from '../../utils';
+import type { AlignmentGeometry } from '../../utils/Alignment';
+import { BoxConstraints } from '../../utils/BoxConstraints';
+import type { BoxDecoration, Clip } from '../../utils/Decoration';
+import type { EdgeInsets } from '../../utils/EdgeInsets';
+import type { Matrix4 as Matrix4Interface } from '../../utils/Matrix4';
 export interface ContainerProps {
     /** Child content to render inside the container */
     children?: ReactNode;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { EdgeInsets as EdgeInsetsType } from '../../utils'
+import type { EdgeInsets as EdgeInsetsType } from '../../utils/EdgeInsets'
 import type { ContainerProps } from '../layout/Container'
 
 export interface AnimatedContainerProps extends Omit<ContainerProps, 'style'> {

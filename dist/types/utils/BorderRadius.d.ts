@@ -16,11 +16,11 @@ export declare class BorderRadius {
     constructor(topLeft?: Radius, topRight?: Radius, bottomLeft?: Radius, bottomRight?: Radius);
     static all(radius: Radius): BorderRadius;
     static circular(radius: number): BorderRadius;
-    static horizontal({ left, right }?: {
+    static horizontal({ left, right, }?: {
         left?: Radius;
         right?: Radius;
     }): BorderRadius;
-    static vertical({ top, bottom }?: {
+    static vertical({ top, bottom, }?: {
         top?: Radius;
         bottom?: Radius;
     }): BorderRadius;

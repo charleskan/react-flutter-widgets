@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react'
 import { Flex } from '../../types/Flex.type'
-import { BoxConstraints, Decoration, Matrix4, alignmentToFlexClasses } from '../../utils'
-import type {
-  AlignmentGeometry,
-  BoxDecoration,
-  Clip,
-  EdgeInsets,
-  Matrix4Interface,
-} from '../../utils'
+import { alignmentToFlexClasses } from '../../utils/Alignment'
+import type { AlignmentGeometry } from '../../utils/Alignment'
+import { BoxConstraints } from '../../utils/BoxConstraints'
+import { Decoration } from '../../utils/Decoration'
+import type { BoxDecoration, Clip } from '../../utils/Decoration'
+import type { EdgeInsets } from '../../utils/EdgeInsets'
+import { Matrix4 } from '../../utils/Matrix4'
+import type { Matrix4 as Matrix4Interface } from '../../utils/Matrix4'
 
 export interface ContainerProps {
   /** Child content to render inside the container */
