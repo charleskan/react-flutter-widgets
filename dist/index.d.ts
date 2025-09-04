@@ -80,6 +80,21 @@ declare class AlignmentDirectional extends AlignmentGeometry {
     static readonly bottomCenter: AlignmentDirectional;
     static readonly bottomEnd: AlignmentDirectional;
 }
+/**
+ * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
+ */
+declare function alignmentToCSS(alignment: AlignmentGeometry): {
+    x: string;
+    y: string;
+};
+/**
+ * Converts alignment to CSS justify-content and align-items classes for flexbox
+ */
+declare function alignmentToFlexClasses(alignment: AlignmentGeometry): string[];
+/**
+ * Converts alignment to CSS transform-origin property
+ */
+declare function alignmentToTransformOrigin(alignment: AlignmentGeometry): string;
 
 declare class EdgeInsets$1 {
     readonly top: number;
@@ -307,6 +322,10 @@ declare namespace Matrix4$1 {
     function toCSS(transform?: Matrix4$1, transformAlignment?: AlignmentGeometry): CSSProperties;
 }
 
+interface GradientStop {
+    color: string;
+    stop?: number;
+}
 declare abstract class Gradient {
     colors: string[];
     stops?: number[];
@@ -315,6 +334,54 @@ declare abstract class Gradient {
         stops?: number[];
     });
     abstract toCSS(): string;
+}
+declare class LinearGradient extends Gradient {
+    begin: AlignmentGeometry;
+    end: AlignmentGeometry;
+    tileMode?: 'clamp' | 'repeat' | 'mirror';
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+        begin?: AlignmentGeometry;
+        end?: AlignmentGeometry;
+        tileMode?: 'clamp' | 'repeat' | 'mirror';
+    });
+    private alignmentToAngle;
+    toCSS(): string;
+}
+declare class RadialGradient extends Gradient {
+    center: AlignmentGeometry;
+    radius: number;
+    focal?: AlignmentGeometry;
+    focalRadius: number;
+    tileMode: 'clamp' | 'repeat' | 'mirror';
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+        center?: AlignmentGeometry;
+        radius?: number;
+        focal?: AlignmentGeometry;
+        focalRadius?: number;
+        tileMode?: 'clamp' | 'repeat' | 'mirror';
+    });
+    private alignmentToPercentage;
+    toCSS(): string;
+}
+declare class SweepGradient extends Gradient {
+    center: AlignmentGeometry;
+    startAngle: number;
+    endAngle: number;
+    tileMode: 'clamp' | 'repeat' | 'mirror';
+    constructor(options: {
+        colors: string[];
+        stops?: number[];
+        center?: AlignmentGeometry;
+        startAngle?: number;
+        endAngle?: number;
+        tileMode?: 'clamp' | 'repeat' | 'mirror';
+    });
+    private alignmentToPercentage;
+    toCSS(): string;
 }
 
 type Clip$1 = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
@@ -326,6 +393,16 @@ interface BoxDecoration {
     borderStyle?: 'solid' | 'dashed' | 'dotted';
     boxShadow?: string;
     gradient?: Gradient;
+}
+declare namespace Decoration {
+    /**
+     * Converts BoxDecoration to CSS properties
+     */
+    function toCSS(decoration?: BoxDecoration): CSSProperties;
+    /**
+     * Converts Clip behavior to CSS classes
+     */
+    function clipToClasses(clipBehavior?: Clip$1): string[];
 }
 
 interface ContainerProps {
@@ -1845,5 +1922,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxConstraints, BuilderProps, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export { Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };

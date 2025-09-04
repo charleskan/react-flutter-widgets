@@ -611,15 +611,15 @@ var Flex$1;
     Flex.getMainAxisSizeStyles = getMainAxisSizeStyles;
 })(Flex$1 || (Flex$1 = {}));
 
-var TextDirection;
+exports.TextDirection = void 0;
 (function (TextDirection) {
     TextDirection["ltr"] = "ltr";
     TextDirection["rtl"] = "rtl";
-})(TextDirection || (TextDirection = {}));
+})(exports.TextDirection || (exports.TextDirection = {}));
 class AlignmentGeometry {
     multiply(factor) {
-        if (this instanceof Alignment) {
-            return new Alignment(this.x * factor, this.y * factor);
+        if (this instanceof Alignment$1) {
+            return new Alignment$1(this.x * factor, this.y * factor);
         }
         if (this instanceof AlignmentDirectional) {
             return new AlignmentDirectional(this.x * factor, this.y * factor);
@@ -630,8 +630,8 @@ class AlignmentGeometry {
         return this.multiply(1 / factor);
     }
     remainder(factor) {
-        if (this instanceof Alignment) {
-            return new Alignment(this.x % factor, this.y % factor);
+        if (this instanceof Alignment$1) {
+            return new Alignment$1(this.x % factor, this.y % factor);
         }
         if (this instanceof AlignmentDirectional) {
             return new AlignmentDirectional(this.x % factor, this.y % factor);
@@ -639,8 +639,8 @@ class AlignmentGeometry {
         throw new Error('Unknown AlignmentGeometry type');
     }
     integerDivide(factor) {
-        if (this instanceof Alignment) {
-            return new Alignment(Math.floor(this.x / factor), Math.floor(this.y / factor));
+        if (this instanceof Alignment$1) {
+            return new Alignment$1(Math.floor(this.x / factor), Math.floor(this.y / factor));
         }
         if (this instanceof AlignmentDirectional) {
             return new AlignmentDirectional(Math.floor(this.x / factor), Math.floor(this.y / factor));
@@ -648,8 +648,8 @@ class AlignmentGeometry {
         throw new Error('Unknown AlignmentGeometry type');
     }
     negate() {
-        if (this instanceof Alignment) {
-            return new Alignment(-this.x, -this.y);
+        if (this instanceof Alignment$1) {
+            return new Alignment$1(-this.x, -this.y);
         }
         if (this instanceof AlignmentDirectional) {
             return new AlignmentDirectional(-this.x, -this.y);
@@ -672,7 +672,7 @@ class AlignmentGeometry {
         return new AlignmentDirectional(start, y);
     }
     static xy(x, y) {
-        return new Alignment(x, y);
+        return new Alignment$1(x, y);
     }
     static lerp(a, b, t) {
         if (a === null && b === null)
@@ -682,19 +682,19 @@ class AlignmentGeometry {
         if (b === null)
             return a.multiply(1 - t);
         if (a.constructor === b.constructor) {
-            if (a instanceof Alignment && b instanceof Alignment) {
-                return new Alignment(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+            if (a instanceof Alignment$1 && b instanceof Alignment$1) {
+                return new Alignment$1(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
             }
             if (a instanceof AlignmentDirectional && b instanceof AlignmentDirectional) {
                 return new AlignmentDirectional(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
             }
         }
-        const resolvedA = a.resolve(TextDirection.ltr);
-        const resolvedB = b.resolve(TextDirection.ltr);
-        return new Alignment(resolvedA.x + (resolvedB.x - resolvedA.x) * t, resolvedA.y + (resolvedB.y - resolvedA.y) * t);
+        const resolvedA = a.resolve(exports.TextDirection.ltr);
+        const resolvedB = b.resolve(exports.TextDirection.ltr);
+        return new Alignment$1(resolvedA.x + (resolvedB.x - resolvedA.x) * t, resolvedA.y + (resolvedB.y - resolvedA.y) * t);
     }
 }
-class Alignment extends AlignmentGeometry {
+let Alignment$1 = class Alignment extends AlignmentGeometry {
     constructor(x, y) {
         super();
         this.x = x;
@@ -762,17 +762,17 @@ class Alignment extends AlignmentGeometry {
             return a.multiply(1 - t);
         return new Alignment(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
     }
-}
+};
 // Static constants
-Alignment.topLeft = new Alignment(-1, -1);
-Alignment.topCenter = new Alignment(0, -1);
-Alignment.topRight = new Alignment(1, -1);
-Alignment.centerLeft = new Alignment(-1, 0);
-Alignment.center = new Alignment(0, 0);
-Alignment.centerRight = new Alignment(1, 0);
-Alignment.bottomLeft = new Alignment(-1, 1);
-Alignment.bottomCenter = new Alignment(0, 1);
-Alignment.bottomRight = new Alignment(1, 1);
+Alignment$1.topLeft = new Alignment$1(-1, -1);
+Alignment$1.topCenter = new Alignment$1(0, -1);
+Alignment$1.topRight = new Alignment$1(1, -1);
+Alignment$1.centerLeft = new Alignment$1(-1, 0);
+Alignment$1.center = new Alignment$1(0, 0);
+Alignment$1.centerRight = new Alignment$1(1, 0);
+Alignment$1.bottomLeft = new Alignment$1(-1, 1);
+Alignment$1.bottomCenter = new Alignment$1(0, 1);
+Alignment$1.bottomRight = new Alignment$1(1, 1);
 class AlignmentDirectional extends AlignmentGeometry {
     get x() {
         return this.start;
@@ -789,10 +789,10 @@ class AlignmentDirectional extends AlignmentGeometry {
         return new AlignmentDirectional(this.start + other.x, this.y + other.y);
     }
     resolve(direction) {
-        if (direction === TextDirection.rtl) {
-            return new Alignment(-this.start, this.y);
+        if (direction === exports.TextDirection.rtl) {
+            return new Alignment$1(-this.start, this.y);
         }
-        return new Alignment(this.start, this.y);
+        return new Alignment$1(this.start, this.y);
     }
 }
 // Static constants
@@ -805,6 +805,15 @@ AlignmentDirectional.centerEnd = new AlignmentDirectional(1, 0);
 AlignmentDirectional.bottomStart = new AlignmentDirectional(-1, 1);
 AlignmentDirectional.bottomCenter = new AlignmentDirectional(0, 1);
 AlignmentDirectional.bottomEnd = new AlignmentDirectional(1, 1);
+/**
+ * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
+ */
+function alignmentToCSS(alignment) {
+    const resolved = alignment.resolve(null);
+    const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+    const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+    return { x: `${x}%`, y: `${y}%` };
+}
 /**
  * Converts alignment to CSS justify-content and align-items classes for flexbox
  */
@@ -836,6 +845,18 @@ function alignmentToTransformOrigin(alignment) {
     const originY = resolved.y === -1 ? 'top' : resolved.y === 0 ? 'center' : 'bottom';
     return `${originX} ${originY}`;
 }
+// Legacy constant exports for backward compatibility
+({
+    topLeft: Alignment$1.topLeft,
+    topCenter: Alignment$1.topCenter,
+    topRight: Alignment$1.topRight,
+    centerLeft: Alignment$1.centerLeft,
+    center: Alignment$1.center,
+    centerRight: Alignment$1.centerRight,
+    bottomLeft: Alignment$1.bottomLeft,
+    bottomCenter: Alignment$1.bottomCenter,
+    bottomRight: Alignment$1.bottomRight,
+});
 
 class EdgeInsets {
     constructor(top, right, bottom, left) {
@@ -1024,7 +1045,7 @@ class EdgeInsets {
  */
 EdgeInsets.zero = new EdgeInsets(0, 0, 0, 0);
 
-var BoxConstraints;
+exports.BoxConstraints = void 0;
 (function (BoxConstraints) {
     /**
      * Converts BoxConstraints to CSS properties
@@ -1092,9 +1113,9 @@ var BoxConstraints;
         };
     }
     BoxConstraints.loose = loose;
-})(BoxConstraints || (BoxConstraints = {}));
+})(exports.BoxConstraints || (exports.BoxConstraints = {}));
 
-var Matrix4$1;
+exports.Matrix4 = void 0;
 (function (Matrix4) {
     /**
      * Creates an identity matrix (no transformation)
@@ -1174,9 +1195,9 @@ var Matrix4$1;
         return styles;
     }
     Matrix4.toCSS = toCSS;
-})(Matrix4$1 || (Matrix4$1 = {}));
+})(exports.Matrix4 || (exports.Matrix4 = {}));
 
-var Decoration;
+exports.Decoration = void 0;
 (function (Decoration) {
     /**
      * Converts BoxDecoration to CSS properties
@@ -1228,7 +1249,118 @@ var Decoration;
         }
     }
     Decoration.clipToClasses = clipToClasses;
-})(Decoration || (Decoration = {}));
+})(exports.Decoration || (exports.Decoration = {}));
+
+class Gradient {
+    constructor(options) {
+        this.colors = options.colors;
+        this.stops = options.stops;
+    }
+}
+class LinearGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.begin = options.begin || Alignment$1.centerLeft;
+        this.end = options.end || Alignment$1.centerRight;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToAngle(begin, end) {
+        const resolvedBegin = begin.resolve(null);
+        const resolvedEnd = end.resolve(null);
+        const dx = resolvedEnd.x - resolvedBegin.x;
+        const dy = resolvedEnd.y - resolvedBegin.y;
+        return Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    }
+    toCSS() {
+        const angle = this.alignmentToAngle(this.begin, this.end);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                return `${color} ${stop * 100}%`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
+                return `${color} ${percentage}%`;
+            });
+        }
+        return `linear-gradient(${angle}deg, ${colorStops.join(', ')})`;
+    }
+}
+class RadialGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.center = options.center || Alignment$1.center;
+        this.radius = options.radius || 0.5;
+        this.focal = options.focal;
+        this.focalRadius = options.focalRadius || 0;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToPercentage(alignment) {
+        const resolved = alignment.resolve(null);
+        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    toCSS() {
+        const centerPos = this.alignmentToPercentage(this.center);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                return `${color} ${stop * 100}%`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
+                return `${color} ${percentage}%`;
+            });
+        }
+        const radiusValue = `${this.radius * 100}%`;
+        return `radial-gradient(circle ${radiusValue} at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
+    }
+}
+class SweepGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.center = options.center || Alignment$1.center;
+        this.startAngle = options.startAngle || 0;
+        this.endAngle = options.endAngle || Math.PI * 2;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToPercentage(alignment) {
+        const resolved = alignment.resolve(null);
+        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    toCSS() {
+        const centerPos = this.alignmentToPercentage(this.center);
+        const startAngleDeg = this.startAngle * (180 / Math.PI);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                const angle = startAngleDeg + stop * (this.endAngle - this.startAngle) * (180 / Math.PI);
+                return `${color} ${angle}deg`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const progress = this.colors.length === 1 ? 0 : index / (this.colors.length - 1);
+                const angle = startAngleDeg + progress * (this.endAngle - this.startAngle) * (180 / Math.PI);
+                return `${color} ${angle}deg`;
+            });
+        }
+        return `conic-gradient(from ${startAngleDeg}deg at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
+    }
+}
 
 function resolvePaddingMargin(value) {
     if (!value)
@@ -1315,11 +1447,11 @@ function Container(props) {
     };
     // Build Tailwind classes
     const alignmentClasses = alignment ? alignmentToFlexClasses(alignment) : [];
-    const clipClasses = Decoration.clipToClasses(clipBehavior);
+    const clipClasses = exports.Decoration.clipToClasses(clipBehavior);
     // Build CSS styles for properties that don't have good Tailwind equivalents
-    const constraintStyles = BoxConstraints.toCSS(constraints);
-    const transformStyles = Matrix4$1.toCSS(transform, transformAlignment);
-    const decorationStyles = Decoration.toCSS(effectiveDecoration);
+    const constraintStyles = exports.BoxConstraints.toCSS(constraints);
+    const transformStyles = exports.Matrix4.toCSS(transform, transformAlignment);
+    const decorationStyles = exports.Decoration.toCSS(effectiveDecoration);
     // Resolve padding and margin
     const resolvedPadding = resolvePaddingMargin(padding);
     const resolvedMargin = resolvePaddingMargin(margin);
@@ -1351,7 +1483,7 @@ function Container(props) {
             right: 0,
             bottom: 0,
             pointerEvents: 'none',
-            ...Decoration.toCSS(foregroundDecoration),
+            ...exports.Decoration.toCSS(foregroundDecoration),
             backgroundColor: 'transparent', // Don't paint background for foreground
         } })) : null;
     return (jsxRuntimeExports.jsxs("div", { className: allClasses, style: containerStyle, children: [children, foregroundElement] }));
@@ -1419,12 +1551,12 @@ const Divider = ({ height = 16, thickness = 1, indent = 0, endIndent = 0, color 
 /**
  * Text direction for layout purposes
  */
-exports.TextDirection = void 0;
+var TextDirection;
 (function (TextDirection) {
     TextDirection["LTR"] = "ltr";
     TextDirection["RTL"] = "rtl";
     TextDirection["AUTO"] = "auto";
-})(exports.TextDirection || (exports.TextDirection = {}));
+})(TextDirection || (TextDirection = {}));
 /**
  * Text baseline for alignment
  */
@@ -1451,7 +1583,7 @@ exports.TextBaseline = void 0;
  * ```
  */
 function Row(props) {
-    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize = exports.MainAxisSize.MAX, textDirection = exports.TextDirection.LTR, textBaseline, spacing = 0, clipBehavior = Clip.NONE, } = props;
+    const { children, mainAxisAlignment = exports.MainAxisAlignment.START, crossAxisAlignment = exports.CrossAxisAlignment.CENTER, mainAxisSize = exports.MainAxisSize.MAX, textDirection = TextDirection.LTR, textBaseline, spacing = 0, clipBehavior = Clip.NONE, } = props;
     const flexStyles = Flex$1.buildFlexStyles({
         spacing,
         clipBehavior,
@@ -1463,14 +1595,14 @@ function Row(props) {
         .filter(Boolean)
         .join(' ');
     // Convert TextDirection enum to CSS direction value
-    const cssDirection = textDirection === exports.TextDirection.AUTO
+    const cssDirection = textDirection === TextDirection.AUTO
         ? undefined
         : textDirection?.toLowerCase();
     const containerStyle = {
         ...flexStyles,
         ...mainAxisSizeStyles,
         direction: cssDirection,
-        flexDirection: textDirection === exports.TextDirection.RTL ? 'row-reverse' : 'row',
+        flexDirection: textDirection === TextDirection.RTL ? 'row-reverse' : 'row',
         alignItems: textBaseline === 'alphabetic' || textBaseline === 'ideographic' ? 'baseline' : undefined,
     };
     return (jsxRuntimeExports.jsx("div", { className: containerClasses, style: containerStyle, children: children }));
@@ -1544,7 +1676,7 @@ function Flex(props) {
         .filter(Boolean)
         .join(' ');
     // Convert TextDirection enum to CSS direction value
-    const cssDirection = textDirection === exports.TextDirection.AUTO
+    const cssDirection = textDirection === TextDirection.AUTO
         ? undefined
         : textDirection?.toLowerCase();
     const containerStyle = {
@@ -3413,7 +3545,7 @@ class Matrix4 {
 /**
  * Alignment enumeration for transform origin
  */
-exports.Alignment = void 0;
+var Alignment;
 (function (Alignment) {
     Alignment["topLeft"] = "top left";
     Alignment["topCenter"] = "top center";
@@ -3424,7 +3556,7 @@ exports.Alignment = void 0;
     Alignment["bottomLeft"] = "bottom left";
     Alignment["bottomCenter"] = "bottom center";
     Alignment["bottomRight"] = "bottom right";
-})(exports.Alignment || (exports.Alignment = {}));
+})(Alignment || (Alignment = {}));
 exports.FilterQuality = void 0;
 (function (FilterQuality) {
     /** Use browser default */
@@ -3436,7 +3568,7 @@ exports.FilterQuality = void 0;
     /** High quality, slower */
     FilterQuality["high"] = "smooth";
 })(exports.FilterQuality || (exports.FilterQuality = {}));
-function Transform({ children, transform, alignment = exports.Alignment.center, transformOrigin, filterQuality = exports.FilterQuality.medium, className = '', style = {}, }) {
+function Transform({ children, transform, alignment = Alignment.center, transformOrigin, filterQuality = exports.FilterQuality.medium, className = '', style = {}, }) {
     const transformStyle = require$$0.useMemo(() => {
         const origin = transformOrigin || alignment;
         return {
@@ -3454,14 +3586,14 @@ function Transform({ children, transform, alignment = exports.Alignment.center, 
 /**
  * Transform.rotate - Creates a rotation transformation
  */
-Transform.rotate = ({ angle, children, alignment = exports.Alignment.center, className = '', style = {}, }) => {
+Transform.rotate = ({ angle, children, alignment = Alignment.center, className = '', style = {}, }) => {
     const transform = Matrix4.rotationZ(angle);
     return (jsxRuntimeExports.jsx(Transform, { transform: transform, alignment: alignment, className: className, style: style, children: children }));
 };
 /**
  * Transform.scale - Creates a scale transformation
  */
-Transform.scale = ({ scale, scaleX, scaleY, children, alignment = exports.Alignment.center, className = '', style = {}, }) => {
+Transform.scale = ({ scale, scaleX, scaleY, children, alignment = Alignment.center, className = '', style = {}, }) => {
     const sx = scaleX ?? scale ?? 1;
     const sy = scaleY ?? scale ?? 1;
     const transform = Matrix4.diagonal3Values(sx, sy);
@@ -3479,7 +3611,7 @@ Transform.translate = ({ offset, x = 0, y = 0, children, className = '', style =
 /**
  * Transform.flip - Creates a flip transformation
  */
-Transform.flip = ({ flipX = false, flipY = false, children, alignment = exports.Alignment.center, className = '', style = {}, }) => {
+Transform.flip = ({ flipX = false, flipY = false, children, alignment = Alignment.center, className = '', style = {}, }) => {
     const scaleX = flipX ? -1 : 1;
     const scaleY = flipY ? -1 : 1;
     const transform = Matrix4.diagonal3Values(scaleX, scaleY);
@@ -3794,7 +3926,7 @@ const TextField = require$$0.forwardRef(function TextField(props, ref) {
  * />
  * ```
  */
-const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'clip', maxLines, textScaleFactor, textScaler, locale, textDirection = exports.TextDirection.AUTO, semanticsLabel, semanticsIdentifier, selectionColor, className, }) => {
+const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'clip', maxLines, textScaleFactor, textScaler, locale, textDirection = TextDirection.AUTO, semanticsLabel, semanticsIdentifier, selectionColor, className, }) => {
     const id = require$$0.useId(); // Used for selectionColor class generation
     // Generate Tailwind classes and custom styles
     const { tailwindClasses, customStyle } = require$$0.useMemo(() => {
@@ -3830,10 +3962,10 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
         // Handle text alignment with Tailwind classes
         if (textAlign) {
             if (textAlign === 'start') {
-                classes.push(textDirection === exports.TextDirection.RTL ? 'text-right' : 'text-left');
+                classes.push(textDirection === TextDirection.RTL ? 'text-right' : 'text-left');
             }
             else if (textAlign === 'end') {
-                classes.push(textDirection === exports.TextDirection.RTL ? 'text-left' : 'text-right');
+                classes.push(textDirection === TextDirection.RTL ? 'text-left' : 'text-right');
             }
             else if (textAlign === 'center') {
                 classes.push('text-center');
@@ -3924,9 +4056,11 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
     // Combine CSS classes
     const combinedClassName = [tailwindClasses, selectionClass, className].filter(Boolean).join(' ') || undefined;
     // Render the text component using div element to avoid baseline alignment issues
-    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("div", { id: elemId, className: combinedClassName, style: customStyle, lang: locale, dir: textDirection === exports.TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
+    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("div", { id: elemId, className: combinedClassName, style: customStyle, lang: locale, dir: textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
 };
 
+exports.Alignment = Alignment$1;
+exports.AlignmentDirectional = AlignmentDirectional;
 exports.AnimatedContainer = AnimatedContainer;
 exports.AnimatedOpacity = AnimatedOpacity;
 exports.BoxConstraintsUtils = BoxConstraintsUtils;
@@ -3936,21 +4070,27 @@ exports.Divider = Divider;
 exports.EdgeInsets = EdgeInsets;
 exports.Flex = Flex;
 exports.GestureDetector = GestureDetector;
+exports.Gradient = Gradient;
 exports.InkWell = InkWell;
 exports.LayoutBuilder = LayoutBuilder;
+exports.LinearGradient = LinearGradient;
 exports.ListView = ListView$1;
-exports.Matrix4 = Matrix4;
 exports.MediaQuery = MediaQuery;
 exports.Opacity = Opacity;
 exports.OrientationBuilder = OrientationBuilder;
 exports.OrientationUtils = OrientationUtils;
+exports.RadialGradient = RadialGradient;
 exports.Row = Row;
 exports.SizedBox = SizedBox;
 exports.Spacer = Spacer;
+exports.SweepGradient = SweepGradient;
 exports.Text = Text;
 exports.TextField = TextField;
 exports.Transform = Transform;
 exports.TransformUtils = TransformUtils;
+exports.alignmentToCSS = alignmentToCSS;
+exports.alignmentToFlexClasses = alignmentToFlexClasses;
+exports.alignmentToTransformOrigin = alignmentToTransformOrigin;
 exports.createBoxConstraints = createBoxConstraints;
 exports.createExpandedConstraints = createExpandedConstraints;
 exports.createLooseConstraints = createLooseConstraints;

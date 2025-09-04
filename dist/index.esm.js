@@ -804,6 +804,15 @@ AlignmentDirectional.bottomStart = new AlignmentDirectional(-1, 1);
 AlignmentDirectional.bottomCenter = new AlignmentDirectional(0, 1);
 AlignmentDirectional.bottomEnd = new AlignmentDirectional(1, 1);
 /**
+ * Converts Flutter-style alignment (-1 to 1) to CSS percentage values
+ */
+function alignmentToCSS(alignment) {
+    const resolved = alignment.resolve(null);
+    const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+    const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+    return { x: `${x}%`, y: `${y}%` };
+}
+/**
  * Converts alignment to CSS justify-content and align-items classes for flexbox
  */
 function alignmentToFlexClasses(alignment) {
@@ -834,6 +843,18 @@ function alignmentToTransformOrigin(alignment) {
     const originY = resolved.y === -1 ? 'top' : resolved.y === 0 ? 'center' : 'bottom';
     return `${originX} ${originY}`;
 }
+// Legacy constant exports for backward compatibility
+({
+    topLeft: Alignment$1.topLeft,
+    topCenter: Alignment$1.topCenter,
+    topRight: Alignment$1.topRight,
+    centerLeft: Alignment$1.centerLeft,
+    center: Alignment$1.center,
+    centerRight: Alignment$1.centerRight,
+    bottomLeft: Alignment$1.bottomLeft,
+    bottomCenter: Alignment$1.bottomCenter,
+    bottomRight: Alignment$1.bottomRight,
+});
 
 class EdgeInsets {
     constructor(top, right, bottom, left) {
@@ -1227,6 +1248,117 @@ var Decoration;
     }
     Decoration.clipToClasses = clipToClasses;
 })(Decoration || (Decoration = {}));
+
+class Gradient {
+    constructor(options) {
+        this.colors = options.colors;
+        this.stops = options.stops;
+    }
+}
+class LinearGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.begin = options.begin || Alignment$1.centerLeft;
+        this.end = options.end || Alignment$1.centerRight;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToAngle(begin, end) {
+        const resolvedBegin = begin.resolve(null);
+        const resolvedEnd = end.resolve(null);
+        const dx = resolvedEnd.x - resolvedBegin.x;
+        const dy = resolvedEnd.y - resolvedBegin.y;
+        return Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+    }
+    toCSS() {
+        const angle = this.alignmentToAngle(this.begin, this.end);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                return `${color} ${stop * 100}%`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
+                return `${color} ${percentage}%`;
+            });
+        }
+        return `linear-gradient(${angle}deg, ${colorStops.join(', ')})`;
+    }
+}
+class RadialGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.center = options.center || Alignment$1.center;
+        this.radius = options.radius || 0.5;
+        this.focal = options.focal;
+        this.focalRadius = options.focalRadius || 0;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToPercentage(alignment) {
+        const resolved = alignment.resolve(null);
+        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    toCSS() {
+        const centerPos = this.alignmentToPercentage(this.center);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                return `${color} ${stop * 100}%`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const percentage = this.colors.length === 1 ? 0 : (index / (this.colors.length - 1)) * 100;
+                return `${color} ${percentage}%`;
+            });
+        }
+        const radiusValue = `${this.radius * 100}%`;
+        return `radial-gradient(circle ${radiusValue} at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
+    }
+}
+class SweepGradient extends Gradient {
+    constructor(options) {
+        super({ colors: options.colors, stops: options.stops });
+        this.center = options.center || Alignment$1.center;
+        this.startAngle = options.startAngle || 0;
+        this.endAngle = options.endAngle || Math.PI * 2;
+        this.tileMode = options.tileMode || 'clamp';
+    }
+    alignmentToPercentage(alignment) {
+        const resolved = alignment.resolve(null);
+        const x = (((resolved.x + 1) / 2) * 100).toFixed(1);
+        const y = (((resolved.y + 1) / 2) * 100).toFixed(1);
+        return { x: `${x}%`, y: `${y}%` };
+    }
+    toCSS() {
+        const centerPos = this.alignmentToPercentage(this.center);
+        const startAngleDeg = this.startAngle * (180 / Math.PI);
+        let colorStops;
+        if (this.stops && this.stops.length === this.colors.length) {
+            const stops = this.stops; // TypeScript narrowing
+            colorStops = this.colors.map((color, index) => {
+                const stop = stops[index] ?? 0;
+                const angle = startAngleDeg + stop * (this.endAngle - this.startAngle) * (180 / Math.PI);
+                return `${color} ${angle}deg`;
+            });
+        }
+        else {
+            colorStops = this.colors.map((color, index) => {
+                const progress = this.colors.length === 1 ? 0 : index / (this.colors.length - 1);
+                const angle = startAngleDeg + progress * (this.endAngle - this.startAngle) * (180 / Math.PI);
+                return `${color} ${angle}deg`;
+            });
+        }
+        return `conic-gradient(from ${startAngleDeg}deg at ${centerPos.x} ${centerPos.y}, ${colorStops.join(', ')})`;
+    }
+}
 
 function resolvePaddingMargin(value) {
     if (!value)
@@ -3925,5 +4057,5 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
     return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [selectionStyleTag, jsxRuntimeExports.jsx("div", { id: elemId, className: combinedClassName, style: customStyle, lang: locale, dir: textDirection === TextDirection.AUTO ? 'auto' : textDirection.toLowerCase(), "aria-label": ariaLabel, children: children ?? data })] }));
 };
 
-export { Alignment, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Divider, EdgeInsets, FilterQuality, Flex, GestureDetector, HitTestBehavior, InkWell, LayoutBuilder, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Text, TextBaseline, TextDirection, TextField, Transform, TransformUtils, VerticalDirection, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Alignment$1 as Alignment, AlignmentDirectional, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map

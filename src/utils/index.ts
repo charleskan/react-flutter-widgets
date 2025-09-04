@@ -1,10 +1,15 @@
 // Flutter-style utilities for React components
 export {
   Alignment,
+  AlignmentDirectional,
   alignmentToFlexClasses,
   alignmentToCSS,
   alignmentToTransformOrigin,
   type AlignmentGeometry,
+  type Size,
+  type Offset,
+  type Rect,
+  TextDirection,
 } from './Alignment'
 export { EdgeInsets } from './EdgeInsets'
 export { BoxConstraints } from './BoxConstraints'

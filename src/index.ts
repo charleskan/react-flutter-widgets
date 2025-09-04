@@ -52,7 +52,6 @@ export {
   HitTestBehavior,
   type InkWellProps,
   type GestureDetectorProps,
-  type Offset,
   type TapDownDetails,
   type TapUpDetails,
   type LongPressStartDetails,
@@ -98,10 +97,8 @@ export {
   type MediaQueryProps,
   type MediaQueryData,
   type MediaQueryBreakpoints,
-  type Size,
   type MediaQueryEdgeInsets,
   type LayoutBuilderProps,
-  type BoxConstraints,
   type LayoutWidgetBuilder,
   type OrientationBuilderProps,
   type OrientationWidgetBuilder,
@@ -111,8 +108,6 @@ export {
 export {
   Transform,
   Opacity,
-  Matrix4,
-  Alignment,
   FilterQuality,
   TransformUtils,
   type TransformProps,
@@ -142,6 +137,35 @@ export {
 // Core Utilities and Types
 export { EdgeInsets } from './types/EdgeInsets'
 
+// All Flutter-style utilities
+export {
+  // Alignment and Geometry
+  Alignment,
+  AlignmentDirectional,
+  alignmentToFlexClasses,
+  alignmentToCSS,
+  alignmentToTransformOrigin,
+  type AlignmentGeometry,
+  type Size,
+  type Offset,
+  type Rect,
+  TextDirection,
+  // Box Constraints and Decoration
+  BoxConstraints,
+  Decoration,
+  type BoxDecoration,
+  type Clip,
+  // Matrix and Transforms
+  Matrix4,
+  type Matrix4Interface,
+  // Gradients
+  Gradient,
+  LinearGradient,
+  RadialGradient,
+  SweepGradient,
+  type GradientStop,
+} from './utils'
+
 // Layout System Types
 export {
   MainAxisAlignment,
@@ -152,7 +176,6 @@ export {
 
 // Text System Types
 export {
-  TextDirection,
   TextBaseline,
 } from './types/Text'
 
