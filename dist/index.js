@@ -611,24 +611,219 @@ var Flex$1;
     Flex.getMainAxisSizeStyles = getMainAxisSizeStyles;
 })(Flex$1 || (Flex$1 = {}));
 
+var TextDirection;
+(function (TextDirection) {
+    TextDirection["ltr"] = "ltr";
+    TextDirection["rtl"] = "rtl";
+})(TextDirection || (TextDirection = {}));
+class AlignmentGeometry {
+    multiply(factor) {
+        if (this instanceof Alignment) {
+            return new Alignment(this.x * factor, this.y * factor);
+        }
+        if (this instanceof AlignmentDirectional) {
+            return new AlignmentDirectional(this.x * factor, this.y * factor);
+        }
+        throw new Error('Unknown AlignmentGeometry type');
+    }
+    divide(factor) {
+        return this.multiply(1 / factor);
+    }
+    remainder(factor) {
+        if (this instanceof Alignment) {
+            return new Alignment(this.x % factor, this.y % factor);
+        }
+        if (this instanceof AlignmentDirectional) {
+            return new AlignmentDirectional(this.x % factor, this.y % factor);
+        }
+        throw new Error('Unknown AlignmentGeometry type');
+    }
+    integerDivide(factor) {
+        if (this instanceof Alignment) {
+            return new Alignment(Math.floor(this.x / factor), Math.floor(this.y / factor));
+        }
+        if (this instanceof AlignmentDirectional) {
+            return new AlignmentDirectional(Math.floor(this.x / factor), Math.floor(this.y / factor));
+        }
+        throw new Error('Unknown AlignmentGeometry type');
+    }
+    negate() {
+        if (this instanceof Alignment) {
+            return new Alignment(-this.x, -this.y);
+        }
+        if (this instanceof AlignmentDirectional) {
+            return new AlignmentDirectional(-this.x, -this.y);
+        }
+        throw new Error('Unknown AlignmentGeometry type');
+    }
+    equals(other) {
+        return (other instanceof AlignmentGeometry &&
+            this.x === other.x &&
+            this.y === other.y &&
+            this.constructor === other.constructor);
+    }
+    get hashCode() {
+        return this.x * 37 + this.y * 41;
+    }
+    toString() {
+        return `${this.constructor.name}(${this.x}, ${this.y})`;
+    }
+    static directional(start, y) {
+        return new AlignmentDirectional(start, y);
+    }
+    static xy(x, y) {
+        return new Alignment(x, y);
+    }
+    static lerp(a, b, t) {
+        if (a === null && b === null)
+            return null;
+        if (a === null)
+            return b?.multiply(t) ?? null;
+        if (b === null)
+            return a.multiply(1 - t);
+        if (a.constructor === b.constructor) {
+            if (a instanceof Alignment && b instanceof Alignment) {
+                return new Alignment(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+            }
+            if (a instanceof AlignmentDirectional && b instanceof AlignmentDirectional) {
+                return new AlignmentDirectional(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+            }
+        }
+        const resolvedA = a.resolve(TextDirection.ltr);
+        const resolvedB = b.resolve(TextDirection.ltr);
+        return new Alignment(resolvedA.x + (resolvedB.x - resolvedA.x) * t, resolvedA.y + (resolvedB.y - resolvedA.y) * t);
+    }
+}
+class Alignment extends AlignmentGeometry {
+    constructor(x, y) {
+        super();
+        this.x = x;
+        this.y = y;
+    }
+    add(other) {
+        const resolved = other.resolve(null);
+        return new Alignment(this.x + resolved.x, this.y + resolved.y);
+    }
+    subtract(other) {
+        return new Alignment(this.x - other.x, this.y - other.y);
+    }
+    multiply(factor) {
+        return new Alignment(this.x * factor, this.y * factor);
+    }
+    divide(factor) {
+        return new Alignment(this.x / factor, this.y / factor);
+    }
+    remainder(factor) {
+        return new Alignment(this.x % factor, this.y % factor);
+    }
+    integerDivide(factor) {
+        return new Alignment(Math.floor(this.x / factor), Math.floor(this.y / factor));
+    }
+    negate() {
+        return new Alignment(-this.x, -this.y);
+    }
+    resolve(_direction) {
+        return this;
+    }
+    alongOffset(other) {
+        return {
+            dx: other.dx * this.x,
+            dy: other.dy * this.y,
+        };
+    }
+    alongSize(other) {
+        return {
+            dx: (other.width / 2) * (1 + this.x),
+            dy: (other.height / 2) * (1 + this.y),
+        };
+    }
+    inscribe(size, rect) {
+        const x = rect.left + ((rect.width - size.width) / 2) * (1 + this.x);
+        const y = rect.top + ((rect.height - size.height) / 2) * (1 + this.y);
+        return {
+            left: x,
+            top: y,
+            width: size.width,
+            height: size.height,
+        };
+    }
+    withinRect(rect) {
+        return {
+            dx: rect.left + (rect.width / 2) * (1 + this.x),
+            dy: rect.top + (rect.height / 2) * (1 + this.y),
+        };
+    }
+    static lerp(a, b, t) {
+        if (a === null && b === null)
+            return null;
+        if (a === null)
+            return b?.multiply(t) ?? null;
+        if (b === null)
+            return a.multiply(1 - t);
+        return new Alignment(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+    }
+}
+// Static constants
+Alignment.topLeft = new Alignment(-1, -1);
+Alignment.topCenter = new Alignment(0, -1);
+Alignment.topRight = new Alignment(1, -1);
+Alignment.centerLeft = new Alignment(-1, 0);
+Alignment.center = new Alignment(0, 0);
+Alignment.centerRight = new Alignment(1, 0);
+Alignment.bottomLeft = new Alignment(-1, 1);
+Alignment.bottomCenter = new Alignment(0, 1);
+Alignment.bottomRight = new Alignment(1, 1);
+class AlignmentDirectional extends AlignmentGeometry {
+    get x() {
+        return this.start;
+    }
+    constructor(start, y) {
+        super();
+        this.start = start;
+        this.y = y;
+    }
+    add(other) {
+        if (other instanceof AlignmentDirectional) {
+            return new AlignmentDirectional(this.start + other.start, this.y + other.y);
+        }
+        return new AlignmentDirectional(this.start + other.x, this.y + other.y);
+    }
+    resolve(direction) {
+        if (direction === TextDirection.rtl) {
+            return new Alignment(-this.start, this.y);
+        }
+        return new Alignment(this.start, this.y);
+    }
+}
+// Static constants
+AlignmentDirectional.topStart = new AlignmentDirectional(-1, -1);
+AlignmentDirectional.topCenter = new AlignmentDirectional(0, -1);
+AlignmentDirectional.topEnd = new AlignmentDirectional(1, -1);
+AlignmentDirectional.centerStart = new AlignmentDirectional(-1, 0);
+AlignmentDirectional.center = new AlignmentDirectional(0, 0);
+AlignmentDirectional.centerEnd = new AlignmentDirectional(1, 0);
+AlignmentDirectional.bottomStart = new AlignmentDirectional(-1, 1);
+AlignmentDirectional.bottomCenter = new AlignmentDirectional(0, 1);
+AlignmentDirectional.bottomEnd = new AlignmentDirectional(1, 1);
 /**
  * Converts alignment to CSS justify-content and align-items classes for flexbox
  */
 function alignmentToFlexClasses(alignment) {
+    const resolved = alignment.resolve(null);
     const classes = ['flex'];
     // Justify content (x-axis)
-    if (alignment.x === -1)
+    if (resolved.x === -1)
         classes.push('justify-start');
-    else if (alignment.x === 0)
+    else if (resolved.x === 0)
         classes.push('justify-center');
-    else if (alignment.x === 1)
+    else if (resolved.x === 1)
         classes.push('justify-end');
     // Align items (y-axis)
-    if (alignment.y === -1)
+    if (resolved.y === -1)
         classes.push('items-start');
-    else if (alignment.y === 0)
+    else if (resolved.y === 0)
         classes.push('items-center');
-    else if (alignment.y === 1)
+    else if (resolved.y === 1)
         classes.push('items-end');
     return classes;
 }
@@ -636,8 +831,9 @@ function alignmentToFlexClasses(alignment) {
  * Converts alignment to CSS transform-origin property
  */
 function alignmentToTransformOrigin(alignment) {
-    const originX = alignment.x === -1 ? 'left' : alignment.x === 0 ? 'center' : 'right';
-    const originY = alignment.y === -1 ? 'top' : alignment.y === 0 ? 'center' : 'bottom';
+    const resolved = alignment.resolve(null);
+    const originX = resolved.x === -1 ? 'left' : resolved.x === 0 ? 'center' : 'right';
+    const originY = resolved.y === -1 ? 'top' : resolved.y === 0 ? 'center' : 'bottom';
     return `${originX} ${originY}`;
 }
 

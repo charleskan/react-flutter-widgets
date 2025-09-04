@@ -1,4 +1,4 @@
-import type { AlignmentGeometry } from './Alignment';
+import { type AlignmentGeometry } from './Alignment';
 export interface GradientStop {
     color: string;
     stop?: number;

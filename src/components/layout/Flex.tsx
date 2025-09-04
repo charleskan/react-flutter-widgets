@@ -1,6 +1,6 @@
 import type { FlexProps } from '../../types/Flex.type'
 import { Flex as FlexUtils } from '../../types/Flex.type'
-import { CrossAxisAlignment, MainAxisAlignment, MainAxisSize, Clip } from '../../types/Layout'
+import { Clip, CrossAxisAlignment, MainAxisAlignment, MainAxisSize } from '../../types/Layout'
 import { TextDirection } from '../../types/Text'
 
 interface FlexComponentProps extends FlexProps {

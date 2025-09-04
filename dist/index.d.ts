@@ -1,9 +1,84 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import React$1, { CSSProperties, ReactNode, Key } from 'react';
 
-interface AlignmentGeometry {
-    x: number;
-    y: number;
+interface Size$1 {
+    width: number;
+    height: number;
+}
+interface Offset$1 {
+    dx: number;
+    dy: number;
+}
+interface Rect {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+}
+declare enum TextDirection$1 {
+    ltr = "ltr",
+    rtl = "rtl"
+}
+declare abstract class AlignmentGeometry {
+    abstract readonly x: number;
+    abstract readonly y: number;
+    abstract add(other: AlignmentGeometry): AlignmentGeometry;
+    abstract resolve(direction: TextDirection$1 | null): Alignment$1;
+    multiply(factor: number): AlignmentGeometry;
+    divide(factor: number): AlignmentGeometry;
+    remainder(factor: number): AlignmentGeometry;
+    integerDivide(factor: number): AlignmentGeometry;
+    negate(): AlignmentGeometry;
+    equals(other: unknown): boolean;
+    get hashCode(): number;
+    toString(): string;
+    static directional(start: number, y: number): AlignmentDirectional;
+    static xy(x: number, y: number): Alignment$1;
+    static lerp(a: AlignmentGeometry | null, b: AlignmentGeometry | null, t: number): AlignmentGeometry | null;
+}
+declare class Alignment$1 extends AlignmentGeometry {
+    readonly x: number;
+    readonly y: number;
+    constructor(x: number, y: number);
+    add(other: AlignmentGeometry): Alignment$1;
+    subtract(other: Alignment$1): Alignment$1;
+    multiply(factor: number): Alignment$1;
+    divide(factor: number): Alignment$1;
+    remainder(factor: number): Alignment$1;
+    integerDivide(factor: number): Alignment$1;
+    negate(): Alignment$1;
+    resolve(_direction: TextDirection$1 | null): Alignment$1;
+    alongOffset(other: Offset$1): Offset$1;
+    alongSize(other: Size$1): Offset$1;
+    inscribe(size: Size$1, rect: Rect): Rect;
+    withinRect(rect: Rect): Offset$1;
+    static lerp(a: Alignment$1 | null, b: Alignment$1 | null, t: number): Alignment$1 | null;
+    static readonly topLeft: Alignment$1;
+    static readonly topCenter: Alignment$1;
+    static readonly topRight: Alignment$1;
+    static readonly centerLeft: Alignment$1;
+    static readonly center: Alignment$1;
+    static readonly centerRight: Alignment$1;
+    static readonly bottomLeft: Alignment$1;
+    static readonly bottomCenter: Alignment$1;
+    static readonly bottomRight: Alignment$1;
+}
+declare class AlignmentDirectional extends AlignmentGeometry {
+    readonly start: number;
+    readonly y: number;
+    get x(): number;
+    constructor(start: number, y: number);
+    add(other: AlignmentGeometry): AlignmentDirectional;
+    resolve(direction: TextDirection$1 | null): Alignment$1;
+    static readonly topStart: AlignmentDirectional;
+    static readonly topCenter: AlignmentDirectional;
+    static readonly topEnd: AlignmentDirectional;
+    static readonly centerStart: AlignmentDirectional;
+    static readonly center: AlignmentDirectional;
+    static readonly centerEnd: AlignmentDirectional;
+    static readonly bottomStart: AlignmentDirectional;
+    static readonly bottomCenter: AlignmentDirectional;
+    static readonly bottomEnd: AlignmentDirectional;
 }
 
 declare class EdgeInsets$1 {

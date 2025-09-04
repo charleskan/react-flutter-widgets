@@ -1,4 +1,4 @@
-import type { AlignmentGeometry } from './Alignment'
+import { Alignment, type AlignmentGeometry } from './Alignment'
 
 export interface GradientStop {
   color: string
@@ -30,14 +30,16 @@ export class LinearGradient extends Gradient {
     tileMode?: 'clamp' | 'repeat' | 'mirror'
   }) {
     super({ colors: options.colors, stops: options.stops })
-    this.begin = options.begin || { x: -1, y: 0 }
-    this.end = options.end || { x: 1, y: 0 }
+    this.begin = options.begin || Alignment.centerLeft
+    this.end = options.end || Alignment.centerRight
     this.tileMode = options.tileMode || 'clamp'
   }
 
   private alignmentToAngle(begin: AlignmentGeometry, end: AlignmentGeometry): number {
-    const dx = end.x - begin.x
-    const dy = end.y - begin.y
+    const resolvedBegin = begin.resolve(null)
+    const resolvedEnd = end.resolve(null)
+    const dx = resolvedEnd.x - resolvedBegin.x
+    const dy = resolvedEnd.y - resolvedBegin.y
     return Math.atan2(dy, dx) * (180 / Math.PI) + 90
   }
 
@@ -79,7 +81,7 @@ export class RadialGradient extends Gradient {
     tileMode?: 'clamp' | 'repeat' | 'mirror'
   }) {
     super({ colors: options.colors, stops: options.stops })
-    this.center = options.center || { x: 0, y: 0 }
+    this.center = options.center || Alignment.center
     this.radius = options.radius || 0.5
     this.focal = options.focal
     this.focalRadius = options.focalRadius || 0
@@ -87,8 +89,9 @@ export class RadialGradient extends Gradient {
   }
 
   private alignmentToPercentage(alignment: AlignmentGeometry): { x: string; y: string } {
-    const x = (((alignment.x + 1) / 2) * 100).toFixed(1)
-    const y = (((alignment.y + 1) / 2) * 100).toFixed(1)
+    const resolved = alignment.resolve(null)
+    const x = (((resolved.x + 1) / 2) * 100).toFixed(1)
+    const y = (((resolved.y + 1) / 2) * 100).toFixed(1)
     return { x: `${x}%`, y: `${y}%` }
   }
 
@@ -130,15 +133,16 @@ export class SweepGradient extends Gradient {
     tileMode?: 'clamp' | 'repeat' | 'mirror'
   }) {
     super({ colors: options.colors, stops: options.stops })
-    this.center = options.center || { x: 0, y: 0 }
+    this.center = options.center || Alignment.center
     this.startAngle = options.startAngle || 0
     this.endAngle = options.endAngle || Math.PI * 2
     this.tileMode = options.tileMode || 'clamp'
   }
 
   private alignmentToPercentage(alignment: AlignmentGeometry): { x: string; y: string } {
-    const x = (((alignment.x + 1) / 2) * 100).toFixed(1)
-    const y = (((alignment.y + 1) / 2) * 100).toFixed(1)
+    const resolved = alignment.resolve(null)
+    const x = (((resolved.x + 1) / 2) * 100).toFixed(1)
+    const y = (((resolved.y + 1) / 2) * 100).toFixed(1)
     return { x: `${x}%`, y: `${y}%` }
   }
 
