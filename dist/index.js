@@ -1517,6 +1517,8 @@ function Spacer({ flex = 1 }) {
     return jsxRuntimeExports.jsx("div", { style: { flex, flexShrink: 1 } });
 }
 
+function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else if("object"==typeof e)if(Array.isArray(e)){var o=e.length;for(t=0;t<o;t++)e[t]&&(f=r(e[t]))&&(n&&(n+=" "),n+=f);}else for(f in e)e[f]&&(n&&(n+=" "),n+=f);return n}function clsx(){for(var e,t,f=0,n="",o=arguments.length;f<o;f++)(e=arguments[f])&&(t=r(e))&&(n&&(n+=" "),n+=t);return n}
+
 /**
  * Defines the scroll direction for ListView components.
  * @enum {string}
@@ -1544,81 +1546,111 @@ exports.ScrollPhysics = void 0;
     ScrollPhysics["CLAMPING"] = "clamping";
 })(exports.ScrollPhysics || (exports.ScrollPhysics = {}));
 /**
- * Converts EdgeInsets to CSS padding properties.
+ * Converts EdgeInsets to Tailwind padding classes.
  * @param p - EdgeInsets value (number or object with top/right/bottom/left)
- * @returns CSS padding properties or undefined if no padding specified
+ * @returns Tailwind padding classes or empty string if no padding specified
  */
-function toPadding(p) {
+function toPaddingClasses(p) {
     if (p == null)
-        return undefined;
+        return '';
     if (typeof p === 'number')
-        return { padding: p };
-    const { top = 0, right = 0, bottom = 0, left = 0 } = p;
-    return { paddingTop: top, paddingRight: right, paddingBottom: bottom, paddingLeft: left };
+        return `p-[${p}px]`;
+    const classes = [];
+    const { top, right, bottom, left } = p;
+    if (top)
+        classes.push(`pt-[${top}px]`);
+    if (right)
+        classes.push(`pr-[${right}px]`);
+    if (bottom)
+        classes.push(`pb-[${bottom}px]`);
+    if (left)
+        classes.push(`pl-[${left}px]`);
+    return classes.join(' ');
 }
 /**
- * Generates container styles for ListView - determines scrolling behavior and layout.
+ * Generates container classes for ListView using Tailwind CSS.
  * This is where the core scrolling logic is implemented.
  * @param axis - Scroll direction (vertical or horizontal)
  * @param reverse - Whether to reverse item order
  * @param shrinkWrap - Whether to size to content instead of filling space
  * @param physics - Scroll physics behavior
  * @param clip - Clipping behavior for overflow
- * @param paddingStyle - Processed padding styles
- * @param userStyle - User-provided custom styles
- * @param itemExtent - Fixed item size for uniform items
- * @returns Complete CSS properties for the container
+ * @param paddingClasses - Processed padding classes
+ * @param className - User-provided CSS classes
+ * @returns Complete Tailwind class string for the container
  */
-function buildContainerStyle(axis, reverse, shrinkWrap, physics, clip, paddingStyle, userStyle, itemExtent) {
+function buildContainerClasses(axis, reverse, shrinkWrap, physics, _clip, paddingClasses, className) {
+    const classes = [];
+    // Base layout classes
+    classes.push('flex', 'list-none', 'm-0');
+    // Add padding if no user padding
+    if (!paddingClasses) {
+        classes.push('p-0');
+    }
     const isVertical = axis === exports.Axis.VERTICAL;
     const enableScroll = physics !== exports.ScrollPhysics.NEVER && !shrinkWrap;
-    const overflow = enableScroll
-        ? isVertical
-            ? { overflowY: 'auto', overflowX: 'hidden' }
-            : { overflowX: 'auto', overflowY: 'hidden' }
-        : { overflow: 'hidden' };
-    const direction = reverse
-        ? isVertical
-            ? 'column-reverse'
-            : 'row-reverse'
-        : isVertical
-            ? 'column'
-            : 'row';
-    const clipStyle = clip === 'hidden' ? { overflowClipMargin: 'content-box' } : {};
-    const momentum = physics === exports.ScrollPhysics.BOUNCING
-        ? { WebkitOverflowScrolling: 'touch' }
-        : {};
-    const extentStyle = itemExtent ? (isVertical ? { rowGap: 0 } : { columnGap: 0 }) : undefined;
-    return {
-        display: 'flex',
-        flexDirection: direction,
-        margin: 0,
-        listStyle: 'none',
-        ...(paddingStyle ? {} : { padding: 0 }),
-        ...overflow,
-        ...(shrinkWrap ? { flex: '0 0 auto', maxHeight: 'none' } : { flex: '1 1 auto' }),
-        ...(clip === 'hidden' ? { overflow: enableScroll ? 'auto' : 'hidden' } : {}),
-        ...clipStyle,
-        ...momentum,
-        ...extentStyle,
-        ...paddingStyle,
-        ...userStyle,
-    };
+    // Direction classes
+    if (reverse) {
+        classes.push(isVertical ? 'flex-col-reverse' : 'flex-row-reverse');
+    }
+    else {
+        classes.push(isVertical ? 'flex-col' : 'flex-row');
+    }
+    // Scroll and overflow classes
+    if (enableScroll) {
+        if (isVertical) {
+            classes.push('overflow-y-auto', 'overflow-x-hidden');
+        }
+        else {
+            classes.push('overflow-x-auto', 'overflow-y-hidden');
+        }
+    }
+    else {
+        classes.push('overflow-hidden');
+    }
+    // Size classes
+    if (shrinkWrap) {
+        classes.push('flex-none');
+    }
+    else {
+        classes.push('flex-1');
+    }
+    // Physics classes (PageScrollPhysics)
+    if (physics && typeof physics === 'object' && 'getClasses' in physics) {
+        const direction = isVertical ? 'vertical' : 'horizontal';
+        classes.push(...physics.getClasses(direction));
+    }
+    // Momentum scrolling for iOS (bouncing physics)
+    if (physics === exports.ScrollPhysics.BOUNCING) {
+        // Use smooth scrolling behavior
+        classes.push('scroll-smooth');
+    }
+    return clsx(classes, paddingClasses, className);
 }
 /**
  * Wrapper component for ListView items.
  * Handles itemExtent (fixed item sizing) and provides semantic listitem role.
  * @param axis - Scroll direction to determine which dimension to fix
  * @param itemExtent - Fixed size for the item in the main axis
+ * @param physics - Physics to apply item-specific classes
  * @param children - Child content to wrap
  */
-const ItemWrap = ({ axis, itemExtent, children, }) => {
-    const style = itemExtent
-        ? axis === exports.Axis.VERTICAL
-            ? { height: itemExtent }
-            : { width: itemExtent }
-        : undefined;
-    return jsxRuntimeExports.jsx("li", { style: style, children: children });
+const ItemWrap = ({ axis, itemExtent, physics, children }) => {
+    const classes = [];
+    // Fixed size classes
+    if (itemExtent) {
+        if (axis === exports.Axis.VERTICAL) {
+            classes.push(`h-[${itemExtent}px]`);
+        }
+        else {
+            classes.push(`w-[${itemExtent}px]`);
+        }
+    }
+    // Physics item classes (for PageScrollPhysics snap alignment)
+    if (physics && typeof physics === 'object' && 'getItemClasses' in physics) {
+        classes.push(...physics.getItemClasses());
+    }
+    return jsxRuntimeExports.jsx("li", { className: clsx(classes), children: children });
 };
 /**
  * Base ListView component implementation.
@@ -1632,22 +1664,9 @@ const ListViewBase = require$$0.forwardRef(function ListView({ children = [], sc
         scrollTo: (opts) => elRef.current?.scrollTo(opts),
         getScrollElement: () => elRef.current,
     }), []);
-    const paddingStyle = require$$0.useMemo(() => toPadding(padding), [padding]);
-    const containerStyle = require$$0.useMemo(() => buildContainerStyle(scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent), [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent]);
-    // Apply PageScrollPhysics if provided
-    require$$0.useEffect(() => {
-        const element = elRef.current;
-        if (!element || !physics || typeof physics === 'string')
-            return;
-        // Check if physics is PageScrollPhysics instance
-        if ('applyTo' in physics && typeof physics.applyTo === 'function') {
-            const direction = scrollDirection === exports.Axis.HORIZONTAL ? 'horizontal' : 'vertical';
-            return physics.applyTo(element, direction, itemExtent);
-        }
-        // Return empty cleanup function for non-PageScrollPhysics cases
-        return () => { };
-    }, [physics, scrollDirection, itemExtent]);
-    return (jsxRuntimeExports.jsx("ul", { ref: elRef, className: className, style: containerStyle, "aria-orientation": scrollDirection === exports.Axis.VERTICAL ? 'vertical' : 'horizontal', ...aria, "data-primary": primary ? 'true' : undefined, children: children?.map((child, i) => (jsxRuntimeExports.jsx(ItemWrap, { axis: scrollDirection, itemExtent: itemExtent, children: child }, child?.key ?? i))) }));
+    const paddingClasses = require$$0.useMemo(() => toPaddingClasses(padding), [padding]);
+    const containerClasses = require$$0.useMemo(() => buildContainerClasses(scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className), [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className]);
+    return (jsxRuntimeExports.jsx("ul", { ref: elRef, className: containerClasses, style: style, "aria-orientation": scrollDirection === exports.Axis.VERTICAL ? 'vertical' : 'horizontal', ...aria, "data-primary": primary ? 'true' : undefined, children: children?.map((child, i) => (jsxRuntimeExports.jsx(ItemWrap, { axis: scrollDirection, itemExtent: itemExtent, physics: physics, children: child }, child?.key ?? i))) }));
 });
 /**
  * Builder function for dynamic ListView variants (builder and separated).
@@ -4303,6 +4322,7 @@ class BorderRadius {
 /**
  * Scroll physics utility classes for implementing various scrolling behaviors.
  * Inspired by Flutter's ScrollPhysics API to provide consistent behavior across platforms.
+ * Uses CSS scroll-snap for optimal performance.
  */
 /**
  * PageScrollPhysics implementation that provides page-like snapping behavior.
@@ -4310,12 +4330,13 @@ class BorderRadius {
  *
  * This physics causes the scroll view to snap to item boundaries,
  * making it ideal for implementing carousel-like behavior.
+ * Uses CSS scroll-snap for optimal performance.
  *
  * @example
  * ```tsx
  * const physics = new PageScrollPhysics({
- *   snapThreshold: 0.3,
- *   snapDuration: 300
+ *   snapAlign: 'start',
+ *   snapType: 'mandatory'
  * })
  *
  * <ListView.builder
@@ -4329,122 +4350,65 @@ class BorderRadius {
 class PageScrollPhysics {
     constructor(config = {}) {
         this.config = {
-            snapping: true,
-            snapThreshold: 0.5,
-            snapDuration: 300,
-            snapEasing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            itemSize: () => 0,
+            snapAlign: 'start',
+            snapType: 'mandatory',
             ...config,
         };
     }
     /**
-     * Applies snapping behavior to a scroll element.
-     * This method sets up event listeners and handles the snapping logic.
+     * Returns the CSS classes needed for scroll snapping behavior.
+     * Uses CSS scroll-snap for optimal performance.
      *
-     * @param element - The scrollable element to apply physics to
      * @param direction - Scroll direction ('horizontal' or 'vertical')
-     * @param itemSize - Size of each item in pixels
+     * @returns Array of CSS classes to apply
      */
-    applyTo(element, direction = 'horizontal', itemSize) {
-        if (!this.config.snapping) {
-            return () => { }; // No-op cleanup function
-        }
-        const actualItemSize = itemSize ??
-            (typeof this.config.itemSize === 'function' ? this.config.itemSize() : this.config.itemSize);
-        if (actualItemSize <= 0) {
-            console.warn('PageScrollPhysics: itemSize must be greater than 0 for snapping to work');
-            return () => { };
-        }
-        let isScrolling = false;
-        let scrollTimeout = null;
-        const handleScroll = () => {
-            if (isScrolling)
-                return;
-            // Clear existing timeout
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-            // Set a timeout to detect when scrolling stops
-            scrollTimeout = setTimeout(() => {
-                this.snapToNearestItem(element, direction, actualItemSize);
-            }, 150); // Wait 150ms after scroll stops
-        };
-        const handleScrollStart = () => {
-            isScrolling = true;
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = null;
-            }
-        };
-        const handleScrollEnd = () => {
-            isScrolling = false;
-        };
-        // Add event listeners
-        element.addEventListener('scroll', handleScroll, { passive: true });
-        element.addEventListener('scrollstart', handleScrollStart, { passive: true });
-        element.addEventListener('scrollend', handleScrollEnd, { passive: true });
-        // For browsers that don't support scrollend, use touchend and mouseup
-        element.addEventListener('touchend', handleScrollEnd, { passive: true });
-        element.addEventListener('mouseup', handleScrollEnd, { passive: true });
-        // Cleanup function
-        return () => {
-            element.removeEventListener('scroll', handleScroll);
-            element.removeEventListener('scrollstart', handleScrollStart);
-            element.removeEventListener('scrollend', handleScrollEnd);
-            element.removeEventListener('touchend', handleScrollEnd);
-            element.removeEventListener('mouseup', handleScrollEnd);
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-        };
-    }
-    /**
-     * Snaps to the nearest item based on current scroll position
-     */
-    snapToNearestItem(element, direction, itemSize) {
-        const isHorizontal = direction === 'horizontal';
-        const currentScroll = isHorizontal ? element.scrollLeft : element.scrollTop;
-        // Calculate which item we're closest to
-        const currentIndex = currentScroll / itemSize;
-        const floorIndex = Math.floor(currentIndex);
-        const remainder = currentIndex - floorIndex;
-        // Determine target index based on threshold
-        let targetIndex;
-        if (remainder > this.config.snapThreshold) {
-            targetIndex = floorIndex + 1;
+    getClasses(direction = 'horizontal') {
+        const classes = [];
+        // Add scroll-snap-type based on direction and type
+        if (direction === 'horizontal') {
+            classes.push('snap-x');
         }
         else {
-            targetIndex = floorIndex;
+            classes.push('snap-y');
         }
-        // Calculate target scroll position
-        const targetScroll = targetIndex * itemSize;
-        // Only snap if we're not already at the target
-        if (Math.abs(currentScroll - targetScroll) > 1) {
-            const scrollOptions = {
-                [isHorizontal ? 'left' : 'top']: targetScroll,
-                behavior: 'smooth',
-            };
-            element.scrollTo(scrollOptions);
+        // Add snap strictness
+        if (this.config.snapType === 'mandatory') {
+            classes.push('snap-mandatory');
         }
+        else {
+            classes.push('snap-proximity');
+        }
+        return classes;
     }
     /**
-     * Calculates the item size automatically based on the first child element
+     * Returns the CSS classes for scroll snap items.
+     * Applied to each child item in the scroll container.
+     *
+     * @returns Array of CSS classes for items
      */
-    static calculateItemSize(element, direction = 'horizontal') {
-        const firstChild = element.firstElementChild;
-        if (!firstChild)
-            return 0;
-        const rect = firstChild.getBoundingClientRect();
-        return direction === 'horizontal' ? rect.width : rect.height;
+    getItemClasses() {
+        const classes = [];
+        // Add scroll-snap-align based on config
+        switch (this.config.snapAlign) {
+            case 'start':
+                classes.push('snap-start');
+                break;
+            case 'center':
+                classes.push('snap-center');
+                break;
+            case 'end':
+                classes.push('snap-end');
+                break;
+        }
+        return classes;
     }
     /**
      * Creates a PageScrollPhysics instance with default settings optimized for carousels
      */
     static carousel(config = {}) {
         return new PageScrollPhysics({
-            snapThreshold: 0.3,
-            snapDuration: 250,
-            snapEasing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            snapAlign: 'start',
+            snapType: 'mandatory',
             ...config,
         });
     }
@@ -4453,9 +4417,8 @@ class PageScrollPhysics {
      */
     static page(config = {}) {
         return new PageScrollPhysics({
-            snapThreshold: 0.5,
-            snapDuration: 400,
-            snapEasing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+            snapAlign: 'start',
+            snapType: 'mandatory',
             ...config,
         });
     }

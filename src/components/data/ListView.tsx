@@ -1,10 +1,10 @@
+import { clsx } from 'clsx'
 import type React from 'react'
 import {
   type CSSProperties,
   type ForwardedRef,
   type ReactNode,
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -128,82 +128,97 @@ export interface ListViewHandle {
 }
 
 /**
- * Converts EdgeInsets to CSS padding properties.
+ * Converts EdgeInsets to Tailwind padding classes.
  * @param p - EdgeInsets value (number or object with top/right/bottom/left)
- * @returns CSS padding properties or undefined if no padding specified
+ * @returns Tailwind padding classes or empty string if no padding specified
  */
-function toPadding(p?: EdgeInsets): CSSProperties | undefined {
-  if (p == null) return undefined
-  if (typeof p === 'number') return { padding: p }
-  const { top = 0, right = 0, bottom = 0, left = 0 } = p
-  return { paddingTop: top, paddingRight: right, paddingBottom: bottom, paddingLeft: left }
+function toPaddingClasses(p?: EdgeInsets): string {
+  if (p == null) return ''
+  if (typeof p === 'number') return `p-[${p}px]`
+
+  const classes: string[] = []
+  const { top, right, bottom, left } = p
+
+  if (top) classes.push(`pt-[${top}px]`)
+  if (right) classes.push(`pr-[${right}px]`)
+  if (bottom) classes.push(`pb-[${bottom}px]`)
+  if (left) classes.push(`pl-[${left}px]`)
+
+  return classes.join(' ')
 }
 
 /**
- * Generates container styles for ListView - determines scrolling behavior and layout.
+ * Generates container classes for ListView using Tailwind CSS.
  * This is where the core scrolling logic is implemented.
  * @param axis - Scroll direction (vertical or horizontal)
  * @param reverse - Whether to reverse item order
  * @param shrinkWrap - Whether to size to content instead of filling space
  * @param physics - Scroll physics behavior
  * @param clip - Clipping behavior for overflow
- * @param paddingStyle - Processed padding styles
- * @param userStyle - User-provided custom styles
- * @param itemExtent - Fixed item size for uniform items
- * @returns Complete CSS properties for the container
+ * @param paddingClasses - Processed padding classes
+ * @param className - User-provided CSS classes
+ * @returns Complete Tailwind class string for the container
  */
-function buildContainerStyle(
+function buildContainerClasses(
   axis: Axis,
   reverse: boolean,
   shrinkWrap: boolean,
   physics: ScrollPhysics | PageScrollPhysics,
-  clip: 'visible' | 'hidden',
-  paddingStyle?: CSSProperties,
-  userStyle?: CSSProperties,
-  itemExtent?: number,
-): CSSProperties {
-  const isVertical = axis === Axis.VERTICAL
+  _clip: 'visible' | 'hidden',
+  paddingClasses: string,
+  className?: string,
+): string {
+  const classes: string[] = []
 
+  // Base layout classes
+  classes.push('flex', 'list-none', 'm-0')
+
+  // Add padding if no user padding
+  if (!paddingClasses) {
+    classes.push('p-0')
+  }
+
+  const isVertical = axis === Axis.VERTICAL
   const enableScroll = physics !== ScrollPhysics.NEVER && !shrinkWrap
 
-  const overflow: CSSProperties = enableScroll
-    ? isVertical
-      ? { overflowY: 'auto', overflowX: 'hidden' }
-      : { overflowX: 'auto', overflowY: 'hidden' }
-    : { overflow: 'hidden' }
-
-  const direction: CSSProperties['flexDirection'] = reverse
-    ? isVertical
-      ? 'column-reverse'
-      : 'row-reverse'
-    : isVertical
-      ? 'column'
-      : 'row'
-
-  const clipStyle: CSSProperties = clip === 'hidden' ? { overflowClipMargin: 'content-box' } : {}
-
-  const momentum: CSSProperties =
-    physics === ScrollPhysics.BOUNCING
-      ? ({ WebkitOverflowScrolling: 'touch' } as CSSProperties)
-      : {}
-
-  const extentStyle = itemExtent ? (isVertical ? { rowGap: 0 } : { columnGap: 0 }) : undefined
-
-  return {
-    display: 'flex',
-    flexDirection: direction,
-    margin: 0,
-    listStyle: 'none',
-    ...(paddingStyle ? {} : { padding: 0 }),
-    ...overflow,
-    ...(shrinkWrap ? { flex: '0 0 auto', maxHeight: 'none' } : { flex: '1 1 auto' }),
-    ...(clip === 'hidden' ? { overflow: enableScroll ? 'auto' : 'hidden' } : {}),
-    ...clipStyle,
-    ...momentum,
-    ...extentStyle,
-    ...paddingStyle,
-    ...userStyle,
+  // Direction classes
+  if (reverse) {
+    classes.push(isVertical ? 'flex-col-reverse' : 'flex-row-reverse')
+  } else {
+    classes.push(isVertical ? 'flex-col' : 'flex-row')
   }
+
+  // Scroll and overflow classes
+  if (enableScroll) {
+    if (isVertical) {
+      classes.push('overflow-y-auto', 'overflow-x-hidden')
+    } else {
+      classes.push('overflow-x-auto', 'overflow-y-hidden')
+    }
+  } else {
+    classes.push('overflow-hidden')
+  }
+
+  // Size classes
+  if (shrinkWrap) {
+    classes.push('flex-none')
+  } else {
+    classes.push('flex-1')
+  }
+
+  // Physics classes (PageScrollPhysics)
+  if (physics && typeof physics === 'object' && 'getClasses' in physics) {
+    const direction = isVertical ? 'vertical' : 'horizontal'
+    classes.push(...physics.getClasses(direction))
+  }
+
+  // Momentum scrolling for iOS (bouncing physics)
+  if (physics === ScrollPhysics.BOUNCING) {
+    // Use smooth scrolling behavior
+    classes.push('scroll-smooth')
+  }
+
+  return clsx(classes, paddingClasses, className)
 }
 
 /**
@@ -211,19 +226,32 @@ function buildContainerStyle(
  * Handles itemExtent (fixed item sizing) and provides semantic listitem role.
  * @param axis - Scroll direction to determine which dimension to fix
  * @param itemExtent - Fixed size for the item in the main axis
+ * @param physics - Physics to apply item-specific classes
  * @param children - Child content to wrap
  */
-const ItemWrap: React.FC<{ axis: Axis; itemExtent?: number; children: ReactNode }> = ({
-  axis,
-  itemExtent,
-  children,
-}) => {
-  const style: CSSProperties | undefined = itemExtent
-    ? axis === Axis.VERTICAL
-      ? { height: itemExtent }
-      : { width: itemExtent }
-    : undefined
-  return <li style={style}>{children}</li>
+const ItemWrap: React.FC<{
+  axis: Axis
+  itemExtent?: number
+  physics?: ScrollPhysics | PageScrollPhysics
+  children: ReactNode
+}> = ({ axis, itemExtent, physics, children }) => {
+  const classes: string[] = []
+
+  // Fixed size classes
+  if (itemExtent) {
+    if (axis === Axis.VERTICAL) {
+      classes.push(`h-[${itemExtent}px]`)
+    } else {
+      classes.push(`w-[${itemExtent}px]`)
+    }
+  }
+
+  // Physics item classes (for PageScrollPhysics snap alignment)
+  if (physics && typeof physics === 'object' && 'getItemClasses' in physics) {
+    classes.push(...physics.getItemClasses())
+  }
+
+  return <li className={clsx(classes)}>{children}</li>
 }
 
 /**
@@ -262,42 +290,26 @@ const ListViewBase = forwardRef(function ListView(
     [],
   )
 
-  const paddingStyle = useMemo(() => toPadding(padding), [padding])
-  const containerStyle = useMemo(
+  const paddingClasses = useMemo(() => toPaddingClasses(padding), [padding])
+  const containerClasses = useMemo(
     () =>
-      buildContainerStyle(
+      buildContainerClasses(
         scrollDirection,
         reverse,
         shrinkWrap,
         physics,
         clipBehavior,
-        paddingStyle,
-        style,
-        itemExtent,
+        paddingClasses,
+        className,
       ),
-    [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingStyle, style, itemExtent],
+    [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className],
   )
-
-  // Apply PageScrollPhysics if provided
-  useEffect(() => {
-    const element = elRef.current
-    if (!element || !physics || typeof physics === 'string') return
-
-    // Check if physics is PageScrollPhysics instance
-    if ('applyTo' in physics && typeof physics.applyTo === 'function') {
-      const direction = scrollDirection === Axis.HORIZONTAL ? 'horizontal' : 'vertical'
-      return physics.applyTo(element, direction, itemExtent)
-    }
-
-    // Return empty cleanup function for non-PageScrollPhysics cases
-    return () => {}
-  }, [physics, scrollDirection, itemExtent])
 
   return (
     <ul
       ref={elRef}
-      className={className}
-      style={containerStyle}
+      className={containerClasses}
+      style={style}
       aria-orientation={scrollDirection === Axis.VERTICAL ? 'vertical' : 'horizontal'}
       {...aria}
       data-primary={primary ? 'true' : undefined}
@@ -306,6 +318,7 @@ const ListViewBase = forwardRef(function ListView(
         <ItemWrap
           axis={scrollDirection}
           itemExtent={itemExtent}
+          physics={physics}
           key={(child as React.ReactElement)?.key ?? i}
         >
           {child}

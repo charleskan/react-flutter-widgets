@@ -856,21 +856,16 @@ declare function Spacer({ flex }: SpacerProps): react_jsx_runtime.JSX.Element;
 /**
  * Scroll physics utility classes for implementing various scrolling behaviors.
  * Inspired by Flutter's ScrollPhysics API to provide consistent behavior across platforms.
+ * Uses CSS scroll-snap for optimal performance.
  */
 /**
- * Base interface for scroll physics implementations
+ * Configuration for scroll physics implementations
  */
 interface ScrollPhysicsConfig {
-    /** Enable snapping behavior */
-    snapping?: boolean;
-    /** Snap threshold (0-1, where 0.5 means snap when scrolled more than half way) */
-    snapThreshold?: number;
-    /** Animation duration for snapping in milliseconds */
-    snapDuration?: number;
-    /** Animation easing function for snapping */
-    snapEasing?: string;
-    /** Item size for calculating snap positions */
-    itemSize?: number | (() => number);
+    /** Snap alignment for scroll-snap-align */
+    snapAlign?: 'start' | 'center' | 'end';
+    /** Snap strictness for scroll-snap-type */
+    snapType?: 'mandatory' | 'proximity';
 }
 /**
  * PageScrollPhysics implementation that provides page-like snapping behavior.
@@ -878,12 +873,13 @@ interface ScrollPhysicsConfig {
  *
  * This physics causes the scroll view to snap to item boundaries,
  * making it ideal for implementing carousel-like behavior.
+ * Uses CSS scroll-snap for optimal performance.
  *
  * @example
  * ```tsx
  * const physics = new PageScrollPhysics({
- *   snapThreshold: 0.3,
- *   snapDuration: 300
+ *   snapAlign: 'start',
+ *   snapType: 'mandatory'
  * })
  *
  * <ListView.builder
@@ -898,22 +894,20 @@ declare class PageScrollPhysics {
     readonly config: Required<ScrollPhysicsConfig>;
     constructor(config?: ScrollPhysicsConfig);
     /**
-     * Applies snapping behavior to a scroll element.
-     * This method sets up event listeners and handles the snapping logic.
+     * Returns the CSS classes needed for scroll snapping behavior.
+     * Uses CSS scroll-snap for optimal performance.
      *
-     * @param element - The scrollable element to apply physics to
      * @param direction - Scroll direction ('horizontal' or 'vertical')
-     * @param itemSize - Size of each item in pixels
+     * @returns Array of CSS classes to apply
      */
-    applyTo(element: HTMLElement, direction?: 'horizontal' | 'vertical', itemSize?: number): () => void;
+    getClasses(direction?: 'horizontal' | 'vertical'): string[];
     /**
-     * Snaps to the nearest item based on current scroll position
+     * Returns the CSS classes for scroll snap items.
+     * Applied to each child item in the scroll container.
+     *
+     * @returns Array of CSS classes for items
      */
-    private snapToNearestItem;
-    /**
-     * Calculates the item size automatically based on the first child element
-     */
-    static calculateItemSize(element: HTMLElement, direction?: 'horizontal' | 'vertical'): number;
+    getItemClasses(): string[];
     /**
      * Creates a PageScrollPhysics instance with default settings optimized for carousels
      */

@@ -46,5 +46,8 @@
   "bugs": {
     "url": "https://github.com/charleskan/react-flutter-widgets/issues"
   },
-  "homepage": "https://github.com/charleskan/react-flutter-widgets#readme"
+  "homepage": "https://github.com/charleskan/react-flutter-widgets#readme",
+  "dependencies": {
+    "clsx": "^2.1.1"
+  }
 }
