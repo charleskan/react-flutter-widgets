@@ -1207,10 +1207,15 @@ var Decoration;
         if (decoration.color)
             styles.backgroundColor = decoration.color;
         if (decoration.borderRadius) {
-            styles.borderRadius =
-                typeof decoration.borderRadius === 'number'
-                    ? `${decoration.borderRadius}px`
-                    : decoration.borderRadius;
+            if (typeof decoration.borderRadius === 'object' && 'toCSS' in decoration.borderRadius) {
+                styles.borderRadius = decoration.borderRadius.toCSS();
+            }
+            else if (typeof decoration.borderRadius === 'number') {
+                styles.borderRadius = `${decoration.borderRadius}px`;
+            }
+            else {
+                styles.borderRadius = decoration.borderRadius;
+            }
         }
         if (decoration.borderWidth && decoration.borderWidth > 0) {
             styles.borderWidth = `${decoration.borderWidth}px`;

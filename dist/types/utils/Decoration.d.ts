@@ -1,9 +1,10 @@
 import type { CSSProperties } from 'react';
 import type { Gradient } from './Gradient';
+import type { BorderRadius } from './BorderRadius';
 export type Clip = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
 export interface BoxDecoration {
     color?: string;
-    borderRadius?: number | string;
+    borderRadius?: BorderRadius | number | string;
     borderWidth?: number;
     borderColor?: string;
     borderStyle?: 'solid' | 'dashed' | 'dotted';

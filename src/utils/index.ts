@@ -22,3 +22,4 @@ export {
   SweepGradient,
   type GradientStop,
 } from './Gradient'
+export { BorderRadius, Radius } from './BorderRadius'

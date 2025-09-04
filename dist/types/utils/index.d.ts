@@ -4,4 +4,5 @@ export { BoxConstraints } from './BoxConstraints';
 export { Matrix4, type Matrix4 as Matrix4Interface } from './Matrix4';
 export { Decoration, type BoxDecoration, type Clip } from './Decoration';
 export { Gradient, LinearGradient, RadialGradient, SweepGradient, type GradientStop, } from './Gradient';
+export { BorderRadius, Radius } from './BorderRadius';
 //# sourceMappingURL=index.d.ts.map
