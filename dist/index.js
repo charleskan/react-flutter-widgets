@@ -931,6 +931,100 @@ exports.BoxConstraints = void 0;
 exports.Decoration = void 0;
 (function (Decoration) {
     /**
+     * Converts BoxFit to CSS object-fit
+     */
+    function boxFitToCSS(fit) {
+        switch (fit) {
+            case 'fill':
+                return 'fill';
+            case 'contain':
+                return 'contain';
+            case 'cover':
+                return 'cover';
+            case 'fitWidth':
+                return 'scale-down';
+            case 'fitHeight':
+                return 'scale-down';
+            case 'none':
+                return 'none';
+            case 'scaleDown':
+                return 'scale-down';
+            default:
+                return 'cover';
+        }
+    }
+    /**
+     * Converts ImageRepeat to CSS background-repeat
+     */
+    function imageRepeatToCSS(repeat) {
+        switch (repeat) {
+            case 'repeat':
+                return 'repeat';
+            case 'repeatX':
+                return 'repeat-x';
+            case 'repeatY':
+                return 'repeat-y';
+            case 'noRepeat':
+                return 'no-repeat';
+            default:
+                return 'no-repeat';
+        }
+    }
+    /**
+     * Converts DecorationImage to CSS properties
+     */
+    function decorationImageToCSS(image) {
+        const styles = {};
+        // Set background image
+        styles.backgroundImage = `url(${image.image})`;
+        // Set background size based on fit
+        if (image.fit) {
+            if (image.fit === 'fitWidth') {
+                styles.backgroundSize = '100% auto';
+            }
+            else if (image.fit === 'fitHeight') {
+                styles.backgroundSize = 'auto 100%';
+            }
+            else {
+                // For other fit values that correspond directly to CSS
+                const cssObjectFit = boxFitToCSS(image.fit);
+                if (cssObjectFit === 'fill') {
+                    styles.backgroundSize = '100% 100%';
+                }
+                else if (cssObjectFit === 'contain') {
+                    styles.backgroundSize = 'contain';
+                }
+                else if (cssObjectFit === 'cover') {
+                    styles.backgroundSize = 'cover';
+                }
+                else if (cssObjectFit === 'none') {
+                    styles.backgroundSize = 'auto';
+                }
+                else {
+                    styles.backgroundSize = 'contain';
+                }
+            }
+        }
+        else {
+            styles.backgroundSize = 'cover';
+        }
+        // Set background position based on alignment
+        if (image.alignment) {
+            const alignment = alignmentToCSS(image.alignment);
+            styles.backgroundPosition = `${alignment.x} ${alignment.y}`;
+        }
+        else {
+            styles.backgroundPosition = 'center center';
+        }
+        // Set background repeat
+        styles.backgroundRepeat = imageRepeatToCSS(image.repeat);
+        // Set opacity if specified
+        if (image.opacity !== undefined && image.opacity < 1) {
+            styles.opacity = image.opacity;
+        }
+        return styles;
+    }
+    /**
      * Converts BoxDecoration to CSS properties
      */
     function toCSS(decoration) {
@@ -957,11 +1051,24 @@ exports.Decoration = void 0;
         }
         if (decoration.boxShadow)
             styles.boxShadow = decoration.boxShadow;
+        // Handle background layers: color -> gradient -> image (in CSS stacking order)
+        // Image goes on top (first in CSS background shorthand)
+        if (decoration.image) {
+            const imageStyles = decorationImageToCSS(decoration.image);
+            Object.assign(styles, imageStyles);
+        }
+        // Gradient goes in the middle
         if (decoration.gradient) {
-            styles.background = decoration.gradient.toCSS();
-            // If both color and gradient are specified, gradient takes precedence
-            if (decoration.color) {
-                styles.backgroundColor = 'transparent';
+            if (decoration.image) {
+                // If both image and gradient, use multiple backgrounds
+                const currentBg = styles.backgroundImage;
+                styles.backgroundImage = `${currentBg}, ${decoration.gradient.toCSS()}`;
+            }
+            else {
+                styles.background = decoration.gradient.toCSS();
+                if (decoration.color) {
+                    styles.backgroundColor = 'transparent';
+                }
             }
         }
         return styles;

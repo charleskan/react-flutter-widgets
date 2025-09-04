@@ -244,8 +244,32 @@ declare class SweepGradient extends Gradient {
 }
 
 type Clip$1 = 'none' | 'hardEdge' | 'antiAlias' | 'antiAliasWithSaveLayer';
+/**
+ * How the image should be inscribed into the box (Flutter BoxFit equivalent)
+ */
+type BoxFit = 'fill' | 'contain' | 'cover' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
+/**
+ * How to paint any portions of the box that would not otherwise be covered by the image
+ */
+type ImageRepeat = 'repeat' | 'repeatX' | 'repeatY' | 'noRepeat';
+/**
+ * An image for a box decoration (Flutter DecorationImage equivalent)
+ */
+interface DecorationImage {
+    /** The image to be painted into the decoration */
+    image: string;
+    /** How the image should be inscribed into the box */
+    fit?: BoxFit;
+    /** How to align the image within its bounds */
+    alignment?: AlignmentGeometry;
+    /** How to paint any portions of the box that would not otherwise be covered by the image */
+    repeat?: ImageRepeat;
+    /** If non-null, the value is multiplied with the opacity of each image pixel before painting */
+    opacity?: number;
+}
 interface BoxDecoration {
     color?: string;
+    image?: DecorationImage;
     borderRadius?: BorderRadius | number | string;
     borderWidth?: number;
     borderColor?: string;
@@ -1976,4 +2000,4 @@ interface TextProps {
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
 export { Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export type { AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BoxFit, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DecorationImage, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, ImageRepeat, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };

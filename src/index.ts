@@ -152,7 +152,14 @@ export {
 export { EdgeInsets } from './utils/EdgeInsets'
 export { BoxConstraints } from './utils/BoxConstraints'
 export { Matrix4, type Matrix4 as Matrix4Interface } from './utils/Matrix4'
-export { Decoration, type BoxDecoration, type Clip } from './utils/Decoration'
+export {
+  Decoration,
+  type BoxDecoration,
+  type DecorationImage,
+  type BoxFit,
+  type ImageRepeat,
+  type Clip,
+} from './utils/Decoration'
 export {
   Gradient,
   LinearGradient,

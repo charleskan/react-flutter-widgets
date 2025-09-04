@@ -32,7 +32,7 @@ export { Alignment, AlignmentDirectional, alignmentToFlexClasses, alignmentToCSS
 export { EdgeInsets } from './utils/EdgeInsets';
 export { BoxConstraints } from './utils/BoxConstraints';
 export { Matrix4, type Matrix4 as Matrix4Interface } from './utils/Matrix4';
-export { Decoration, type BoxDecoration, type Clip } from './utils/Decoration';
+export { Decoration, type BoxDecoration, type DecorationImage, type BoxFit, type ImageRepeat, type Clip, } from './utils/Decoration';
 export { Gradient, LinearGradient, RadialGradient, SweepGradient, type GradientStop, } from './utils/Gradient';
 export { BorderRadius, Radius } from './utils/BorderRadius';
 export { MainAxisAlignment, CrossAxisAlignment, MainAxisSize, VerticalDirection, } from './types/Layout';
