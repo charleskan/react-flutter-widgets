@@ -1,6 +1,5 @@
 import { clsx } from 'clsx'
-import type React from 'react'
-import {
+import React, {
   type CSSProperties,
   type ForwardedRef,
   type ReactNode,
@@ -9,7 +8,9 @@ import {
   useMemo,
   useRef,
 } from 'react'
+import { type AlignmentGeometry, alignmentToCSS } from '../../utils/Alignment'
 import type { PageScrollPhysics } from '../../utils/ScrollPhysics'
+import { Align } from '../layout/Align'
 
 /**
  * Defines the scroll direction for ListView components.
@@ -148,6 +149,42 @@ function toPaddingClasses(p?: EdgeInsets): string {
 }
 
 /**
+ * Converts Flutter Alignment to Tailwind flexbox classes.
+ * @param alignment - Flutter AlignmentGeometry object
+ * @returns Array of Tailwind classes for flexbox alignment
+ */
+function alignmentToFlexClasses(alignment: AlignmentGeometry): string[] {
+  const classes = ['flex']
+  const css = alignmentToCSS(alignment)
+
+  // Handle horizontal alignment (justify-content)
+  if (css.x === '0%') {
+    classes.push('justify-start')
+  } else if (css.x === '50%') {
+    classes.push('justify-center')
+  } else if (css.x === '100%') {
+    classes.push('justify-end')
+  } else {
+    // For custom alignments, fallback to center
+    classes.push('justify-center')
+  }
+
+  // Handle vertical alignment (align-items)
+  if (css.y === '0%') {
+    classes.push('items-start')
+  } else if (css.y === '50%') {
+    classes.push('items-center')
+  } else if (css.y === '100%') {
+    classes.push('items-end')
+  } else {
+    // For custom alignments, fallback to center
+    classes.push('items-center')
+  }
+
+  return classes
+}
+
+/**
  * Generates container classes for ListView using Tailwind CSS.
  * This is where the core scrolling logic is implemented.
  * @param axis - Scroll direction (vertical or horizontal)
@@ -223,7 +260,7 @@ function buildContainerClasses(
 
 /**
  * Wrapper component for ListView items.
- * Handles itemExtent (fixed item sizing) and provides semantic listitem role.
+ * Handles itemExtent (fixed item sizing), Align component detection, and provides semantic listitem role.
  * @param axis - Scroll direction to determine which dimension to fix
  * @param itemExtent - Fixed size for the item in the main axis
  * @param physics - Physics to apply item-specific classes
@@ -236,6 +273,23 @@ const ItemWrap: React.FC<{
   children: ReactNode
 }> = ({ axis, itemExtent, physics, children }) => {
   const classes: string[] = []
+
+  // Check if child is an Align component
+  const isAlignComponent = React.isValidElement(children) && children.type === Align
+
+  if (isAlignComponent) {
+    // Extract alignment from Align component props
+    const alignProps = children.props as { alignment?: AlignmentGeometry }
+    const alignment = alignProps.alignment
+
+    if (alignment) {
+      // Add flexbox classes for alignment
+      classes.push(...alignmentToFlexClasses(alignment))
+    } else {
+      // Default to center if no alignment specified
+      classes.push('flex', 'items-center', 'justify-center')
+    }
+  }
 
   // Fixed size classes
   if (itemExtent) {
@@ -251,7 +305,13 @@ const ItemWrap: React.FC<{
     classes.push(...physics.getItemClasses())
   }
 
-  return <li className={clsx(classes)}>{children}</li>
+  // Render content: if it's an Align component, render its children directly
+  const content = isAlignComponent
+    ? (children as React.ReactElement).props.children ||
+      (children as React.ReactElement).props.child
+    : children
+
+  return <li className={clsx(classes)}>{content}</li>
 }
 
 /**

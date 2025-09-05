@@ -815,7 +815,7 @@ function alignmentToCSS(alignment) {
 /**
  * Converts alignment to CSS justify-content and align-items classes for flexbox
  */
-function alignmentToFlexClasses(alignment) {
+function alignmentToFlexClasses$1(alignment) {
     const resolved = alignment.resolve(null);
     const classes = ['flex'];
     // Justify content (x-axis)
@@ -1258,7 +1258,7 @@ function Container(props) {
         borderStyle: decoration?.borderStyle || borderStyle,
     };
     // Build Tailwind classes
-    const alignmentClasses = alignment ? alignmentToFlexClasses(alignment) : [];
+    const alignmentClasses = alignment ? alignmentToFlexClasses$1(alignment) : [];
     const clipClasses = Decoration.clipToClasses(clipBehavior);
     // Build CSS styles for properties that don't have good Tailwind equivalents
     const constraintStyles = BoxConstraints.toCSS(constraints);
@@ -1662,6 +1662,44 @@ function toPaddingClasses(p) {
     return classes.join(' ');
 }
 /**
+ * Converts Flutter Alignment to Tailwind flexbox classes.
+ * @param alignment - Flutter AlignmentGeometry object
+ * @returns Array of Tailwind classes for flexbox alignment
+ */
+function alignmentToFlexClasses(alignment) {
+    const classes = ['flex'];
+    const css = alignmentToCSS(alignment);
+    // Handle horizontal alignment (justify-content)
+    if (css.x === '0%') {
+        classes.push('justify-start');
+    }
+    else if (css.x === '50%') {
+        classes.push('justify-center');
+    }
+    else if (css.x === '100%') {
+        classes.push('justify-end');
+    }
+    else {
+        // For custom alignments, fallback to center
+        classes.push('justify-center');
+    }
+    // Handle vertical alignment (align-items)
+    if (css.y === '0%') {
+        classes.push('items-start');
+    }
+    else if (css.y === '50%') {
+        classes.push('items-center');
+    }
+    else if (css.y === '100%') {
+        classes.push('items-end');
+    }
+    else {
+        // For custom alignments, fallback to center
+        classes.push('items-center');
+    }
+    return classes;
+}
+/**
  * Generates container classes for ListView using Tailwind CSS.
  * This is where the core scrolling logic is implemented.
  * @param axis - Scroll direction (vertical or horizontal)
@@ -1723,7 +1761,7 @@ function buildContainerClasses(axis, reverse, shrinkWrap, physics, _clip, paddin
 }
 /**
  * Wrapper component for ListView items.
- * Handles itemExtent (fixed item sizing) and provides semantic listitem role.
+ * Handles itemExtent (fixed item sizing), Align component detection, and provides semantic listitem role.
  * @param axis - Scroll direction to determine which dimension to fix
  * @param itemExtent - Fixed size for the item in the main axis
  * @param physics - Physics to apply item-specific classes
@@ -1731,6 +1769,21 @@ function buildContainerClasses(axis, reverse, shrinkWrap, physics, _clip, paddin
  */
 const ItemWrap = ({ axis, itemExtent, physics, children }) => {
     const classes = [];
+    // Check if child is an Align component
+    const isAlignComponent = require$$0.isValidElement(children) && children.type === Align;
+    if (isAlignComponent) {
+        // Extract alignment from Align component props
+        const alignProps = children.props;
+        const alignment = alignProps.alignment;
+        if (alignment) {
+            // Add flexbox classes for alignment
+            classes.push(...alignmentToFlexClasses(alignment));
+        }
+        else {
+            // Default to center if no alignment specified
+            classes.push('flex', 'items-center', 'justify-center');
+        }
+    }
     // Fixed size classes
     if (itemExtent) {
         if (axis === Axis.VERTICAL) {
@@ -1744,7 +1797,12 @@ const ItemWrap = ({ axis, itemExtent, physics, children }) => {
     if (physics && typeof physics === 'object' && 'getItemClasses' in physics) {
         classes.push(...physics.getItemClasses());
     }
-    return jsxRuntimeExports.jsx("li", { className: clsx(classes), children: children });
+    // Render content: if it's an Align component, render its children directly
+    const content = isAlignComponent
+        ? children.props.children ||
+            children.props.child
+        : children;
+    return jsxRuntimeExports.jsx("li", { className: clsx(classes), children: content });
 };
 /**
  * Base ListView component implementation.
@@ -4531,5 +4589,5 @@ function createPageScrollPhysics(preset = 'carousel', config) {
     }
 }
 
-export { Align, Alignment$1 as Alignment, AlignmentDirectional, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, PageScrollPhysics, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createPageScrollPhysics, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export { Align, Alignment$1 as Alignment, AlignmentDirectional, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView$1 as ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, PageScrollPhysics, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses$1 as alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createPageScrollPhysics, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
 //# sourceMappingURL=index.esm.js.map

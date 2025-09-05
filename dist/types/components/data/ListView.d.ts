@@ -1,5 +1,4 @@
-import type React from 'react';
-import { type CSSProperties, type ReactNode } from 'react';
+import React, { type CSSProperties, type ReactNode } from 'react';
 import type { PageScrollPhysics } from '../../utils/ScrollPhysics';
 /**
  * Defines the scroll direction for ListView components.
