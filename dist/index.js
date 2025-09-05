@@ -1544,10 +1544,10 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
             alignItems: alignmentCSS.y === '50%' ? 'center' : alignmentCSS.y === '0%' ? 'flex-start' : 'flex-end',
             justifyContent: alignmentCSS.x === '50%' ? 'center' : alignmentCSS.x === '0%' ? 'flex-start' : 'flex-end',
         };
-        // Default behavior: fit content, not fill space (like Flutter)
-        baseStyles.width = 'auto';
-        baseStyles.height = 'auto';
-        baseStyles.flexShrink = 0; // Don't shrink in flex containers
+        // Default behavior: fill parent container space (like Flutter)
+        baseStyles.width = '100%';
+        baseStyles.height = '100%';
+        baseStyles.flexShrink = 1; // Allow shrinking to fit parent constraints
         // Handle size factors - these override the defaults
         if (widthFactor != null) {
             baseStyles.width = 'fit-content';
