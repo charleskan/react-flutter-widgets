@@ -1542,21 +1542,23 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
             alignItems: alignmentCSS.y === '50%' ? 'center' : alignmentCSS.y === '0%' ? 'flex-start' : 'flex-end',
             justifyContent: alignmentCSS.x === '50%' ? 'center' : alignmentCSS.x === '0%' ? 'flex-start' : 'flex-end',
         };
-        // Handle size factors
-        if (widthFactor != null || heightFactor != null) {
-            // When size factors are specified, we need to measure the child
-            // For now, we'll use a simpler approach with CSS
-            if (widthFactor != null) {
-                baseStyles.width = 'fit-content';
-            }
-            if (heightFactor != null) {
-                baseStyles.height = 'fit-content';
-            }
+        // Default behavior: fit content, not fill space (like Flutter)
+        baseStyles.width = 'auto';
+        baseStyles.height = 'auto';
+        baseStyles.flexShrink = 0; // Don't shrink in flex containers
+        // Handle size factors - these override the defaults
+        if (widthFactor != null) {
+            baseStyles.width = 'fit-content';
+            baseStyles.transform = `scaleX(${widthFactor})`;
+            baseStyles.transformOrigin = 'left center';
         }
-        else {
-            // Default behavior: fill available space
-            baseStyles.width = '100%';
-            baseStyles.height = '100%';
+        if (heightFactor != null) {
+            baseStyles.height = 'fit-content';
+            const existingTransform = baseStyles.transform || '';
+            baseStyles.transform = existingTransform
+                ? `${existingTransform} scaleY(${heightFactor})`
+                : `scaleY(${heightFactor})`;
+            baseStyles.transformOrigin = widthFactor != null ? 'left top' : 'center top';
         }
         // If the alignment is not exactly center/start/end, use more precise positioning
         const needsPreciseAlignment = !['0%', '50%', '100%'].includes(alignmentCSS.x) ||
@@ -1572,7 +1574,7 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
         // Check if we need precise positioning
         const needsPreciseAlignment = !['0%', '50%', '100%'].includes(alignmentCSS.x) ||
             !['0%', '50%', '100%'].includes(alignmentCSS.y);
-        if (!needsPreciseAlignment && widthFactor == null && heightFactor == null) {
+        if (!needsPreciseAlignment) {
             return undefined;
         }
         const childStyles = {};
@@ -1583,15 +1585,9 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
             childStyles.top = alignmentCSS.y;
             childStyles.transform = `translate(-${alignmentCSS.x}, -${alignmentCSS.y})`;
         }
-        // Handle size factors
-        if (widthFactor != null) {
-            childStyles.width = `${widthFactor * 100}%`;
-        }
-        if (heightFactor != null) {
-            childStyles.height = `${heightFactor * 100}%`;
-        }
+        // Size factors are handled in containerStyles, not here
         return childStyles;
-    }, [alignment, widthFactor, heightFactor]);
+    }, [alignment]);
     const combinedStyle = useMemo(() => ({
         ...containerStyles,
         ...style,
