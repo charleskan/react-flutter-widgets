@@ -294,15 +294,20 @@ const ItemWrap: React.FC<{
   // Fixed size classes
   if (itemExtent) {
     if (axis === Axis.VERTICAL) {
-      classes.push(`h-[${itemExtent}px]`)
+      classes.push(`h-[${itemExtent}px]`, 'flex-shrink-0')
     } else {
-      classes.push(`w-[${itemExtent}px]`)
+      classes.push(`w-[${itemExtent}px]`, 'flex-shrink-0')
     }
   }
 
   // Physics item classes (for PageScrollPhysics snap alignment)
   if (physics && typeof physics === 'object' && 'getItemClasses' in physics) {
     classes.push(...physics.getItemClasses())
+  }
+
+  // Ensure consistent sizing for snap behavior
+  if (!itemExtent && physics && typeof physics === 'object' && 'getItemClasses' in physics) {
+    classes.push('flex-shrink-0')
   }
 
   // Render content: if it's an Align component, render its children directly
