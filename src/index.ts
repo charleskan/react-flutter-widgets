@@ -12,6 +12,8 @@ export type { DividerProps } from './components/layout/Divider'
 export { default as Row } from './components/layout/Row'
 export { default as Column } from './components/layout/Column'
 export { default as Flex } from './components/layout/Flex'
+export { default as Align } from './components/layout/Align'
+export type { AlignProps } from './components/layout/Align'
 export type {
   RowProps,
   ColumnProps,
