@@ -1510,10 +1510,16 @@ function Flex(props) {
  *
  * @example
  * ```tsx
- * // Align to top-right corner
+ * // React-style children prop
  * <Align alignment={Alignment.topRight}>
  *   <div>Top Right Content</div>
  * </Align>
+ *
+ * // Flutter-style child prop
+ * <Align
+ *   alignment={Alignment.center}
+ *   child={<div>Centered content</div>}
+ * />
  *
  * // Custom alignment with size factors
  * <Align
@@ -1525,7 +1531,9 @@ function Flex(props) {
  * </Align>
  * ```
  */
-function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, child, className, style, }) {
+function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, child, children, className, style, }) {
+    // Support both child (Flutter-style) and children (React-style)
+    const content = child ?? children;
     const containerStyles = require$$0.useMemo(() => {
         const alignmentCSS = alignmentToCSS(alignment);
         // Base container styles
@@ -1590,8 +1598,8 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
         ...containerStyles,
         ...style,
     }), [containerStyles, style]);
-    return (jsxRuntimeExports.jsx("div", { className: className, style: combinedStyle, children: child != null &&
-            (childWrapperStyles ? jsxRuntimeExports.jsx("div", { style: childWrapperStyles, children: child }) : child) }));
+    return (jsxRuntimeExports.jsx("div", { className: className, style: combinedStyle, children: content != null &&
+            (childWrapperStyles ? jsxRuntimeExports.jsx("div", { style: childWrapperStyles, children: content }) : content) }));
 }
 
 function SizedBox({ width, height }) {

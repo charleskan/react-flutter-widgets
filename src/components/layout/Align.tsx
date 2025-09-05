@@ -13,8 +13,10 @@ export interface AlignProps {
   widthFactor?: number
   /** If non-null, sets the height to the child's height multiplied by this factor */
   heightFactor?: number
-  /** The child widget to be aligned */
+  /** The child widget to be aligned (Flutter-style prop) */
   child?: ReactNode
+  /** React-style children prop (alternative to child) */
+  children?: ReactNode
   /** Additional CSS classes */
   className?: string
   /** Additional inline styles */
@@ -29,10 +31,16 @@ export interface AlignProps {
  *
  * @example
  * ```tsx
- * // Align to top-right corner
+ * // React-style children prop
  * <Align alignment={Alignment.topRight}>
  *   <div>Top Right Content</div>
  * </Align>
+ *
+ * // Flutter-style child prop
+ * <Align
+ *   alignment={Alignment.center}
+ *   child={<div>Centered content</div>}
+ * />
  *
  * // Custom alignment with size factors
  * <Align
@@ -49,9 +57,12 @@ export function Align({
   widthFactor,
   heightFactor,
   child,
+  children,
   className,
   style,
 }: AlignProps): React.JSX.Element {
+  // Support both child (Flutter-style) and children (React-style)
+  const content = child ?? children
   const containerStyles = useMemo((): CSSProperties => {
     const alignmentCSS = alignmentToCSS(alignment)
 
@@ -138,8 +149,8 @@ export function Align({
 
   return (
     <div className={className} style={combinedStyle}>
-      {child != null &&
-        (childWrapperStyles ? <div style={childWrapperStyles}>{child}</div> : child)}
+      {content != null &&
+        (childWrapperStyles ? <div style={childWrapperStyles}>{content}</div> : content)}
     </div>
   )
 }

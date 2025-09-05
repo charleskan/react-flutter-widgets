@@ -811,8 +811,10 @@ interface AlignProps {
     widthFactor?: number;
     /** If non-null, sets the height to the child's height multiplied by this factor */
     heightFactor?: number;
-    /** The child widget to be aligned */
+    /** The child widget to be aligned (Flutter-style prop) */
     child?: ReactNode;
+    /** React-style children prop (alternative to child) */
+    children?: ReactNode;
     /** Additional CSS classes */
     className?: string;
     /** Additional inline styles */
@@ -826,10 +828,16 @@ interface AlignProps {
  *
  * @example
  * ```tsx
- * // Align to top-right corner
+ * // React-style children prop
  * <Align alignment={Alignment.topRight}>
  *   <div>Top Right Content</div>
  * </Align>
+ *
+ * // Flutter-style child prop
+ * <Align
+ *   alignment={Alignment.center}
+ *   child={<div>Centered content</div>}
+ * />
  *
  * // Custom alignment with size factors
  * <Align
@@ -841,7 +849,7 @@ interface AlignProps {
  * </Align>
  * ```
  */
-declare function Align({ alignment, widthFactor, heightFactor, child, className, style, }: AlignProps): React$1.JSX.Element;
+declare function Align({ alignment, widthFactor, heightFactor, child, children, className, style, }: AlignProps): React$1.JSX.Element;
 
 /**
  * SizedBox component equivalent to Flutter's SizedBox widget.
