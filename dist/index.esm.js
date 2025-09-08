@@ -1787,19 +1787,15 @@ const ItemWrap = ({ axis, itemExtent, physics, children }) => {
     // Fixed size classes
     if (itemExtent) {
         if (axis === Axis.VERTICAL) {
-            classes.push(`h-[${itemExtent}px]`, 'flex-shrink-0');
+            classes.push(`h-[${itemExtent}px]`);
         }
         else {
-            classes.push(`w-[${itemExtent}px]`, 'flex-shrink-0');
+            classes.push(`w-[${itemExtent}px]`);
         }
     }
     // Physics item classes (for PageScrollPhysics snap alignment)
     if (physics && typeof physics === 'object' && 'getItemClasses' in physics) {
         classes.push(...physics.getItemClasses());
-    }
-    // Ensure consistent sizing for snap behavior
-    if (!itemExtent && physics && typeof physics === 'object' && 'getItemClasses' in physics) {
-        classes.push('flex-shrink-0');
     }
     // Render content: if it's an Align component, render its children directly
     const content = isAlignComponent
@@ -4563,7 +4559,7 @@ class PageScrollPhysics {
      */
     static carousel(config = {}) {
         return new PageScrollPhysics({
-            snapAlign: 'center', // Changed to center for better carousel UX
+            snapAlign: 'start',
             snapType: 'mandatory',
             ...config,
         });

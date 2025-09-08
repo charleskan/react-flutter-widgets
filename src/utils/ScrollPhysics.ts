@@ -105,7 +105,7 @@ export class PageScrollPhysics {
    */
   public static carousel(config: Partial<ScrollPhysicsConfig> = {}): PageScrollPhysics {
     return new PageScrollPhysics({
-      snapAlign: 'center', // Changed to center for better carousel UX
+      snapAlign: 'start',
       snapType: 'mandatory',
       ...config,
     })
