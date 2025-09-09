@@ -1,6 +1,6 @@
 'use strict';
 
-var React = require('react');
+var require$$0 = require('react');
 
 var jsxRuntime = {exports: {}};
 
@@ -339,7 +339,7 @@ function requireReactJsxRuntime_development () {
 	        node._store &&
 	        (node._store.validated = 1);
 	    }
-	    var React$1 = React,
+	    var React = require$$0,
 	      REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"),
 	      REACT_PORTAL_TYPE = Symbol.for("react.portal"),
 	      REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"),
@@ -355,7 +355,7 @@ function requireReactJsxRuntime_development () {
 	      REACT_ACTIVITY_TYPE = Symbol.for("react.activity"),
 	      REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"),
 	      ReactSharedInternals =
-	        React$1.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
+	        React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
 	      hasOwnProperty = Object.prototype.hasOwnProperty,
 	      isArrayImpl = Array.isArray,
 	      createTask = console.createTask
@@ -363,15 +363,15 @@ function requireReactJsxRuntime_development () {
 	        : function () {
 	            return null;
 	          };
-	    React$1 = {
+	    React = {
 	      react_stack_bottom_frame: function (callStackForError) {
 	        return callStackForError();
 	      }
 	    };
 	    var specialPropKeyWarningShown;
 	    var didWarnAboutElementRef = {};
-	    var unknownOwnerDebugStack = React$1.react_stack_bottom_frame.bind(
-	      React$1,
+	    var unknownOwnerDebugStack = React.react_stack_bottom_frame.bind(
+	      React,
 	      UnknownOwner
 	    )();
 	    var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
@@ -1334,7 +1334,7 @@ function Container(props) {
  * ```
  */
 const Divider = ({ height = 16, thickness = 1, indent = 0, endIndent = 0, color = '#e5e7eb', radius = 0, className, }) => {
-    const { containerStyle, lineStyle } = React.useMemo(() => {
+    const { containerStyle, lineStyle } = require$$0.useMemo(() => {
         // Calculate padding for the container to achieve the desired height
         const lineHeight = thickness;
         const totalPadding = Math.max(0, height - lineHeight);
@@ -1534,7 +1534,7 @@ function Flex(props) {
 function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, child, children, className, style, }) {
     // Support both child (Flutter-style) and children (React-style)
     const content = child ?? children;
-    const containerStyles = React.useMemo(() => {
+    const containerStyles = require$$0.useMemo(() => {
         const alignmentCSS = alignmentToCSS(alignment);
         // Base container styles
         const baseStyles = {
@@ -1568,7 +1568,7 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
         }
         return baseStyles;
     }, [alignment, widthFactor, heightFactor]);
-    const childWrapperStyles = React.useMemo(() => {
+    const childWrapperStyles = require$$0.useMemo(() => {
         const alignmentCSS = alignmentToCSS(alignment);
         // Check if we need precise positioning
         const needsPreciseAlignment = !['0%', '50%', '100%'].includes(alignmentCSS.x) ||
@@ -1587,7 +1587,7 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
         // Size factors are handled in containerStyles, not here
         return childStyles;
     }, [alignment]);
-    const combinedStyle = React.useMemo(() => ({
+    const combinedStyle = require$$0.useMemo(() => ({
         ...containerStyles,
         ...style,
     }), [containerStyles, style]);
@@ -1773,17 +1773,7 @@ function buildContainerClasses(axis, reverse, shrinkWrap, physics, _clip, paddin
 const ItemWrap = ({ axis, itemExtent, physics, children }) => {
     const classes = [];
     // Check if child is an Align component
-    const isAlignComponent = React.isValidElement(children) && children.type === Align;
-    // Debug logging (remove in production)
-    if (process.env.NODE_ENV === 'development') {
-        console.log('ItemWrap debug:', {
-            isValidElement: React.isValidElement(children),
-            childType: React.isValidElement(children) ? children.type : 'not valid element',
-            alignType: Align,
-            typeMatch: React.isValidElement(children) ? children.type === Align : false,
-            isAlignComponent,
-        });
-    }
+    const isAlignComponent = require$$0.isValidElement(children) && children.type === Align;
     if (isAlignComponent) {
         // Extract alignment from Align component props
         const alignProps = children.props;
@@ -1827,14 +1817,14 @@ const ItemWrap = ({ axis, itemExtent, physics, children }) => {
  * @param props - ListView properties
  * @param ref - Forward ref for imperative operations
  */
-const ListViewBase = React.forwardRef(function ListView({ children = [], scrollDirection = exports.Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = exports.ScrollPhysics.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
-    const elRef = React.useRef(null);
-    React.useImperativeHandle(ref, () => ({
+const ListViewBase = require$$0.forwardRef(function ListView({ children = [], scrollDirection = exports.Axis.VERTICAL, reverse = false, shrinkWrap = false, primary, physics = exports.ScrollPhysics.DEFAULT, padding, itemExtent, prototypeItem, clipBehavior = 'visible', className, style, semanticChildCount, ...aria }, ref) {
+    const elRef = require$$0.useRef(null);
+    require$$0.useImperativeHandle(ref, () => ({
         scrollTo: (opts) => elRef.current?.scrollTo(opts),
         getScrollElement: () => elRef.current,
     }), []);
-    const paddingClasses = React.useMemo(() => toPaddingClasses(padding), [padding]);
-    const containerClasses = React.useMemo(() => buildContainerClasses(scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className), [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className]);
+    const paddingClasses = require$$0.useMemo(() => toPaddingClasses(padding), [padding]);
+    const containerClasses = require$$0.useMemo(() => buildContainerClasses(scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className), [scrollDirection, reverse, shrinkWrap, physics, clipBehavior, paddingClasses, className]);
     return (jsxRuntimeExports.jsx("ul", { ref: elRef, className: containerClasses, style: style, "aria-orientation": scrollDirection === exports.Axis.VERTICAL ? 'vertical' : 'horizontal', ...aria, "data-primary": primary ? 'true' : undefined, children: children?.map((child, i) => (jsxRuntimeExports.jsx(ItemWrap, { axis: scrollDirection, itemExtent: itemExtent, physics: physics, children: child }, child?.key ?? i))) }));
 });
 /**
@@ -1845,7 +1835,7 @@ const ListViewBase = React.forwardRef(function ListView({ children = [], scrollD
  * @param ref - Forward ref for imperative operations
  */
 function Builder({ itemCount, itemBuilder, separatorBuilder, ...rest }, ref) {
-    const items = React.useMemo(() => {
+    const items = require$$0.useMemo(() => {
         const out = [];
         for (let i = 0; i < itemCount; i++) {
             out.push(itemBuilder(i));
@@ -1882,8 +1872,8 @@ function Builder({ itemCount, itemBuilder, separatorBuilder, ...rest }, ref) {
  * ```
  */
 const ListView$1 = Object.assign(ListViewBase, {
-    builder: React.forwardRef((p, ref) => Builder(p, ref)),
-    separated: React.forwardRef((p, ref) => Builder(p, ref)),
+    builder: require$$0.forwardRef((p, ref) => Builder(p, ref)),
+    separated: require$$0.forwardRef((p, ref) => Builder(p, ref)),
 });
 
 class EdgeInsets {
@@ -2178,16 +2168,16 @@ var ListView;
 
 function InkWell(props) {
     const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = 'rgba(0, 0, 0, 0.12)', hoverColor = 'rgba(0, 0, 0, 0.04)', focusColor = 'rgba(0, 0, 0, 0.12)', highlightColor = 'rgba(0, 0, 0, 0.08)', borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = '', style = {}, role = 'button', tabIndex = 0, } = props;
-    const [isHovered, setIsHovered] = React.useState(false);
-    const [isFocused, setIsFocused] = React.useState(false);
-    const [isPressed, setIsPressed] = React.useState(false);
-    const [ripples, setRipples] = React.useState([]);
-    const containerRef = React.useRef(null);
-    const longPressTimerRef = React.useRef();
-    const doubleTapTimerRef = React.useRef();
-    const lastTapRef = React.useRef(0);
+    const [isHovered, setIsHovered] = require$$0.useState(false);
+    const [isFocused, setIsFocused] = require$$0.useState(false);
+    const [isPressed, setIsPressed] = require$$0.useState(false);
+    const [ripples, setRipples] = require$$0.useState([]);
+    const containerRef = require$$0.useRef(null);
+    const longPressTimerRef = require$$0.useRef();
+    const doubleTapTimerRef = require$$0.useRef();
+    const lastTapRef = require$$0.useRef(0);
     // Clean up timers on unmount
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         return () => {
             if (longPressTimerRef.current) {
                 clearTimeout(longPressTimerRef.current);
@@ -2197,7 +2187,7 @@ function InkWell(props) {
             }
         };
     }, []);
-    const createRipple = React.useCallback((event) => {
+    const createRipple = require$$0.useCallback((event) => {
         if (!containerRef.current)
             return;
         const rect = containerRef.current.getBoundingClientRect();
@@ -2220,13 +2210,13 @@ function InkWell(props) {
             setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
         }, splashDuration);
     }, [splashDuration]);
-    const handleMouseEnter = React.useCallback(() => {
+    const handleMouseEnter = require$$0.useCallback(() => {
         if (!enabled)
             return;
         setIsHovered(true);
         onHover?.(true);
     }, [enabled, onHover]);
-    const handleMouseLeave = React.useCallback(() => {
+    const handleMouseLeave = require$$0.useCallback(() => {
         if (!enabled)
             return;
         setIsHovered(false);
@@ -2237,7 +2227,7 @@ function InkWell(props) {
             clearTimeout(longPressTimerRef.current);
         }
     }, [enabled, onHover]);
-    const handleMouseDown = React.useCallback((event) => {
+    const handleMouseDown = require$$0.useCallback((event) => {
         if (!enabled)
             return;
         setIsPressed(true);
@@ -2247,7 +2237,7 @@ function InkWell(props) {
             onLongPress?.();
         }, 500); // 500ms for long press
     }, [enabled, createRipple, onLongPress]);
-    const handleMouseUp = React.useCallback(() => {
+    const handleMouseUp = require$$0.useCallback(() => {
         if (!enabled)
             return;
         setIsPressed(false);
@@ -2256,7 +2246,7 @@ function InkWell(props) {
             clearTimeout(longPressTimerRef.current);
         }
     }, [enabled]);
-    const handleClick = React.useCallback(() => {
+    const handleClick = require$$0.useCallback(() => {
         if (!enabled)
             return;
         const now = Date.now();
@@ -2277,19 +2267,19 @@ function InkWell(props) {
             }, onDoubleTap ? 300 : 0);
         }
     }, [enabled, onTap, onDoubleTap]);
-    const handleFocus = React.useCallback(() => {
+    const handleFocus = require$$0.useCallback(() => {
         if (!enabled)
             return;
         setIsFocused(true);
         onFocusChange?.(true);
     }, [enabled, onFocusChange]);
-    const handleBlur = React.useCallback(() => {
+    const handleBlur = require$$0.useCallback(() => {
         if (!enabled)
             return;
         setIsFocused(false);
         onFocusChange?.(false);
     }, [enabled, onFocusChange]);
-    const handleKeyDown = React.useCallback((event) => {
+    const handleKeyDown = require$$0.useCallback((event) => {
         if (!enabled)
             return;
         if (event.key === 'Enter' || event.key === ' ') {
@@ -2410,21 +2400,21 @@ function distance(a, b) {
 }
 // ===== Component =====
 function GestureDetector({ children, className, style, behavior = exports.HitTestBehavior.deferToChild, excludeFromSemantics = false, ariaLabel, onTap, onTapDown, onTapUp, onTapCancel, onDoubleTap, onLongPress, onLongPressStart, onLongPressMoveUpdate, onLongPressEnd, onPanStart, onPanUpdate, onPanEnd, onScaleStart, onScaleUpdate, onScaleEnd, longPressDelay = 500, doubleTapDelay = 300, tapSlop = 10, panSlop = 10, longPressMoveTolerance = 6, }) {
-    const ref = React.useRef(null);
-    const pressedRef = React.useRef(false);
-    const startGlobal = React.useRef(null);
-    const lastGlobal = React.useRef(null);
-    const startTimeRef = React.useRef(0);
-    const lastTapTimeRef = React.useRef(0);
-    const waitingSingleTapRef = React.useRef(null);
-    const longPressTimerRef = React.useRef(null);
-    const isPanningRef = React.useRef(false);
-    const isLongPressRef = React.useRef(false);
-    const vTracker = React.useRef(new VelocityTracker());
+    const ref = require$$0.useRef(null);
+    const pressedRef = require$$0.useRef(false);
+    const startGlobal = require$$0.useRef(null);
+    const lastGlobal = require$$0.useRef(null);
+    const startTimeRef = require$$0.useRef(0);
+    const lastTapTimeRef = require$$0.useRef(0);
+    const waitingSingleTapRef = require$$0.useRef(null);
+    const longPressTimerRef = require$$0.useRef(null);
+    const isPanningRef = require$$0.useRef(false);
+    const isLongPressRef = require$$0.useRef(false);
+    const vTracker = require$$0.useRef(new VelocityTracker());
     // Multi-pointer for scale
-    const activePointers = React.useRef(new Map());
-    const scaleActiveRef = React.useRef(false);
-    const clearTimers = React.useCallback(() => {
+    const activePointers = require$$0.useRef(new Map());
+    const scaleActiveRef = require$$0.useRef(false);
+    const clearTimers = require$$0.useCallback(() => {
         if (waitingSingleTapRef.current) {
             clearTimeout(waitingSingleTapRef.current);
             waitingSingleTapRef.current = null;
@@ -2434,8 +2424,8 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
             longPressTimerRef.current = null;
         }
     }, []);
-    const pointerCount = React.useCallback(() => activePointers.current.size, []);
-    const getFocal = React.useCallback(() => {
+    const pointerCount = require$$0.useCallback(() => activePointers.current.size, []);
+    const getFocal = require$$0.useCallback(() => {
         let sx = 0;
         let sy = 0;
         let n = 0;
@@ -2446,7 +2436,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         }
         return n ? { dx: sx / n, dy: sy / n } : { dx: 0, dy: 0 };
     }, []);
-    const getScaleRotate = React.useCallback((prev, curr) => {
+    const getScaleRotate = require$$0.useCallback((prev, curr) => {
         // Return average scale and rotation between prev and curr pointers
         const ids = [...curr.keys()].filter((id) => prev.has(id));
         if (ids.length < 2)
@@ -2479,11 +2469,11 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         const vScale = Math.hypot(perp, 0) || 1; // magnitude perpendicular
         return { scale, rotation, hScale, vScale };
     }, []);
-    const fireTapCancel = React.useCallback(() => {
+    const fireTapCancel = require$$0.useCallback(() => {
         onTapCancel?.();
     }, [onTapCancel]);
     // === Pointer Handlers ===
-    const onPointerDown = React.useCallback((e) => {
+    const onPointerDown = require$$0.useCallback((e) => {
         if (e.pointerType === 'mouse' && e.button !== 0)
             return; // primary only
         // Respect deferToChild: only handle if a child is hit, not the container itself
@@ -2544,7 +2534,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         onScaleEnd,
         pointerCount,
     ]);
-    const onPointerMove = React.useCallback((e) => {
+    const onPointerMove = require$$0.useCallback((e) => {
         if (!pressedRef.current)
             return;
         const global = { dx: e.clientX, dy: e.clientY };
@@ -2623,7 +2613,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         panSlop,
         pointerCount,
     ]);
-    const onPointerUp = React.useCallback((e) => {
+    const onPointerUp = require$$0.useCallback((e) => {
         if (!pressedRef.current)
             return;
         const now = performance.now();
@@ -2705,7 +2695,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         tapSlop,
         pointerCount,
     ]);
-    const onPointerCancel = React.useCallback(() => {
+    const onPointerCancel = require$$0.useCallback(() => {
         if (!pressedRef.current)
             return;
         clearTimers();
@@ -2722,7 +2712,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         }
     }, [clearTimers, fireTapCancel, onScaleEnd]);
     // Keyboard accessibility: Space/Enter => onTap
-    const onKeyDown = React.useCallback((e) => {
+    const onKeyDown = require$$0.useCallback((e) => {
         if (excludeFromSemantics)
             return;
         if (e.key === 'Enter' || e.key === ' ') {
@@ -2731,7 +2721,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         }
     }, [excludeFromSemantics, onTap]);
     // Cancel on window blur / visibility change (closer to Flutter's cancel conditions)
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         const cancel = () => onPointerCancel();
         window.addEventListener('blur', cancel);
         document.addEventListener('visibilitychange', () => {
@@ -2744,7 +2734,7 @@ function GestureDetector({ children, className, style, behavior = exports.HitTes
         };
     }, [onPointerCancel]);
     // Styles approximating HitTestBehavior semantics without breaking layout
-    const containerStyle = React.useMemo(() => {
+    const containerStyle = require$$0.useMemo(() => {
         const base = { ...style, touchAction: 'none' };
         switch (behavior) {
             case exports.HitTestBehavior.opaque:
@@ -2822,13 +2812,13 @@ function AnimatedContainer(props) {
     const { children, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, style = {}, 
     // Container props
     width, height, padding, margin, backgroundColor, borderRadius, borderWidth = 0, borderColor, borderStyle = 'solid', flex, expanded, flexible, flexShrink, alignSelf, className = '', } = props;
-    const [currentStyles, setCurrentStyles] = React.useState({});
-    const [isAnimating, setIsAnimating] = React.useState(false);
-    const previousPropsRef = React.useRef(props);
-    const containerRef = React.useRef(null);
-    const animationTimeoutRef = React.useRef();
+    const [currentStyles, setCurrentStyles] = require$$0.useState({});
+    const [isAnimating, setIsAnimating] = require$$0.useState(false);
+    const previousPropsRef = require$$0.useRef(props);
+    const containerRef = require$$0.useRef(null);
+    const animationTimeoutRef = require$$0.useRef();
     // Helper function to normalize values for comparison and animation
-    const normalizeValue = React.useCallback((value) => {
+    const normalizeValue = require$$0.useCallback((value) => {
         if (value === undefined)
             return '';
         if (typeof value === 'number')
@@ -2836,7 +2826,7 @@ function AnimatedContainer(props) {
         return value;
     }, []);
     // Helper function to normalize EdgeInsets or string values
-    const normalizeEdgeInsets = React.useCallback((value) => {
+    const normalizeEdgeInsets = require$$0.useCallback((value) => {
         if (value === undefined)
             return '0';
         if (typeof value === 'string')
@@ -2844,14 +2834,14 @@ function AnimatedContainer(props) {
         return value.toPadding();
     }, []);
     // Calculate effective padding and margin
-    const calculateEffectivePadding = React.useCallback(() => {
+    const calculateEffectivePadding = require$$0.useCallback(() => {
         return normalizeEdgeInsets(padding);
     }, [padding, normalizeEdgeInsets]);
-    const calculateEffectiveMargin = React.useCallback(() => {
+    const calculateEffectiveMargin = require$$0.useCallback(() => {
         return normalizeEdgeInsets(margin);
     }, [margin, normalizeEdgeInsets]);
     // Calculate animated styles based on current props
-    const calculateTargetStyles = React.useCallback(() => {
+    const calculateTargetStyles = require$$0.useCallback(() => {
         const effectivePadding = calculateEffectivePadding();
         const effectiveMargin = calculateEffectiveMargin();
         return {
@@ -2878,7 +2868,7 @@ function AnimatedContainer(props) {
         normalizeValue,
     ]);
     // Check if props have changed and need animation
-    const hasStyleChanged = React.useCallback(() => {
+    const hasStyleChanged = require$$0.useCallback(() => {
         const prev = previousPropsRef.current;
         return (width !== prev.width ||
             height !== prev.height ||
@@ -2901,7 +2891,7 @@ function AnimatedContainer(props) {
         borderStyle,
     ]);
     // Apply animation
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         if (!hasStyleChanged())
             return;
         const targetStyles = calculateTargetStyles();
@@ -2935,7 +2925,7 @@ function AnimatedContainer(props) {
         };
     }, [duration, delay, onStart, onEnd, calculateTargetStyles, hasStyleChanged, props]);
     // Initialize styles on mount
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         setCurrentStyles(calculateTargetStyles());
     }, [calculateTargetStyles]);
     // Build flex styles (same logic as Container)
@@ -3002,19 +2992,19 @@ function AnimatedContainer(props) {
  */
 function AnimatedOpacity(props) {
     const { children, opacity, duration, curve = exports.AnimationCurve.ease, delay = 0, onStart, onEnd, alwaysIncludeSemantics = false, className = '', style = {}, } = props;
-    const [currentOpacity, setCurrentOpacity] = React.useState(opacity);
-    const [isAnimating, setIsAnimating] = React.useState(false);
-    const previousOpacityRef = React.useRef(opacity);
-    const animationTimeoutRef = React.useRef();
-    const startTimeoutRef = React.useRef();
+    const [currentOpacity, setCurrentOpacity] = require$$0.useState(opacity);
+    const [isAnimating, setIsAnimating] = require$$0.useState(false);
+    const previousOpacityRef = require$$0.useRef(opacity);
+    const animationTimeoutRef = require$$0.useRef();
+    const startTimeoutRef = require$$0.useRef();
     // Clamp opacity value between 0 and 1
     const clampedOpacity = Math.max(0, Math.min(1, opacity));
     // Check if opacity has changed
-    const hasOpacityChanged = React.useCallback(() => {
+    const hasOpacityChanged = require$$0.useCallback(() => {
         return Math.abs(clampedOpacity - previousOpacityRef.current) > 0.001;
     }, [clampedOpacity]);
     // Apply opacity animation
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         if (!hasOpacityChanged())
             return;
         // Clear any existing timeouts
@@ -3053,7 +3043,7 @@ function AnimatedOpacity(props) {
         };
     }, [clampedOpacity, duration, delay, onStart, onEnd, hasOpacityChanged]);
     // Initialize opacity on mount
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         setCurrentOpacity(clampedOpacity);
         previousOpacityRef.current = clampedOpacity;
     }, [clampedOpacity]);
@@ -3087,7 +3077,7 @@ const defaultBreakpoints = {
     lg: 992,
     xl: 1200,
 };
-const MediaQueryContext = React.createContext(undefined);
+const MediaQueryContext = require$$0.createContext(undefined);
 const isBrowser = typeof window !== 'undefined';
 const DEFAULT_DATA = {
     size: { width: 0, height: 0 },
@@ -3102,8 +3092,8 @@ const DEFAULT_DATA = {
     supportsTouch: false,
 };
 function MediaQuery({ children, breakpoints = defaultBreakpoints, data, }) {
-    const [mediaQueryData, setMediaQueryData] = React.useState(() => data ?? DEFAULT_DATA);
-    React.useEffect(() => {
+    const [mediaQueryData, setMediaQueryData] = require$$0.useState(() => data ?? DEFAULT_DATA);
+    require$$0.useEffect(() => {
         if (data) {
             setMediaQueryData(data);
             return;
@@ -3144,11 +3134,11 @@ function MediaQuery({ children, breakpoints = defaultBreakpoints, data, }) {
             vv?.removeEventListener('scroll', update);
         };
     }, [data]);
-    const contextValue = React.useMemo(() => ({ ...mediaQueryData, breakpoints }), [mediaQueryData, breakpoints]);
+    const contextValue = require$$0.useMemo(() => ({ ...mediaQueryData, breakpoints }), [mediaQueryData, breakpoints]);
     return jsxRuntimeExports.jsx(MediaQueryContext.Provider, { value: contextValue, children: children });
 }
 function useMediaQuery() {
-    const ctx = React.useContext(MediaQueryContext);
+    const ctx = require$$0.useContext(MediaQueryContext);
     if (!ctx)
         throw new Error('useMediaQuery must be used within a <MediaQuery> provider');
     return ctx;
@@ -3156,7 +3146,7 @@ function useMediaQuery() {
 function useBreakpoint(breakpoints) {
     const { size, breakpoints: ctxBp } = useMediaQuery();
     const bp = breakpoints || ctxBp;
-    return React.useMemo(() => {
+    return require$$0.useMemo(() => {
         const w = size.width;
         if (w >= bp.xl)
             return 'xl';
@@ -3172,7 +3162,7 @@ function useBreakpoint(breakpoints) {
 function useBreakpointMatch(condition, breakpoints) {
     const { size, breakpoints: ctxBp } = useMediaQuery();
     const bp = breakpoints || ctxBp;
-    return React.useMemo(() => {
+    return require$$0.useMemo(() => {
         const w = size.width;
         switch (condition) {
             case 'xs-only':
@@ -3264,11 +3254,11 @@ function readTextScaleFactor() {
 }
 
 function LayoutBuilder({ builder, className = '', style = {} }) {
-    const [constraints, setConstraints] = React.useState(() => createDefaultConstraints());
-    const containerRef = React.useRef(null);
-    const resizeObserverRef = React.useRef();
+    const [constraints, setConstraints] = require$$0.useState(() => createDefaultConstraints());
+    const containerRef = require$$0.useRef(null);
+    const resizeObserverRef = require$$0.useRef();
     // Calculate constraints from element
-    const calculateConstraints = React.useCallback((element) => {
+    const calculateConstraints = require$$0.useCallback((element) => {
         const computedStyle = getComputedStyle(element);
         // Get the parent's constraints or use viewport
         const parentElement = element.parentElement;
@@ -3296,7 +3286,7 @@ function LayoutBuilder({ builder, className = '', style = {} }) {
         });
     }, []);
     // Set up resize observer
-    React.useEffect(() => {
+    require$$0.useEffect(() => {
         if (!containerRef.current)
             return;
         const element = containerRef.current;
@@ -3329,7 +3319,7 @@ function LayoutBuilder({ builder, className = '', style = {} }) {
         };
     }, [calculateConstraints]);
     // Memoize the built content
-    const content = React.useMemo(() => {
+    const content = require$$0.useMemo(() => {
         return builder(constraints);
     }, [builder, constraints]);
     const containerStyle = {
@@ -3468,8 +3458,8 @@ const BoxConstraintsUtils = {
 };
 
 function OrientationBuilder({ builder, className = '', style = {} }) {
-    const [orientation, setOrientation] = React.useState(() => getCurrentOrientation());
-    React.useEffect(() => {
+    const [orientation, setOrientation] = require$$0.useState(() => getCurrentOrientation());
+    require$$0.useEffect(() => {
         const updateOrientation = () => {
             setOrientation(getCurrentOrientation());
         };
@@ -3508,8 +3498,8 @@ function OrientationBuilder({ builder, className = '', style = {} }) {
  * Hook to get the current screen orientation
  */
 function useOrientation() {
-    const [orientation, setOrientation] = React.useState(() => getCurrentOrientation());
-    React.useEffect(() => {
+    const [orientation, setOrientation] = require$$0.useState(() => getCurrentOrientation());
+    require$$0.useEffect(() => {
         const updateOrientation = () => {
             setOrientation(getCurrentOrientation());
         };
@@ -3771,7 +3761,7 @@ exports.FilterQuality = void 0;
     FilterQuality["high"] = "smooth";
 })(exports.FilterQuality || (exports.FilterQuality = {}));
 function Transform({ children, transform, alignment = Alignment.center, transformOrigin, filterQuality = exports.FilterQuality.medium, className = '', style = {}, }) {
-    const transformStyle = React.useMemo(() => {
+    const transformStyle = require$$0.useMemo(() => {
         const origin = transformOrigin || alignment;
         return {
             transform: transform.toCssMatrix3d(),
@@ -3944,15 +3934,15 @@ function applyCapitalization(text, mode) {
  * />
  * ```
  */
-const TextField = React.forwardRef(function TextField(props, ref) {
+const TextField = require$$0.forwardRef(function TextField(props, ref) {
     const { value, defaultValue, onChangeText, onChanged, onEditingComplete, onSubmitted, onFocus, onBlur, onTap, style, textAlign = 'start', textDirection, textCapitalization = 'none', maxLength, maxLines = 1, minLines, expands = false, obscureText = false, obscuringCharacter: _, // not used directly; browser uses own mask
     enabled = true, readOnly = false, autoFocus = false, canRequestFocus: __ = true, keyboardType = 'text', textInputAction = 'none', inputMode, decoration = {}, id, name, placeholder, forwardedRef, className, containerStyle, } = props;
-    const [inner, setInner] = React.useState(defaultValue ?? '');
+    const [inner, setInner] = require$$0.useState(defaultValue ?? '');
     const controlled = value !== undefined;
     const currentValue = controlled ? value : inner;
-    const inputRef = React.useRef(null);
+    const inputRef = require$$0.useRef(null);
     // expose imperative API
-    React.useImperativeHandle(ref ?? forwardedRef, () => ({
+    require$$0.useImperativeHandle(ref ?? forwardedRef, () => ({
         focus: () => inputRef.current?.focus(),
         blur: () => inputRef.current?.blur(),
         select: () => inputRef.current?.select?.(),
@@ -3971,7 +3961,7 @@ const TextField = React.forwardRef(function TextField(props, ref) {
         },
     }), [controlled, currentValue, onChangeText, onChanged]);
     // map Flutter keyboard type -> HTML
-    const { htmlType, inputMode: autoInputMode } = React.useMemo(() => mapKeyboard(obscureText ? 'password' : keyboardType), [keyboardType, obscureText]);
+    const { htmlType, inputMode: autoInputMode } = require$$0.useMemo(() => mapKeyboard(obscureText ? 'password' : keyboardType), [keyboardType, obscureText]);
     // compute props
     const dir = textDirection;
     const ta = textAlign === 'start'
@@ -3980,7 +3970,7 @@ const TextField = React.forwardRef(function TextField(props, ref) {
             ? undefined
             : textAlign;
     // enterKeyHint mapping removed as it's not used in the implementation
-    const handleChange = React.useCallback((e) => {
+    const handleChange = require$$0.useCallback((e) => {
         let text = e.target.value;
         if (textCapitalization && textCapitalization !== 'none') {
             const target = e.target;
@@ -4004,7 +3994,7 @@ const TextField = React.forwardRef(function TextField(props, ref) {
             (onChangeText ?? onChanged)?.(text);
         }
     }, [controlled, onChangeText, onChanged, textCapitalization]);
-    const handleKeyDown = React.useCallback((e) => {
+    const handleKeyDown = require$$0.useCallback((e) => {
         if (e.key === 'Enter') {
             onEditingComplete?.();
             onSubmitted?.(currentValue);
@@ -4020,7 +4010,7 @@ const TextField = React.forwardRef(function TextField(props, ref) {
             }
         }
     }, [currentValue, onEditingComplete, onSubmitted, textInputAction]);
-    const handleBlur = React.useCallback(() => {
+    const handleBlur = require$$0.useCallback(() => {
         onEditingComplete?.();
         onBlur?.();
     }, [onEditingComplete, onBlur]);
@@ -4129,9 +4119,9 @@ const TextField = React.forwardRef(function TextField(props, ref) {
  * ```
  */
 const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'clip', maxLines, textScaleFactor, textScaler, locale, textDirection = TextDirection.AUTO, semanticsLabel, semanticsIdentifier, selectionColor, className, }) => {
-    const id = React.useId(); // Used for selectionColor class generation
+    const id = require$$0.useId(); // Used for selectionColor class generation
     // Generate Tailwind classes and custom styles
-    const { tailwindClasses, customStyle } = React.useMemo(() => {
+    const { tailwindClasses, customStyle } = require$$0.useMemo(() => {
         const classes = [];
         const css = {};
         // Handle text styling
@@ -4241,7 +4231,7 @@ const Text = ({ data, children, style, textAlign, softWrap = true, overflow = 'c
         };
     }, [style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, textDirection]);
     // Generate unique class name for selection color
-    const selectionClass = React.useMemo(() => {
+    const selectionClass = require$$0.useMemo(() => {
         if (!selectionColor)
             return undefined;
         // Use useId to generate collision-resistant class name

@@ -279,17 +279,6 @@ const ItemWrap: React.FC<{
   // Check if child is an Align component
   const isAlignComponent = React.isValidElement(children) && children.type === Align
 
-  // Debug logging (remove in production)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('ItemWrap debug:', {
-      isValidElement: React.isValidElement(children),
-      childType: React.isValidElement(children) ? children.type : 'not valid element',
-      alignType: Align,
-      typeMatch: React.isValidElement(children) ? children.type === Align : false,
-      isAlignComponent,
-    })
-  }
-
   if (isAlignComponent) {
     // Extract alignment from Align component props
     const alignProps = children.props as { alignment?: AlignmentGeometry }
