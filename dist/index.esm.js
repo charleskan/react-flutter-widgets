@@ -1538,22 +1538,19 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
         const baseStyles = {
             display: 'flex',
             position: 'relative',
+            // Default behavior: wrap content (like Flutter Align)
+            width: 'fit-content',
+            height: 'fit-content',
             // Convert Flutter alignment coordinates to CSS positioning
             alignItems: alignmentCSS.y === '50%' ? 'center' : alignmentCSS.y === '0%' ? 'flex-start' : 'flex-end',
             justifyContent: alignmentCSS.x === '50%' ? 'center' : alignmentCSS.x === '0%' ? 'flex-start' : 'flex-end',
         };
-        // Default behavior: fill parent container space (like Flutter)
-        baseStyles.width = '100%';
-        baseStyles.height = '100%';
-        baseStyles.flexShrink = 1; // Allow shrinking to fit parent constraints
-        // Handle size factors - these override the defaults
+        // Handle size factors - apply scaling transforms
         if (widthFactor != null) {
-            baseStyles.width = 'fit-content';
             baseStyles.transform = `scaleX(${widthFactor})`;
             baseStyles.transformOrigin = 'left center';
         }
         if (heightFactor != null) {
-            baseStyles.height = 'fit-content';
             const existingTransform = baseStyles.transform || '';
             baseStyles.transform = existingTransform
                 ? `${existingTransform} scaleY(${heightFactor})`
