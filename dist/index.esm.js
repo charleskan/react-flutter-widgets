@@ -1670,13 +1670,14 @@ function alignmentToFlexClasses(alignment) {
     const classes = ['flex'];
     const css = alignmentToCSS(alignment);
     // Handle horizontal alignment (justify-content)
-    if (css.x === '0%') {
+    const xValue = Number.parseFloat(css.x);
+    if (xValue === 0) {
         classes.push('justify-start');
     }
-    else if (css.x === '50%') {
+    else if (xValue === 50) {
         classes.push('justify-center');
     }
-    else if (css.x === '100%') {
+    else if (xValue === 100) {
         classes.push('justify-end');
     }
     else {
@@ -1684,13 +1685,14 @@ function alignmentToFlexClasses(alignment) {
         classes.push('justify-center');
     }
     // Handle vertical alignment (align-items)
-    if (css.y === '0%') {
+    const yValue = Number.parseFloat(css.y);
+    if (yValue === 0) {
         classes.push('items-start');
     }
-    else if (css.y === '50%') {
+    else if (yValue === 50) {
         classes.push('items-center');
     }
-    else if (css.y === '100%') {
+    else if (yValue === 100) {
         classes.push('items-end');
     }
     else {
