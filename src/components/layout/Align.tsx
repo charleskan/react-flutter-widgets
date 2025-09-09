@@ -153,4 +153,7 @@ export function Align({
   )
 }
 
+// Set displayName for debugging
+Align.displayName = 'Align'
+
 export default Align

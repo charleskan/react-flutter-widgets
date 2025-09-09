@@ -51,5 +51,8 @@ export interface AlignProps {
  * ```
  */
 export declare function Align({ alignment, widthFactor, heightFactor, child, children, className, style, }: AlignProps): React.JSX.Element;
+export declare namespace Align {
+    var displayName: string;
+}
 export default Align;
 //# sourceMappingURL=Align.d.ts.map

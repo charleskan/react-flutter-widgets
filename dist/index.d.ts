@@ -850,6 +850,9 @@ interface AlignProps {
  * ```
  */
 declare function Align({ alignment, widthFactor, heightFactor, child, children, className, style, }: AlignProps): React$1.JSX.Element;
+declare namespace Align {
+    var displayName: string;
+}
 
 /**
  * SizedBox component equivalent to Flutter's SizedBox widget.

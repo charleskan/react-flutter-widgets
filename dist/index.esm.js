@@ -1,4 +1,4 @@
-import require$$0, { useMemo, forwardRef, useRef, useImperativeHandle, useState, useEffect, useCallback, createContext, useContext, useId } from 'react';
+import React, { useMemo, forwardRef, useRef, useImperativeHandle, useState, useEffect, useCallback, createContext, useContext, useId } from 'react';
 
 var jsxRuntime = {exports: {}};
 
@@ -337,7 +337,7 @@ function requireReactJsxRuntime_development () {
 	        node._store &&
 	        (node._store.validated = 1);
 	    }
-	    var React = require$$0,
+	    var React$1 = React,
 	      REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"),
 	      REACT_PORTAL_TYPE = Symbol.for("react.portal"),
 	      REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"),
@@ -353,7 +353,7 @@ function requireReactJsxRuntime_development () {
 	      REACT_ACTIVITY_TYPE = Symbol.for("react.activity"),
 	      REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"),
 	      ReactSharedInternals =
-	        React.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
+	        React$1.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE,
 	      hasOwnProperty = Object.prototype.hasOwnProperty,
 	      isArrayImpl = Array.isArray,
 	      createTask = console.createTask
@@ -361,15 +361,15 @@ function requireReactJsxRuntime_development () {
 	        : function () {
 	            return null;
 	          };
-	    React = {
+	    React$1 = {
 	      react_stack_bottom_frame: function (callStackForError) {
 	        return callStackForError();
 	      }
 	    };
 	    var specialPropKeyWarningShown;
 	    var didWarnAboutElementRef = {};
-	    var unknownOwnerDebugStack = React.react_stack_bottom_frame.bind(
-	      React,
+	    var unknownOwnerDebugStack = React$1.react_stack_bottom_frame.bind(
+	      React$1,
 	      UnknownOwner
 	    )();
 	    var unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
@@ -1595,6 +1595,8 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
     return (jsxRuntimeExports.jsx("div", { className: className, style: combinedStyle, children: content != null &&
             (childWrapperStyles ? jsxRuntimeExports.jsx("div", { style: childWrapperStyles, children: content }) : content) }));
 }
+// Set displayName for debugging
+Align.displayName = 'Align';
 
 function SizedBox({ width, height }) {
     const style = {};
@@ -1772,7 +1774,17 @@ function buildContainerClasses(axis, reverse, shrinkWrap, physics, _clip, paddin
 const ItemWrap = ({ axis, itemExtent, physics, children }) => {
     const classes = [];
     // Check if child is an Align component
-    const isAlignComponent = require$$0.isValidElement(children) && children.type === Align;
+    const isAlignComponent = React.isValidElement(children) && children.type === Align;
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+        console.log('ItemWrap debug:', {
+            isValidElement: React.isValidElement(children),
+            childType: React.isValidElement(children) ? children.type : 'not valid element',
+            alignType: Align,
+            typeMatch: React.isValidElement(children) ? children.type === Align : false,
+            isAlignComponent,
+        });
+    }
     if (isAlignComponent) {
         // Extract alignment from Align component props
         const alignProps = children.props;
