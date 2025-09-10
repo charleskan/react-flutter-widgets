@@ -1,0 +1,1 @@
+{"version":3,"file":"SizedBox.d.ts","sourceRoot":"","sources":["../../../src/components/spacing/SizedBox.tsx"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;;;;;GAkBG;AACH,MAAM,WAAW,aAAa;IAC5B,oFAAoF;IACpF,KAAK,CAAC,EAAE,MAAM,GAAG,MAAM,CAAA;IACvB,qFAAqF;IACrF,MAAM,CAAC,EAAE,MAAM,GAAG,MAAM,CAAA;CACzB;AAED,iBAAS,QAAQ,CAAC,EAAE,KAAK,EAAE,MAAM,EAAE,EAAE,aAAa,2CASjD;AAED,eAAe,QAAQ,CAAA"}
