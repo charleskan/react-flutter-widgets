@@ -1250,6 +1250,20 @@ interface InkWellProps {
     role?: string;
     /** Tab index for keyboard navigation */
     tabIndex?: number;
+    /** Accessibility label for screen readers */
+    "aria-label"?: string;
+    /** ID of element that labels this component */
+    "aria-labelledby"?: string;
+    /** ID of element that describes this component */
+    "aria-describedby"?: string;
+    /** Indicates if the element is pressed (for toggle buttons) */
+    "aria-pressed"?: boolean | "mixed";
+    /** Indicates if the element is expanded (for collapsible content) */
+    "aria-expanded"?: boolean;
+    /** Indicates if the element controls another element */
+    "aria-controls"?: string;
+    /** Indicates if the element has a popup */
+    "aria-haspopup"?: boolean | "false" | "true" | "menu" | "listbox" | "tree" | "grid" | "dialog";
 }
 declare function InkWell(props: InkWellProps): react_jsx_runtime.JSX.Element;
 

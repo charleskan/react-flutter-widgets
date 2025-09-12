@@ -2165,7 +2165,7 @@ var ListView;
 })(ListView || (ListView = {}));
 
 function InkWell(props) {
-    const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = 'rgba(0, 0, 0, 0.12)', hoverColor = 'rgba(0, 0, 0, 0.04)', focusColor = 'rgba(0, 0, 0, 0.12)', highlightColor = 'rgba(0, 0, 0, 0.08)', borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = '', style = {}, role = 'button', tabIndex = 0, } = props;
+    const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = "rgba(0, 0, 0, 0.12)", hoverColor = "rgba(0, 0, 0, 0.04)", focusColor = "rgba(0, 0, 0, 0.12)", highlightColor = "rgba(0, 0, 0, 0.08)", borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = "", style = {}, role, tabIndex, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, "aria-describedby": ariaDescribedby, "aria-pressed": ariaPressed, "aria-expanded": ariaExpanded, "aria-controls": ariaControls, "aria-haspopup": ariaHaspopup } = props;
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const [isPressed, setIsPressed] = useState(false);
@@ -2174,6 +2174,19 @@ function InkWell(props) {
     const longPressTimerRef = useRef();
     const doubleTapTimerRef = useRef();
     const lastTapRef = useRef(0);
+    // Determine semantic role and interactivity
+    const hasInteraction = Boolean(onTap || onDoubleTap || onLongPress);
+    const semanticRole = role || (hasInteraction ? "button" : "presentation");
+    const isInteractive = hasInteraction && enabled;
+    const shouldBeAccessible = !excludeFromSemantics && isInteractive;
+    // Determine appropriate tabIndex
+    const effectiveTabIndex = (() => {
+        if (excludeFromSemantics || !enabled)
+            return -1;
+        if (tabIndex !== undefined)
+            return tabIndex;
+        return hasInteraction ? 0 : -1;
+    })();
     // Clean up timers on unmount
     useEffect(() => {
         return () => {
@@ -2228,13 +2241,17 @@ function InkWell(props) {
     const handleMouseDown = useCallback((event) => {
         if (!enabled)
             return;
+        // Only prevent default for interactive elements to avoid interfering with text selection
+        if (isInteractive) {
+            event.preventDefault();
+        }
         setIsPressed(true);
         createRipple(event);
         // Start long press timer
         longPressTimerRef.current = setTimeout(() => {
             onLongPress?.();
         }, 500); // 500ms for long press
-    }, [enabled, createRipple, onLongPress]);
+    }, [enabled, isInteractive, createRipple, onLongPress]);
     const handleMouseUp = useCallback(() => {
         if (!enabled)
             return;
@@ -2278,13 +2295,22 @@ function InkWell(props) {
         onFocusChange?.(false);
     }, [enabled, onFocusChange]);
     const handleKeyDown = useCallback((event) => {
-        if (!enabled)
+        if (!enabled || !isInteractive)
             return;
-        if (event.key === 'Enter' || event.key === ' ') {
+        // Handle activation keys
+        if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+            setIsPressed(true);
             onTap?.();
         }
-    }, [enabled, onTap]);
+    }, [enabled, isInteractive, onTap]);
+    const handleKeyUp = useCallback((event) => {
+        if (!enabled || !isInteractive)
+            return;
+        if (event.key === "Enter" || event.key === " ") {
+            setIsPressed(false);
+        }
+    }, [enabled, isInteractive]);
     // Combine all overlay colors
     const overlayColor = (() => {
         if (isPressed)
@@ -2293,43 +2319,69 @@ function InkWell(props) {
             return focusColor;
         if (isHovered)
             return hoverColor;
-        return 'transparent';
+        return "transparent";
     })();
     const containerStyle = {
-        position: 'relative',
-        overflow: 'hidden',
-        cursor: enabled ? 'pointer' : 'default',
-        borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
-        outline: 'none',
-        userSelect: 'none',
-        touchAction: 'manipulation',
+        position: "relative",
+        overflow: "hidden",
+        cursor: enabled && isInteractive ? "pointer" : "default",
+        borderRadius: typeof borderRadius === "number" ? `${borderRadius}px` : borderRadius,
+        outline: "none",
+        userSelect: isInteractive ? "none" : undefined,
+        touchAction: isInteractive ? "manipulation" : undefined,
         ...style,
     };
     const overlayStyle = {
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
         backgroundColor: overlayColor,
         transition: `background-color ${hoverDuration}ms ease`,
-        pointerEvents: 'none',
-        borderRadius: 'inherit',
+        pointerEvents: "none",
+        borderRadius: "inherit",
     };
     const rippleStyle = (ripple) => ({
-        position: 'absolute',
+        position: "absolute",
         left: ripple.x - ripple.size / 2,
         top: ripple.y - ripple.size / 2,
         width: ripple.size,
         height: ripple.size,
         backgroundColor: splashColor,
-        borderRadius: '50%',
+        borderRadius: "50%",
         opacity: ripple.opacity,
-        transform: 'scale(0)',
+        transform: "scale(0)",
         animation: `inkwell-ripple ${splashDuration}ms ease-out`,
-        pointerEvents: 'none',
+        pointerEvents: "none",
     });
-    return (jsxRuntimeExports.jsxs("div", { ref: containerRef, className: className, style: containerStyle, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onMouseDown: handleMouseDown, onMouseUp: handleMouseUp, onClick: handleClick, onFocus: handleFocus, onBlur: handleBlur, onKeyDown: handleKeyDown, role: excludeFromSemantics ? undefined : role, tabIndex: enabled && !excludeFromSemantics ? tabIndex : -1, "aria-disabled": !enabled, children: [jsxRuntimeExports.jsx("div", { style: overlayStyle }), ripples.map((ripple) => (jsxRuntimeExports.jsx("div", { style: rippleStyle(ripple) }, ripple.id))), jsxRuntimeExports.jsx("div", { style: { position: 'relative', zIndex: 1 }, children: children }), jsxRuntimeExports.jsx("style", { children: `
+    // Build ARIA attributes object
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    const ariaAttributes = {};
+    if (shouldBeAccessible) {
+        // Only add aria-disabled if the component is interactive
+        ariaAttributes["aria-disabled"] = !enabled;
+        // Add provided ARIA attributes
+        if (ariaLabel)
+            ariaAttributes["aria-label"] = ariaLabel;
+        if (ariaLabelledby)
+            ariaAttributes["aria-labelledby"] = ariaLabelledby;
+        if (ariaDescribedby)
+            ariaAttributes["aria-describedby"] = ariaDescribedby;
+        if (ariaPressed !== undefined)
+            ariaAttributes["aria-pressed"] = ariaPressed;
+        if (ariaExpanded !== undefined)
+            ariaAttributes["aria-expanded"] = ariaExpanded;
+        if (ariaControls)
+            ariaAttributes["aria-controls"] = ariaControls;
+        if (ariaHaspopup !== undefined)
+            ariaAttributes["aria-haspopup"] = ariaHaspopup;
+        // Add pressed state for screen readers during interaction
+        if (isPressed && semanticRole === "button" && ariaPressed === undefined) {
+            ariaAttributes["aria-pressed"] = "true";
+        }
+    }
+    return (jsxRuntimeExports.jsxs("div", { ref: containerRef, className: className, style: containerStyle, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onMouseDown: handleMouseDown, onMouseUp: handleMouseUp, onClick: handleClick, onFocus: shouldBeAccessible ? handleFocus : undefined, onBlur: shouldBeAccessible ? handleBlur : undefined, onKeyDown: shouldBeAccessible ? handleKeyDown : undefined, onKeyUp: shouldBeAccessible ? handleKeyUp : undefined, role: excludeFromSemantics ? undefined : semanticRole, tabIndex: effectiveTabIndex, ...ariaAttributes, children: [jsxRuntimeExports.jsx("div", { style: overlayStyle }), ripples.map((ripple) => (jsxRuntimeExports.jsx("div", { style: rippleStyle(ripple) }, ripple.id))), jsxRuntimeExports.jsx("div", { style: { position: "relative", zIndex: 1 }, children: children }), jsxRuntimeExports.jsx("style", { children: `
         @keyframes inkwell-ripple {
           from {
             transform: scale(0);
