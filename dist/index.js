@@ -1597,6 +1597,319 @@ function Align({ alignment = Alignment$1.center, widthFactor, heightFactor, chil
 // Set displayName for debugging
 Align.displayName = 'Align';
 
+/**
+ * How to size the non-positioned children in the stack.
+ * Equivalent to Flutter's StackFit enum.
+ */
+exports.StackFit = void 0;
+(function (StackFit) {
+    /** The constraints passed to the stack from its parent are loosened. */
+    StackFit["loose"] = "loose";
+    /** The constraints passed to the stack from its parent are tightened to the biggest size allowed. */
+    StackFit["expand"] = "expand";
+    /** The constraints passed to the stack from its parent are passed unmodified to the non-positioned children. */
+    StackFit["passthrough"] = "passthrough";
+})(exports.StackFit || (exports.StackFit = {}));
+/**
+ * Check if a child is a Positioned widget
+ */
+function isPositioned(child) {
+    if (!require$$0.isValidElement(child))
+        return false;
+    // Check if the component has a displayName of 'Positioned'
+    const type = child.type;
+    return type.displayName === 'Positioned';
+}
+/**
+ * A widget that positions its children relative to the edges of its box.
+ *
+ * Equivalent to Flutter's Stack widget. This class is useful if you want to overlap
+ * several children in a simple way.
+ *
+ * Each child of a Stack is either positioned or non-positioned. Positioned children
+ * are those wrapped in a Positioned widget that has at least one non-null property.
+ * The stack sizes itself to contain all the non-positioned children, which are
+ * positioned according to alignment. The positioned children are then placed relative
+ * to the stack according to their top, right, bottom, and left properties.
+ *
+ * @example
+ * ```tsx
+ * // Basic stack with overlapping children
+ * <Stack>
+ *   <Container width={100} height={100} color="red" />
+ *   <Container width={90} height={90} color="green" />
+ *   <Container width={80} height={80} color="blue" />
+ * </Stack>
+ *
+ * // Stack with positioned children
+ * <Stack alignment={Alignment.center}>
+ *   <Container width={250} height={250} color="white" />
+ *   <Positioned
+ *     bottom={0}
+ *     left={0}
+ *     right={0}
+ *   >
+ *     <Container
+ *       padding={EdgeInsets.all(5)}
+ *       decoration={{
+ *         gradient: new LinearGradient({
+ *           begin: Alignment.topCenter,
+ *           end: Alignment.bottomCenter,
+ *           colors: ['transparent', 'rgba(0,0,0,0.5)']
+ *         })
+ *       }}
+ *     >
+ *       <Text style={{ color: 'white' }}>Foreground Text</Text>
+ *     </Container>
+ *   </Positioned>
+ * </Stack>
+ *
+ * // Stack with custom alignment and fit
+ * <Stack
+ *   alignment={Alignment.bottomRight}
+ *   fit={StackFit.expand}
+ * >
+ *   <Image src="background.jpg" />
+ *   <Positioned
+ *     top={10}
+ *     right={10}
+ *   >
+ *     <Icon name="close" />
+ *   </Positioned>
+ * </Stack>
+ * ```
+ */
+function Stack({ alignment = AlignmentDirectional.topStart, textDirection, fit = exports.StackFit.loose, clipBehavior = 'hardEdge', children, className, style, }) {
+    const { containerStyle, childrenArray } = require$$0.useMemo(() => {
+        // Resolve alignment with text direction
+        const resolvedAlignment = alignment instanceof AlignmentDirectional && textDirection
+            ? alignment.resolve(textDirection)
+            : alignment instanceof Alignment$1
+                ? alignment
+                : Alignment$1.topLeft;
+        // Build container styles
+        const baseContainerStyle = {
+            position: 'relative',
+            display: 'flex',
+        };
+        // Apply fit behavior
+        switch (fit) {
+            case exports.StackFit.expand:
+                baseContainerStyle.width = '100%';
+                baseContainerStyle.height = '100%';
+                break;
+            case exports.StackFit.loose:
+                baseContainerStyle.width = 'fit-content';
+                baseContainerStyle.height = 'fit-content';
+                break;
+            case exports.StackFit.passthrough:
+                // Don't set width/height, pass through constraints
+                break;
+        }
+        // Apply clip behavior
+        const clipClasses = exports.Decoration.clipToClasses(clipBehavior);
+        // Process children
+        const childArray = require$$0.Children.toArray(children);
+        const processedChildren = childArray.map((child) => {
+            if (!require$$0.isValidElement(child))
+                return child;
+            const isPositionedChild = isPositioned(child);
+            if (isPositionedChild) {
+                // Positioned children handle their own positioning
+                return child;
+            }
+            // Non-positioned children need alignment applied
+            const childStyle = {
+                position: 'absolute',
+                ...getAlignmentStyles(resolvedAlignment),
+            };
+            // Apply fit to non-positioned children
+            if (fit === exports.StackFit.expand) {
+                childStyle.width = '100%';
+                childStyle.height = '100%';
+            }
+            // Children.toArray already provides stable keys
+            return (jsxRuntimeExports.jsx("div", { style: childStyle, children: child }, child.key));
+        });
+        return {
+            containerStyle: {
+                ...baseContainerStyle,
+                ...style,
+            },
+            childrenArray: processedChildren,
+            clipClasses: clipClasses.join(' '),
+        };
+    }, [alignment, textDirection, fit, clipBehavior, children, style]);
+    const combinedClassName = require$$0.useMemo(() => {
+        const clipClasses = exports.Decoration.clipToClasses(clipBehavior);
+        return [clipClasses.join(' '), className].filter(Boolean).join(' ');
+    }, [clipBehavior, className]);
+    return (jsxRuntimeExports.jsx("div", { className: combinedClassName, style: containerStyle, children: childrenArray }));
+}
+/**
+ * Convert Flutter Alignment to CSS positioning styles
+ */
+function getAlignmentStyles(alignment) {
+    // Flutter alignment uses -1 to 1 coordinate system
+    // -1, -1 = top left
+    // 0, 0 = center
+    // 1, 1 = bottom right
+    const xPercent = ((alignment.x + 1) / 2) * 100;
+    const yPercent = ((alignment.y + 1) / 2) * 100;
+    return {
+        left: `${xPercent}%`,
+        top: `${yPercent}%`,
+        transform: `translate(-${xPercent}%, -${yPercent}%)`,
+    };
+}
+// Set displayName for debugging
+Stack.displayName = 'Stack';
+
+/**
+ * Convert number or string to CSS value
+ */
+function toCSSValue(value) {
+    if (value === undefined || value === null)
+        return undefined;
+    return typeof value === 'number' ? `${value}px` : value;
+}
+/**
+ * A widget that controls where a child of a Stack is positioned.
+ *
+ * A Positioned widget must be a descendant of a Stack. If a widget is wrapped in a
+ * Positioned, then it is a positioned widget in its Stack. If the top property is
+ * non-null, the top edge of this child will be positioned that many units from the
+ * top of the stack. The right, bottom, and left properties work analogously.
+ *
+ * If both the top and bottom properties are non-null, then the child will be forced
+ * to have exactly the height required to satisfy both constraints. Similarly, setting
+ * the right and left properties to non-null values will force the child to have a
+ * particular width.
+ *
+ * @example
+ * ```tsx
+ * // Basic positioned child
+ * <Stack>
+ *   <Positioned
+ *     top={10}
+ *     left={20}
+ *   >
+ *     <Container width={100} height={100} color="blue" />
+ *   </Positioned>
+ * </Stack>
+ *
+ * // Stretch child to fill area
+ * <Stack>
+ *   <Positioned
+ *     top={0}
+ *     left={0}
+ *     right={0}
+ *     bottom={0}
+ *   >
+ *     <Container color="rgba(0,0,0,0.5)" />
+ *   </Positioned>
+ * </Stack>
+ *
+ * // Position with width and height
+ * <Stack>
+ *   <Positioned
+ *     top={10}
+ *     right={10}
+ *     width={100}
+ *     height={50}
+ *   >
+ *     <Text>Top Right</Text>
+ *   </Positioned>
+ * </Stack>
+ * ```
+ */
+function Positioned({ left, top, right, bottom, width, height, child, children, className, style, }) {
+    const content = child ?? children;
+    const positionedStyle = require$$0.useMemo(() => {
+        const styles = {
+            position: 'absolute',
+        };
+        // Apply positioning
+        if (left !== undefined)
+            styles.left = toCSSValue(left);
+        if (top !== undefined)
+            styles.top = toCSSValue(top);
+        if (right !== undefined)
+            styles.right = toCSSValue(right);
+        if (bottom !== undefined)
+            styles.bottom = toCSSValue(bottom);
+        // Apply sizing
+        if (width !== undefined)
+            styles.width = toCSSValue(width);
+        if (height !== undefined)
+            styles.height = toCSSValue(height);
+        return styles;
+    }, [left, top, right, bottom, width, height]);
+    const combinedStyle = require$$0.useMemo(() => ({
+        ...positionedStyle,
+        ...style,
+    }), [positionedStyle, style]);
+    return (jsxRuntimeExports.jsx("div", { className: className, style: combinedStyle, children: content }));
+}
+/**
+ * Creates a Positioned object with left, top, right, and bottom set to 0.0 unless
+ * a value for them is passed.
+ *
+ * @example
+ * ```tsx
+ * <Stack>
+ *   <Positioned.fill>
+ *     <Container color="rgba(0,0,0,0.3)" />
+ *   </Positioned.fill>
+ * </Stack>
+ *
+ * // With custom insets
+ * <Stack>
+ *   <Positioned.fill left={10} right={10}>
+ *     <Container color="blue" />
+ *   </Positioned.fill>
+ * </Stack>
+ * ```
+ */
+Positioned.fill = function PositionedFill({ left = 0, top = 0, right = 0, bottom = 0, child, children, className, style, }) {
+    const content = child ?? children;
+    return (jsxRuntimeExports.jsx(Positioned, { left: left, top: top, right: right, bottom: bottom, className: className, style: style, children: content }));
+};
+/**
+ * Creates a widget that controls where a child of a Stack is positioned, with
+ * text direction awareness.
+ *
+ * This constructor is useful when you want to position a child according to the
+ * reading direction (left-to-right or right-to-left).
+ *
+ * @example
+ * ```tsx
+ * <Stack>
+ *   <Positioned.directional
+ *     textDirection={TextDirection.ltr}
+ *     start={10}
+ *     top={10}
+ *   >
+ *     <Text>Start aligned</Text>
+ *   </Positioned.directional>
+ * </Stack>
+ * ```
+ */
+Positioned.directional = function PositionedDirectional({ start, top, end, bottom, width, height, textDirection, child, children, className, style, }) {
+    // Resolve start/end based on text direction
+    const left = textDirection === exports.TextDirection.ltr ? start : end;
+    const right = textDirection === exports.TextDirection.ltr ? end : start;
+    const content = child ?? children;
+    return (jsxRuntimeExports.jsx(Positioned, { left: left, top: top, right: right, bottom: bottom, width: width, height: height, className: className, style: style, children: content }));
+};
+// Set displayName for debugging
+Positioned.displayName = 'Positioned';
+// TypeScript workaround for function properties
+Object.defineProperty(Positioned.fill, 'displayName', { value: 'Positioned.fill' });
+Object.defineProperty(Positioned.directional, 'displayName', {
+    value: 'Positioned.directional',
+});
+
 function SizedBox({ width, height }) {
     const style = {};
     if (width !== undefined) {
@@ -2167,7 +2480,7 @@ var ListView;
 })(ListView || (ListView = {}));
 
 function InkWell(props) {
-    const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = "rgba(0, 0, 0, 0.12)", hoverColor = "rgba(0, 0, 0, 0.04)", focusColor = "rgba(0, 0, 0, 0.12)", highlightColor = "rgba(0, 0, 0, 0.08)", borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = "", style = {}, role, tabIndex, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, "aria-describedby": ariaDescribedby, "aria-pressed": ariaPressed, "aria-expanded": ariaExpanded, "aria-controls": ariaControls, "aria-haspopup": ariaHaspopup } = props;
+    const { children, onTap, onDoubleTap, onLongPress, onHover, onFocusChange, splashColor = 'rgba(0, 0, 0, 0.12)', hoverColor = 'rgba(0, 0, 0, 0.04)', focusColor = 'rgba(0, 0, 0, 0.12)', highlightColor = 'rgba(0, 0, 0, 0.08)', borderRadius = 0, enabled = true, excludeFromSemantics = false, splashDuration = 300, hoverDuration = 200, className = '', style = {}, role, tabIndex, 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledby, 'aria-describedby': ariaDescribedby, 'aria-pressed': ariaPressed, 'aria-expanded': ariaExpanded, 'aria-controls': ariaControls, 'aria-haspopup': ariaHaspopup, } = props;
     const [isHovered, setIsHovered] = require$$0.useState(false);
     const [isFocused, setIsFocused] = require$$0.useState(false);
     const [isPressed, setIsPressed] = require$$0.useState(false);
@@ -2178,7 +2491,7 @@ function InkWell(props) {
     const lastTapRef = require$$0.useRef(0);
     // Determine semantic role and interactivity
     const hasInteraction = Boolean(onTap || onDoubleTap || onLongPress);
-    const semanticRole = role || (hasInteraction ? "button" : "presentation");
+    const semanticRole = role || (hasInteraction ? 'button' : 'presentation');
     const isInteractive = hasInteraction && enabled;
     const shouldBeAccessible = !excludeFromSemantics && isInteractive;
     // Determine appropriate tabIndex
@@ -2300,7 +2613,7 @@ function InkWell(props) {
         if (!enabled || !isInteractive)
             return;
         // Handle activation keys
-        if (event.key === "Enter" || event.key === " ") {
+        if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             setIsPressed(true);
             onTap?.();
@@ -2309,7 +2622,7 @@ function InkWell(props) {
     const handleKeyUp = require$$0.useCallback((event) => {
         if (!enabled || !isInteractive)
             return;
-        if (event.key === "Enter" || event.key === " ") {
+        if (event.key === 'Enter' || event.key === ' ') {
             setIsPressed(false);
         }
     }, [enabled, isInteractive]);
@@ -2321,69 +2634,69 @@ function InkWell(props) {
             return focusColor;
         if (isHovered)
             return hoverColor;
-        return "transparent";
+        return 'transparent';
     })();
     const containerStyle = {
-        position: "relative",
-        overflow: "hidden",
-        cursor: enabled && isInteractive ? "pointer" : "default",
-        borderRadius: typeof borderRadius === "number" ? `${borderRadius}px` : borderRadius,
-        outline: "none",
-        userSelect: isInteractive ? "none" : undefined,
-        touchAction: isInteractive ? "manipulation" : undefined,
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: enabled && isInteractive ? 'pointer' : 'default',
+        borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
+        outline: 'none',
+        userSelect: isInteractive ? 'none' : undefined,
+        touchAction: isInteractive ? 'manipulation' : undefined,
         ...style,
     };
     const overlayStyle = {
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
         backgroundColor: overlayColor,
         transition: `background-color ${hoverDuration}ms ease`,
-        pointerEvents: "none",
-        borderRadius: "inherit",
+        pointerEvents: 'none',
+        borderRadius: 'inherit',
     };
     const rippleStyle = (ripple) => ({
-        position: "absolute",
+        position: 'absolute',
         left: ripple.x - ripple.size / 2,
         top: ripple.y - ripple.size / 2,
         width: ripple.size,
         height: ripple.size,
         backgroundColor: splashColor,
-        borderRadius: "50%",
+        borderRadius: '50%',
         opacity: ripple.opacity,
-        transform: "scale(0)",
+        transform: 'scale(0)',
         animation: `inkwell-ripple ${splashDuration}ms ease-out`,
-        pointerEvents: "none",
+        pointerEvents: 'none',
     });
     // Build ARIA attributes object
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const ariaAttributes = {};
     if (shouldBeAccessible) {
         // Only add aria-disabled if the component is interactive
-        ariaAttributes["aria-disabled"] = !enabled;
+        ariaAttributes['aria-disabled'] = !enabled;
         // Add provided ARIA attributes
         if (ariaLabel)
-            ariaAttributes["aria-label"] = ariaLabel;
+            ariaAttributes['aria-label'] = ariaLabel;
         if (ariaLabelledby)
-            ariaAttributes["aria-labelledby"] = ariaLabelledby;
+            ariaAttributes['aria-labelledby'] = ariaLabelledby;
         if (ariaDescribedby)
-            ariaAttributes["aria-describedby"] = ariaDescribedby;
+            ariaAttributes['aria-describedby'] = ariaDescribedby;
         if (ariaPressed !== undefined)
-            ariaAttributes["aria-pressed"] = ariaPressed;
+            ariaAttributes['aria-pressed'] = ariaPressed;
         if (ariaExpanded !== undefined)
-            ariaAttributes["aria-expanded"] = ariaExpanded;
+            ariaAttributes['aria-expanded'] = ariaExpanded;
         if (ariaControls)
-            ariaAttributes["aria-controls"] = ariaControls;
+            ariaAttributes['aria-controls'] = ariaControls;
         if (ariaHaspopup !== undefined)
-            ariaAttributes["aria-haspopup"] = ariaHaspopup;
+            ariaAttributes['aria-haspopup'] = ariaHaspopup;
         // Add pressed state for screen readers during interaction
-        if (isPressed && semanticRole === "button" && ariaPressed === undefined) {
-            ariaAttributes["aria-pressed"] = "true";
+        if (isPressed && semanticRole === 'button' && ariaPressed === undefined) {
+            ariaAttributes['aria-pressed'] = 'true';
         }
     }
-    return (jsxRuntimeExports.jsxs("div", { ref: containerRef, className: className, style: containerStyle, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onMouseDown: handleMouseDown, onMouseUp: handleMouseUp, onClick: handleClick, onFocus: shouldBeAccessible ? handleFocus : undefined, onBlur: shouldBeAccessible ? handleBlur : undefined, onKeyDown: shouldBeAccessible ? handleKeyDown : undefined, onKeyUp: shouldBeAccessible ? handleKeyUp : undefined, role: excludeFromSemantics ? undefined : semanticRole, tabIndex: effectiveTabIndex, ...ariaAttributes, children: [jsxRuntimeExports.jsx("div", { style: overlayStyle }), ripples.map((ripple) => (jsxRuntimeExports.jsx("div", { style: rippleStyle(ripple) }, ripple.id))), jsxRuntimeExports.jsx("div", { style: { position: "relative", zIndex: 1 }, children: children }), jsxRuntimeExports.jsx("style", { children: `
+    return (jsxRuntimeExports.jsxs("div", { ref: containerRef, className: className, style: containerStyle, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onMouseDown: handleMouseDown, onMouseUp: handleMouseUp, onClick: handleClick, onFocus: shouldBeAccessible ? handleFocus : undefined, onBlur: shouldBeAccessible ? handleBlur : undefined, onKeyDown: shouldBeAccessible ? handleKeyDown : undefined, onKeyUp: shouldBeAccessible ? handleKeyUp : undefined, role: excludeFromSemantics ? undefined : semanticRole, tabIndex: effectiveTabIndex, ...ariaAttributes, children: [jsxRuntimeExports.jsx("div", { style: overlayStyle }), ripples.map((ripple) => (jsxRuntimeExports.jsx("div", { style: rippleStyle(ripple) }, ripple.id))), jsxRuntimeExports.jsx("div", { style: { position: 'relative', zIndex: 1 }, children: children }), jsxRuntimeExports.jsx("style", { children: `
         @keyframes inkwell-ripple {
           from {
             transform: scale(0);
@@ -4671,11 +4984,13 @@ exports.Opacity = Opacity;
 exports.OrientationBuilder = OrientationBuilder;
 exports.OrientationUtils = OrientationUtils;
 exports.PageScrollPhysics = PageScrollPhysics;
+exports.Positioned = Positioned;
 exports.RadialGradient = RadialGradient;
 exports.Radius = Radius;
 exports.Row = Row;
 exports.SizedBox = SizedBox;
 exports.Spacer = Spacer;
+exports.Stack = Stack;
 exports.SweepGradient = SweepGradient;
 exports.Text = Text;
 exports.TextField = TextField;

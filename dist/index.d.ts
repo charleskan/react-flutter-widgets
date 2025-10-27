@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React$1, { CSSProperties, ReactNode, Key } from 'react';
+import React$1, { CSSProperties, ReactNode, ReactElement, Key } from 'react';
 
 interface Size$1 {
     width: number;
@@ -855,6 +855,233 @@ declare namespace Align {
 }
 
 /**
+ * How to size the non-positioned children in the stack.
+ * Equivalent to Flutter's StackFit enum.
+ */
+declare enum StackFit {
+    /** The constraints passed to the stack from its parent are loosened. */
+    loose = "loose",
+    /** The constraints passed to the stack from its parent are tightened to the biggest size allowed. */
+    expand = "expand",
+    /** The constraints passed to the stack from its parent are passed unmodified to the non-positioned children. */
+    passthrough = "passthrough"
+}
+/**
+ * Properties for the Stack component.
+ * Equivalent to Flutter's Stack widget properties.
+ */
+interface StackProps {
+    /** How to align the non-positioned and partially-positioned children in the stack */
+    alignment?: AlignmentGeometry;
+    /** The text direction with which to resolve alignment */
+    textDirection?: TextDirection$1;
+    /** How to size the non-positioned children in the stack */
+    fit?: StackFit;
+    /** The clip behavior when content overflows */
+    clipBehavior?: Clip$1;
+    /** The child widgets (Flutter-style prop) */
+    children?: ReactNode;
+    /** Additional CSS classes */
+    className?: string;
+    /** Additional inline styles */
+    style?: CSSProperties;
+}
+/**
+ * A widget that positions its children relative to the edges of its box.
+ *
+ * Equivalent to Flutter's Stack widget. This class is useful if you want to overlap
+ * several children in a simple way.
+ *
+ * Each child of a Stack is either positioned or non-positioned. Positioned children
+ * are those wrapped in a Positioned widget that has at least one non-null property.
+ * The stack sizes itself to contain all the non-positioned children, which are
+ * positioned according to alignment. The positioned children are then placed relative
+ * to the stack according to their top, right, bottom, and left properties.
+ *
+ * @example
+ * ```tsx
+ * // Basic stack with overlapping children
+ * <Stack>
+ *   <Container width={100} height={100} color="red" />
+ *   <Container width={90} height={90} color="green" />
+ *   <Container width={80} height={80} color="blue" />
+ * </Stack>
+ *
+ * // Stack with positioned children
+ * <Stack alignment={Alignment.center}>
+ *   <Container width={250} height={250} color="white" />
+ *   <Positioned
+ *     bottom={0}
+ *     left={0}
+ *     right={0}
+ *   >
+ *     <Container
+ *       padding={EdgeInsets.all(5)}
+ *       decoration={{
+ *         gradient: new LinearGradient({
+ *           begin: Alignment.topCenter,
+ *           end: Alignment.bottomCenter,
+ *           colors: ['transparent', 'rgba(0,0,0,0.5)']
+ *         })
+ *       }}
+ *     >
+ *       <Text style={{ color: 'white' }}>Foreground Text</Text>
+ *     </Container>
+ *   </Positioned>
+ * </Stack>
+ *
+ * // Stack with custom alignment and fit
+ * <Stack
+ *   alignment={Alignment.bottomRight}
+ *   fit={StackFit.expand}
+ * >
+ *   <Image src="background.jpg" />
+ *   <Positioned
+ *     top={10}
+ *     right={10}
+ *   >
+ *     <Icon name="close" />
+ *   </Positioned>
+ * </Stack>
+ * ```
+ */
+declare function Stack({ alignment, textDirection, fit, clipBehavior, children, className, style, }: StackProps): ReactElement;
+declare namespace Stack {
+    var displayName: string;
+}
+
+/**
+ * Properties for the Positioned component.
+ * Equivalent to Flutter's Positioned widget properties.
+ */
+interface PositionedProps {
+    /** The distance that the child's left edge is inset from the left of the stack */
+    left?: number | string;
+    /** The distance that the child's top edge is inset from the top of the stack */
+    top?: number | string;
+    /** The distance that the child's right edge is inset from the right of the stack */
+    right?: number | string;
+    /** The distance that the child's bottom edge is inset from the bottom of the stack */
+    bottom?: number | string;
+    /** The child's width (cannot be used with both left and right) */
+    width?: number | string;
+    /** The child's height (cannot be used with both top and bottom) */
+    height?: number | string;
+    /** The child widget */
+    child?: ReactNode;
+    /** React-style children prop (alternative to child) */
+    children?: ReactNode;
+    /** Additional CSS classes */
+    className?: string;
+    /** Additional inline styles */
+    style?: CSSProperties;
+}
+/**
+ * Properties for Positioned.directional
+ */
+interface PositionedDirectionalProps {
+    /** The distance from the start edge */
+    start?: number | string;
+    /** The distance that the child's top edge is inset from the top of the stack */
+    top?: number | string;
+    /** The distance from the end edge */
+    end?: number | string;
+    /** The distance that the child's bottom edge is inset from the bottom of the stack */
+    bottom?: number | string;
+    /** The child's width */
+    width?: number | string;
+    /** The child's height */
+    height?: number | string;
+    /** Text direction for resolving start/end */
+    textDirection: TextDirection$1;
+    /** The child widget */
+    child?: ReactNode;
+    /** React-style children prop (alternative to child) */
+    children?: ReactNode;
+    /** Additional CSS classes */
+    className?: string;
+    /** Additional inline styles */
+    style?: CSSProperties;
+}
+/**
+ * Properties for Positioned.fill
+ */
+interface PositionedFillProps {
+    /** The distance that the child's left edge is inset from the left of the stack */
+    left?: number | string;
+    /** The distance that the child's top edge is inset from the top of the stack */
+    top?: number | string;
+    /** The distance that the child's right edge is inset from the right of the stack */
+    right?: number | string;
+    /** The distance that the child's bottom edge is inset from the bottom of the stack */
+    bottom?: number | string;
+    /** The child widget */
+    child?: ReactNode;
+    /** React-style children prop (alternative to child) */
+    children?: ReactNode;
+    /** Additional CSS classes */
+    className?: string;
+    /** Additional inline styles */
+    style?: CSSProperties;
+}
+/**
+ * A widget that controls where a child of a Stack is positioned.
+ *
+ * A Positioned widget must be a descendant of a Stack. If a widget is wrapped in a
+ * Positioned, then it is a positioned widget in its Stack. If the top property is
+ * non-null, the top edge of this child will be positioned that many units from the
+ * top of the stack. The right, bottom, and left properties work analogously.
+ *
+ * If both the top and bottom properties are non-null, then the child will be forced
+ * to have exactly the height required to satisfy both constraints. Similarly, setting
+ * the right and left properties to non-null values will force the child to have a
+ * particular width.
+ *
+ * @example
+ * ```tsx
+ * // Basic positioned child
+ * <Stack>
+ *   <Positioned
+ *     top={10}
+ *     left={20}
+ *   >
+ *     <Container width={100} height={100} color="blue" />
+ *   </Positioned>
+ * </Stack>
+ *
+ * // Stretch child to fill area
+ * <Stack>
+ *   <Positioned
+ *     top={0}
+ *     left={0}
+ *     right={0}
+ *     bottom={0}
+ *   >
+ *     <Container color="rgba(0,0,0,0.5)" />
+ *   </Positioned>
+ * </Stack>
+ *
+ * // Position with width and height
+ * <Stack>
+ *   <Positioned
+ *     top={10}
+ *     right={10}
+ *     width={100}
+ *     height={50}
+ *   >
+ *     <Text>Top Right</Text>
+ *   </Positioned>
+ * </Stack>
+ * ```
+ */
+declare function Positioned({ left, top, right, bottom, width, height, child, children, className, style, }: PositionedProps): ReactElement;
+declare namespace Positioned {
+    var fill: ({ left, top, right, bottom, child, children, className, style, }: PositionedFillProps) => ReactElement;
+    var directional: ({ start, top, end, bottom, width, height, textDirection, child, children, className, style, }: PositionedDirectionalProps) => ReactElement;
+    var displayName: string;
+}
+
+/**
  * SizedBox component equivalent to Flutter's SizedBox widget.
  * Creates a box with specific width and/or height dimensions.
  *
@@ -1251,19 +1478,19 @@ interface InkWellProps {
     /** Tab index for keyboard navigation */
     tabIndex?: number;
     /** Accessibility label for screen readers */
-    "aria-label"?: string;
+    'aria-label'?: string;
     /** ID of element that labels this component */
-    "aria-labelledby"?: string;
+    'aria-labelledby'?: string;
     /** ID of element that describes this component */
-    "aria-describedby"?: string;
+    'aria-describedby'?: string;
     /** Indicates if the element is pressed (for toggle buttons) */
-    "aria-pressed"?: boolean | "mixed";
+    'aria-pressed'?: boolean | 'mixed';
     /** Indicates if the element is expanded (for collapsible content) */
-    "aria-expanded"?: boolean;
+    'aria-expanded'?: boolean;
     /** Indicates if the element controls another element */
-    "aria-controls"?: string;
+    'aria-controls'?: string;
     /** Indicates if the element has a popup */
-    "aria-haspopup"?: boolean | "false" | "true" | "menu" | "listbox" | "tree" | "grid" | "dialog";
+    'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
 }
 declare function InkWell(props: InkWellProps): react_jsx_runtime.JSX.Element;
 
@@ -2136,5 +2363,5 @@ interface TextProps {
  */
 declare const Text: ({ data, children, style, textAlign, softWrap, overflow, maxLines, textScaleFactor, textScaler, locale, textDirection, semanticsLabel, semanticsIdentifier, selectionColor, className, }: TextProps) => react_jsx_runtime.JSX.Element;
 
-export { Align, Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, PageScrollPhysics, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createPageScrollPhysics, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
-export type { AlignProps, AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BoxFit, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DecorationImage, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, ImageRepeat, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, ScrollPhysicsConfig, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };
+export { Align, Alignment$1 as Alignment, AlignmentDirectional, AlignmentGeometry, AnimatedContainer, AnimatedOpacity, AnimationCurve, Axis, BorderRadius, BoxConstraints$1 as BoxConstraints, BoxConstraintsUtils, Brightness, Column, Container, CrossAxisAlignment, Decoration, Divider, EdgeInsets$1 as EdgeInsets, FilterQuality, Flex, GestureDetector, Gradient, HitTestBehavior, InkWell, LayoutBuilder, LinearGradient, ListView, MainAxisAlignment, MainAxisSize, Matrix4$1 as Matrix4, Matrix4$1 as Matrix4Interface, MediaQuery, Opacity, Orientation, OrientationBuilder, OrientationUtils, PaddingDirection, PageScrollPhysics, Positioned, RadialGradient, Radius, Row, ScrollDirection, ScrollPhysics, SizedBox, Spacer, Stack, StackFit, SweepGradient, Text, TextBaseline, TextDirection$1 as TextDirection, TextField, Transform, TransformUtils, VerticalDirection, alignmentToCSS, alignmentToFlexClasses, alignmentToTransformOrigin, createBoxConstraints, createExpandedConstraints, createLooseConstraints, createPageScrollPhysics, createTightConstraints, defaultBreakpoints, useBreakpoint, useBreakpointMatch, useMediaQuery, useOrientation, useOrientationMatch, useOrientationValue };
+export type { AlignProps, AnimatedContainerProps, AnimatedOpacityProps, BaseProps, BoxDecoration, BoxFit, BuilderProps, Clip$1 as Clip, ColumnProps, ContainerProps, DecorationImage, DividerProps, DragEndDetails, DragStartDetails, DragUpdateDetails, FlexProps, GestureDetectorProps, GradientStop, ImageRepeat, InkWellProps, InputDecoration, LayoutBuilderProps, LayoutWidgetBuilder, ListViewProps$1 as ListViewComponentProps, ListViewHandle, ListViewProps, LongPressEndDetails, LongPressMoveUpdateDetails, LongPressStartDetails, MediaQueryBreakpoints, MediaQueryData, MediaQueryEdgeInsets, MediaQueryProps, Offset$1 as Offset, OpacityProps, OrientationBuilderProps, OrientationWidgetBuilder, PositionedDirectionalProps, PositionedFillProps, PositionedProps, Rect, RowProps, ScaleEndDetails, ScaleStartDetails, ScaleUpdateDetails, ScrollPhysicsConfig, SeparatedProps, Size$1 as Size, SizedBoxProps, SpacerProps, StackProps, TapDownDetails, TapUpDetails, TextAlign, TextCapitalization, TextFieldHandle, TextFieldProps, TextInputAction, TextInputType, TextOverflow, TextProps, TextStyle, TransformProps };

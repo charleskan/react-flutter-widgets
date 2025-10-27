@@ -14,6 +14,14 @@ export { default as Column } from './components/layout/Column'
 export { default as Flex } from './components/layout/Flex'
 export { default as Align } from './components/layout/Align'
 export type { AlignProps } from './components/layout/Align'
+export { Stack, StackFit } from './components/layout/Stack'
+export type { StackProps } from './components/layout/Stack'
+export { Positioned } from './components/layout/Positioned'
+export type {
+  PositionedProps,
+  PositionedDirectionalProps,
+  PositionedFillProps,
+} from './components/layout/Positioned'
 export type {
   RowProps,
   ColumnProps,
