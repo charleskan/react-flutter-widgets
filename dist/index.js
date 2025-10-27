@@ -1706,40 +1706,44 @@ function Stack({ alignment = AlignmentDirectional.topStart, textDirection, fit =
                 // Don't set width/height, pass through constraints
                 break;
         }
-        // Apply clip behavior
-        const clipClasses = exports.Decoration.clipToClasses(clipBehavior);
-        // Process children
+        // Process children - separate positioned from non-positioned
         const childArray = require$$0.Children.toArray(children);
-        const processedChildren = childArray.map((child) => {
-            if (!require$$0.isValidElement(child))
-                return child;
-            const isPositionedChild = isPositioned(child);
-            if (isPositionedChild) {
-                // Positioned children handle their own positioning
-                return child;
+        const positionedChildren = [];
+        const nonPositionedChildren = [];
+        for (const child of childArray) {
+            if (require$$0.isValidElement(child) && isPositioned(child)) {
+                positionedChildren.push(child);
             }
-            // Non-positioned children need alignment applied
-            const childStyle = {
+            else {
+                nonPositionedChildren.push(child);
+            }
+        }
+        const processedChildren = [];
+        // Add non-positioned children as a single block
+        if (nonPositionedChildren.length > 0) {
+            const nonPositionedBlockStyle = {
                 position: 'absolute',
                 ...getAlignmentStyles(resolvedAlignment),
+                display: 'flex',
+                flexDirection: 'column',
             };
-            // Apply fit to non-positioned children
+            // Apply fit to the non-positioned block
             if (fit === exports.StackFit.expand) {
-                childStyle.width = '100%';
-                childStyle.height = '100%';
+                nonPositionedBlockStyle.width = '100%';
+                nonPositionedBlockStyle.height = '100%';
             }
-            // Children.toArray already provides stable keys
-            return (jsxRuntimeExports.jsx("div", { style: childStyle, children: child }, child.key));
-        });
+            processedChildren.push(jsxRuntimeExports.jsx("div", { style: nonPositionedBlockStyle, children: nonPositionedChildren }, "non-positioned-block"));
+        }
+        // Add positioned children (they handle their own positioning)
+        processedChildren.push(...positionedChildren);
         return {
             containerStyle: {
                 ...baseContainerStyle,
                 ...style,
             },
             childrenArray: processedChildren,
-            clipClasses: clipClasses.join(' '),
         };
-    }, [alignment, textDirection, fit, clipBehavior, children, style]);
+    }, [alignment, textDirection, fit, children, style]);
     const combinedClassName = require$$0.useMemo(() => {
         const clipClasses = exports.Decoration.clipToClasses(clipBehavior);
         return [clipClasses.join(' '), className].filter(Boolean).join(' ');

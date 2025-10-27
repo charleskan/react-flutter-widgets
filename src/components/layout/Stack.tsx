@@ -146,40 +146,45 @@ export function Stack({
         break
     }
 
-    // Apply clip behavior
-    const clipClasses = Decoration.clipToClasses(clipBehavior)
-
-    // Process children
+    // Process children - separate positioned from non-positioned
     const childArray = Children.toArray(children)
-    const processedChildren = childArray.map((child) => {
-      if (!isValidElement(child)) return child
+    const positionedChildren: ReactNode[] = []
+    const nonPositionedChildren: ReactNode[] = []
 
-      const isPositionedChild = isPositioned(child)
-
-      if (isPositionedChild) {
-        // Positioned children handle their own positioning
-        return child
+    for (const child of childArray) {
+      if (isValidElement(child) && isPositioned(child)) {
+        positionedChildren.push(child)
+      } else {
+        nonPositionedChildren.push(child)
       }
+    }
 
-      // Non-positioned children need alignment applied
-      const childStyle: CSSProperties = {
+    const processedChildren: ReactNode[] = []
+
+    // Add non-positioned children as a single block
+    if (nonPositionedChildren.length > 0) {
+      const nonPositionedBlockStyle: CSSProperties = {
         position: 'absolute',
         ...getAlignmentStyles(resolvedAlignment),
+        display: 'flex',
+        flexDirection: 'column',
       }
 
-      // Apply fit to non-positioned children
+      // Apply fit to the non-positioned block
       if (fit === StackFit.expand) {
-        childStyle.width = '100%'
-        childStyle.height = '100%'
+        nonPositionedBlockStyle.width = '100%'
+        nonPositionedBlockStyle.height = '100%'
       }
 
-      // Children.toArray already provides stable keys
-      return (
-        <div key={child.key} style={childStyle}>
-          {child}
-        </div>
+      processedChildren.push(
+        <div key="non-positioned-block" style={nonPositionedBlockStyle}>
+          {nonPositionedChildren}
+        </div>,
       )
-    })
+    }
+
+    // Add positioned children (they handle their own positioning)
+    processedChildren.push(...positionedChildren)
 
     return {
       containerStyle: {
@@ -187,9 +192,8 @@ export function Stack({
         ...style,
       },
       childrenArray: processedChildren,
-      clipClasses: clipClasses.join(' '),
     }
-  }, [alignment, textDirection, fit, clipBehavior, children, style])
+  }, [alignment, textDirection, fit, children, style])
 
   const combinedClassName = useMemo(() => {
     const clipClasses = Decoration.clipToClasses(clipBehavior)
