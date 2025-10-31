@@ -1680,32 +1680,30 @@ function isPositioned(child) {
  * ```
  */
 function Stack({ alignment = AlignmentDirectional.topStart, textDirection, fit = exports.StackFit.loose, clipBehavior = 'hardEdge', children, className, style, }) {
-    const { containerStyle, childrenArray } = require$$0.useMemo(() => {
+    const { containerClasses, containerStyle, childrenArray } = require$$0.useMemo(() => {
         // Resolve alignment with text direction
         const resolvedAlignment = alignment instanceof AlignmentDirectional && textDirection
             ? alignment.resolve(textDirection)
             : alignment instanceof Alignment$1
                 ? alignment
                 : Alignment$1.topLeft;
-        // Build container styles
-        const baseContainerStyle = {
-            position: 'relative',
-            display: 'flex',
-        };
-        // Apply fit behavior
+        // Build container classes (using Tailwind)
+        const baseClasses = ['grid', 'relative'];
+        // Apply fit behavior via Tailwind classes
         switch (fit) {
             case exports.StackFit.expand:
-                baseContainerStyle.width = '100%';
-                baseContainerStyle.height = '100%';
+                baseClasses.push('w-full', 'h-full');
                 break;
             case exports.StackFit.loose:
-                baseContainerStyle.width = 'fit-content';
-                baseContainerStyle.height = 'fit-content';
+                baseClasses.push('w-fit', 'h-fit');
                 break;
             case exports.StackFit.passthrough:
                 // Don't set width/height, pass through constraints
                 break;
         }
+        // Get alignment classes and styles
+        const { classes: alignmentClasses, styles: alignmentStyles } = getGridAlignmentClassesAndStyles(resolvedAlignment);
+        baseClasses.push(...alignmentClasses);
         // Process children - separate positioned from non-positioned
         const childArray = require$$0.Children.toArray(children);
         const positionedChildren = [];
@@ -1719,26 +1717,17 @@ function Stack({ alignment = AlignmentDirectional.topStart, textDirection, fit =
             }
         }
         const processedChildren = [];
-        // Add non-positioned children as a single block
-        if (nonPositionedChildren.length > 0) {
-            const nonPositionedBlockStyle = {
-                position: 'absolute',
-                ...getAlignmentStyles(resolvedAlignment),
-                display: 'flex',
-                flexDirection: 'column',
-            };
-            // Apply fit to the non-positioned block
-            if (fit === exports.StackFit.expand) {
-                nonPositionedBlockStyle.width = '100%';
-                nonPositionedBlockStyle.height = '100%';
-            }
-            processedChildren.push(jsxRuntimeExports.jsx("div", { style: nonPositionedBlockStyle, children: nonPositionedChildren }, "non-positioned-block"));
+        // Wrap each non-positioned child to place them in the same grid cell
+        for (const child of nonPositionedChildren) {
+            const key = require$$0.isValidElement(child) ? child.key : undefined;
+            processedChildren.push(jsxRuntimeExports.jsx("div", { className: "col-start-1 row-start-1", children: child }, key));
         }
-        // Add positioned children (they handle their own positioning)
+        // Add positioned children (they handle their own positioning via position: absolute)
         processedChildren.push(...positionedChildren);
         return {
+            containerClasses: baseClasses,
             containerStyle: {
-                ...baseContainerStyle,
+                ...alignmentStyles,
                 ...style,
             },
             childrenArray: processedChildren,
@@ -1746,25 +1735,67 @@ function Stack({ alignment = AlignmentDirectional.topStart, textDirection, fit =
     }, [alignment, textDirection, fit, children, style]);
     const combinedClassName = require$$0.useMemo(() => {
         const clipClasses = exports.Decoration.clipToClasses(clipBehavior);
-        return [clipClasses.join(' '), className].filter(Boolean).join(' ');
-    }, [clipBehavior, className]);
+        return [...clipClasses, ...containerClasses, className].filter(Boolean).join(' ');
+    }, [clipBehavior, containerClasses, className]);
     return (jsxRuntimeExports.jsx("div", { className: combinedClassName, style: containerStyle, children: childrenArray }));
 }
 /**
- * Convert Flutter Alignment to CSS positioning styles
+ * Convert Flutter Alignment to CSS Grid alignment classes and styles
+ * Returns both Tailwind classes and inline styles for precise alignment
  */
-function getAlignmentStyles(alignment) {
+function getGridAlignmentClassesAndStyles(alignment) {
     // Flutter alignment uses -1 to 1 coordinate system
-    // -1, -1 = top left
-    // 0, 0 = center
-    // 1, 1 = bottom right
-    const xPercent = ((alignment.x + 1) / 2) * 100;
-    const yPercent = ((alignment.y + 1) / 2) * 100;
-    return {
-        left: `${xPercent}%`,
-        top: `${yPercent}%`,
-        transform: `translate(-${xPercent}%, -${yPercent}%)`,
-    };
+    // -1, -1 = top left (start, start)
+    // 0, 0 = center (center, center)
+    // 1, 1 = bottom right (end, end)
+    const classes = [];
+    const styles = {};
+    // Check for common alignments that can use Tailwind classes
+    if (alignment.x === -1 && alignment.y === -1) {
+        // topLeft
+        classes.push('place-items-start');
+    }
+    else if (alignment.x === 0 && alignment.y === -1) {
+        // topCenter
+        classes.push('items-start', 'justify-items-center');
+    }
+    else if (alignment.x === 1 && alignment.y === -1) {
+        // topRight
+        classes.push('items-start', 'justify-items-end');
+    }
+    else if (alignment.x === -1 && alignment.y === 0) {
+        // centerLeft
+        classes.push('items-center', 'justify-items-start');
+    }
+    else if (alignment.x === 0 && alignment.y === 0) {
+        // center
+        classes.push('place-items-center');
+    }
+    else if (alignment.x === 1 && alignment.y === 0) {
+        // centerRight
+        classes.push('items-center', 'justify-items-end');
+    }
+    else if (alignment.x === -1 && alignment.y === 1) {
+        // bottomLeft
+        classes.push('items-end', 'justify-items-start');
+    }
+    else if (alignment.x === 0 && alignment.y === 1) {
+        // bottomCenter
+        classes.push('items-end', 'justify-items-center');
+    }
+    else if (alignment.x === 1 && alignment.y === 1) {
+        // bottomRight
+        classes.push('place-items-end');
+    }
+    else {
+        // For arbitrary alignment values, use inline styles
+        // Convert -1..1 to CSS percentage (start, center, end)
+        const xPercent = ((alignment.x + 1) / 2) * 100;
+        const yPercent = ((alignment.y + 1) / 2) * 100;
+        styles.justifyItems = `${xPercent}%`;
+        styles.alignItems = `${yPercent}%`;
+    }
+    return { classes, styles };
 }
 // Set displayName for debugging
 Stack.displayName = 'Stack';
