@@ -125,26 +125,30 @@ export function Stack({
           ? alignment
           : Alignment.topLeft
 
-    // Build container classes (using Tailwind)
-    const baseClasses = ['grid', 'relative']
+    // Build container classes (using position: relative instead of grid)
+    const baseClasses = ['relative', 'flex']
 
-    // Apply fit behavior via Tailwind classes
+    // Build container inline styles
+    const baseStyle: CSSProperties = {}
+
+    // Apply fit behavior
     switch (fit) {
       case StackFit.expand:
         baseClasses.push('w-full', 'h-full')
         break
       case StackFit.loose:
-        baseClasses.push('w-fit', 'h-fit')
+        // Don't set size - let first non-positioned child determine size
         break
       case StackFit.passthrough:
         // Don't set width/height, pass through constraints
         break
     }
 
-    // Get alignment classes and styles
+    // Get alignment classes and styles for flex container
     const { classes: alignmentClasses, styles: alignmentStyles } =
-      getGridAlignmentClassesAndStyles(resolvedAlignment)
+      getFlexAlignmentClassesAndStyles(resolvedAlignment)
     baseClasses.push(...alignmentClasses)
+    Object.assign(baseStyle, alignmentStyles)
 
     // Process children - separate positioned from non-positioned
     const childArray = Children.toArray(children)
@@ -161,15 +165,27 @@ export function Stack({
 
     const processedChildren: ReactNode[] = []
 
-    // Wrap each non-positioned child to place them in the same grid cell
-    for (const child of nonPositionedChildren) {
-      const key = isValidElement(child) ? child.key : undefined
-      processedChildren.push(
-        <div key={key} className="col-start-1 row-start-1">
-          {child}
-        </div>,
-      )
-    }
+    // Process non-positioned children:
+    // - First child uses normal flow (determines Stack size)
+    // - Rest use absolute positioning with alignment
+    nonPositionedChildren.forEach((child, index) => {
+      const key = isValidElement(child)
+        ? (child.key ?? `non-positioned-${index}`)
+        : `non-positioned-${index}`
+
+      if (index === 0) {
+        // First non-positioned child - normal flow, aligned by flex container
+        processedChildren.push(<div key={key}>{child}</div>)
+      } else {
+        // Subsequent non-positioned children - absolute positioned with alignment
+        const absoluteStyle = getAbsoluteAlignmentStyles(resolvedAlignment)
+        processedChildren.push(
+          <div key={key} className="absolute" style={absoluteStyle}>
+            {child}
+          </div>,
+        )
+      }
+    })
 
     // Add positioned children (they handle their own positioning via position: absolute)
     processedChildren.push(...positionedChildren)
@@ -177,7 +193,7 @@ export function Stack({
     return {
       containerClasses: baseClasses,
       containerStyle: {
-        ...alignmentStyles,
+        ...baseStyle,
         ...style,
       },
       childrenArray: processedChildren,
@@ -197,60 +213,81 @@ export function Stack({
 }
 
 /**
- * Convert Flutter Alignment to CSS Grid alignment classes and styles
- * Returns both Tailwind classes and inline styles for precise alignment
+ * Convert Flutter Alignment to CSS Flexbox alignment classes and styles
+ * For aligning the first non-positioned child within the flex container
  */
-function getGridAlignmentClassesAndStyles(alignment: Alignment): {
+function getFlexAlignmentClassesAndStyles(alignment: Alignment): {
   classes: string[]
   styles: CSSProperties
 } {
   // Flutter alignment uses -1 to 1 coordinate system
-  // -1, -1 = top left (start, start)
+  // -1, -1 = top left (flex-start, flex-start)
   // 0, 0 = center (center, center)
-  // 1, 1 = bottom right (end, end)
+  // 1, 1 = bottom right (flex-end, flex-end)
 
   const classes: string[] = []
   const styles: CSSProperties = {}
 
+  // Map alignment to flex justify-content and align-items
   // Check for common alignments that can use Tailwind classes
   if (alignment.x === -1 && alignment.y === -1) {
     // topLeft
-    classes.push('place-items-start')
+    classes.push('justify-start', 'items-start')
   } else if (alignment.x === 0 && alignment.y === -1) {
     // topCenter
-    classes.push('items-start', 'justify-items-center')
+    classes.push('justify-center', 'items-start')
   } else if (alignment.x === 1 && alignment.y === -1) {
     // topRight
-    classes.push('items-start', 'justify-items-end')
+    classes.push('justify-end', 'items-start')
   } else if (alignment.x === -1 && alignment.y === 0) {
     // centerLeft
-    classes.push('items-center', 'justify-items-start')
+    classes.push('justify-start', 'items-center')
   } else if (alignment.x === 0 && alignment.y === 0) {
     // center
-    classes.push('place-items-center')
+    classes.push('justify-center', 'items-center')
   } else if (alignment.x === 1 && alignment.y === 0) {
     // centerRight
-    classes.push('items-center', 'justify-items-end')
+    classes.push('justify-end', 'items-center')
   } else if (alignment.x === -1 && alignment.y === 1) {
     // bottomLeft
-    classes.push('items-end', 'justify-items-start')
+    classes.push('justify-start', 'items-end')
   } else if (alignment.x === 0 && alignment.y === 1) {
     // bottomCenter
-    classes.push('items-end', 'justify-items-center')
+    classes.push('justify-center', 'items-end')
   } else if (alignment.x === 1 && alignment.y === 1) {
     // bottomRight
-    classes.push('place-items-end')
+    classes.push('justify-end', 'items-end')
   } else {
     // For arbitrary alignment values, use inline styles
-    // Convert -1..1 to CSS percentage (start, center, end)
+    // Convert -1..1 to flex alignment
     const xPercent = ((alignment.x + 1) / 2) * 100
     const yPercent = ((alignment.y + 1) / 2) * 100
 
-    styles.justifyItems = `${xPercent}%`
+    styles.justifyContent = `${xPercent}%`
     styles.alignItems = `${yPercent}%`
   }
 
   return { classes, styles }
+}
+
+/**
+ * Convert Flutter Alignment to absolute positioning styles
+ * For non-positioned children after the first one
+ */
+function getAbsoluteAlignmentStyles(alignment: Alignment): CSSProperties {
+  // Flutter alignment uses -1 to 1 coordinate system
+  // -1, -1 = top left
+  // 0, 0 = center
+  // 1, 1 = bottom right
+
+  const xPercent = ((alignment.x + 1) / 2) * 100
+  const yPercent = ((alignment.y + 1) / 2) * 100
+
+  return {
+    left: `${xPercent}%`,
+    top: `${yPercent}%`,
+    transform: `translate(-${xPercent}%, -${yPercent}%)`,
+  }
 }
 
 // Set displayName for debugging
